@@ -57,7 +57,7 @@ class GWRBasic:
         if (self.has_intercept):
             cyg_indep_vars = np.hstack([np.ones((cyg_indep_vars.shape[0], 1)), cyg_indep_vars])
         cyg_coords = np.asfortranarray(self.sdf.geometry.centroid.get_coordinates())
-        cyg_gwr_basic = CyGWRBasic(cyg_coords, cyg_depen_var, cyg_indep_vars, cyg_weight, cyg_distance, hatmatrix)
+        cyg_gwr_basic = CyGWRBasic(cyg_coords, cyg_depen_var, cyg_indep_vars, cyg_weight, cyg_distance, self.has_intercept)
         if self.bw is None and optimize_bw is None:
             optimize_bw = BandwidthSelectionCriterionType.CV
         if optimize_bw is not None:
