@@ -1,0 +1,3 @@
+[submodule "libgwmodel"]
+	path = libgwmodel
+	url = https://github.com/GWmodel-Lab/libgwmodel.git
