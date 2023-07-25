@@ -19,7 +19,7 @@ cdef mat numpy2mat(double[::1, :] array):
     cdef unsigned long long cols = array.shape[1]
     return mat(&array[0, 0], rows, cols)
 
-cdef vec numpy2vec(double[::1] array):
+cdef vec numpy2vec(double[:] array):
     cdef unsigned long long rows = array.shape[0]
     return vec(&array[0], rows)
 
@@ -34,6 +34,16 @@ cdef mat2numpy(const mat& arma_mat):
     for i in range(cols):
         for j in range(rows):
             dst[j, i] = src[i * rows + j]
+    return result
+
+cdef vec2numpy(const vec& arma_vec):
+    cdef const double* src = arma_vec.memptr()
+    cdef unsigned long long rows = arma_vec.n_rows
+    result = np.zeros((rows,), dtype=np.float64, order="F")
+    cdef double[:] dst = result
+    cdef unsigned long long i
+    for i in range(rows):
+        dst[i] = src[i]
     return result
 
 cdef cube2numpy(const cube& arma_cube):
@@ -90,14 +100,14 @@ cdef class CyBandwidthWeight(CyWeight):
 cdef class CyGWRBasic:
     cdef GWRBasic* _c_instance
 
-    def __cinit__(self, double[::1, :] coords, double[::1] depen_var, double[::1, :] indep_vars, CyWeight weight, CyDistance distance, bint hatmatrix):
+    def __cinit__(self, double[::1, :] coords, double[:] depen_var, double[::1, :] indep_vars, CyWeight weight, CyDistance distance, bint intercept):
         self._c_instance = new GWRBasic()
         self._c_instance.setCoords(numpy2mat(coords))
         self._c_instance.setDependentVariable(numpy2vec(depen_var))
         self._c_instance.setIndependentVariables(numpy2mat(indep_vars))
         cdef SpatialWeight spatial = SpatialWeight(weight._c_instance, distance._c_instance)
         self._c_instance.setSpatialWeight(spatial)
-        self._c_instance.setHasHatMatrix(hatmatrix)
+        self._c_instance.setHasIntercept(intercept)
     
     def enable_bandwidth_autoselection(self, int criterion):
         self._c_instance.setIsAutoselectBandwidth(True)
@@ -111,8 +121,17 @@ cdef class CyGWRBasic:
         self._c_instance.setParallelType(ParallelType.OpenMP)
         self._c_instance.setOmpThreadNum(threads)
 
-    def fit(self):
+    def fit(self, bint hatmatrix=True):
+        self._c_instance.setHasHatMatrix(hatmatrix)
         self._c_instance.fit()
+    
+    @property
+    def dependent_variable(self):
+        return vec2numpy(self._c_instance.dependentVariable())
+    
+    @property
+    def independent_variables(self):
+        return mat2numpy(self._c_instance.independentVariables())
     
     @property
     def betas(self):

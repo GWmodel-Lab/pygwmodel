@@ -22,7 +22,7 @@ class GWRBasic:
     Basic GWR python high api class.
     """
 
-    def __init__(self, sdf: gp.GeoDataFrame, depen_var: str, indep_vars: List[str], has_intercept=True, bw: Union[float, None]=None, adaptive: bool=True, kernel: KernelType=KernelType.GAUSSIAN, longlat: bool=True):
+    def __init__(self, sdf: gp.GeoDataFrame, depen_var: str, indep_vars: List[str], bw: Union[float, None]=None, adaptive: bool=True, kernel: KernelType=KernelType.GAUSSIAN, longlat: bool=True, has_intercept=True):
         """
         docstring
         """
@@ -55,8 +55,8 @@ class GWRBasic:
         indep_var_names = (['Intercept'] if self.has_intercept else []) + self.indep_vars
         cyg_indep_vars = np.asfortranarray(self.sdf[self.indep_vars])
         if (self.has_intercept):
-            cyg_indep_vars = np.insert(cyg_indep_vars, 0, 1.0)
-        cyg_coords = self.sdf.geometry.centroid
+            cyg_indep_vars = np.hstack([np.ones((cyg_indep_vars.shape[0], 1)), cyg_indep_vars])
+        cyg_coords = np.asfortranarray(self.sdf.geometry.centroid.get_coordinates())
         cyg_gwr_basic = CyGWRBasic(cyg_coords, cyg_depen_var, cyg_indep_vars, cyg_weight, cyg_distance, hatmatrix)
         if self.bw is None and optimize_bw is None:
             optimize_bw = BandwidthSelectionCriterionType.CV

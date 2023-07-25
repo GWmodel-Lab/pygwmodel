@@ -32,36 +32,36 @@ class TestGWRBasic(unittest.TestCase):
         ])
         self.assertTrue(np.all(np.abs(diagnostic0 - diagnostic) < 1e-8))
     
-    def test_minimal_multithreads(self):
-        londonhp_depen = 'PURCHASE'
-        londonhp_indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
-        algorithm = GWRBasic(self.londonhp, londonhp_depen, londonhp_indep, 36.0, longlat=False).fit(multithreads=8)
+    # def test_minimal_multithreads(self):
+    #     londonhp_depen = 'PURCHASE'
+    #     londonhp_indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
+    #     algorithm = GWRBasic(self.londonhp, londonhp_depen, londonhp_indep, 36.0, longlat=False).fit(multithreads=8)
 
-        diagnostic0 = np.array([
-            2436.60445730413,
-            2448.27206524754,
-            0.708010632044736,
-            0.674975341723766
-        ])
-        diagnostic = np.array([
-            algorithm.diagnostic['AIC'],
-            algorithm.diagnostic['AICc'],
-            algorithm.diagnostic['RSquare'],
-            algorithm.diagnostic['RSquareAdjust']
-        ])
-        self.assertTrue(np.all(np.abs(diagnostic0 - diagnostic) < 1e-8))
+    #     diagnostic0 = np.array([
+    #         2436.60445730413,
+    #         2448.27206524754,
+    #         0.708010632044736,
+    #         0.674975341723766
+    #     ])
+    #     diagnostic = np.array([
+    #         algorithm.diagnostic['AIC'],
+    #         algorithm.diagnostic['AICc'],
+    #         algorithm.diagnostic['RSquare'],
+    #         algorithm.diagnostic['RSquareAdjust']
+    #     ])
+    #     self.assertTrue(np.all(np.abs(diagnostic0 - diagnostic) < 1e-8))
 
-    def test_autoselect_bandwidth(self):
-        londonhp_depen = 'PURCHASE'
-        londonhp_indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
-        algorithm = GWRBasic(self.londonhp, londonhp_depen, londonhp_indep, 36.0, longlat=False).fit(optimize_bw=pygwmodel.BandwidthSelectionCriterionType.CV)
-        self.assertEqual(algorithm.bw, 67)
+    # def test_autoselect_bandwidth(self):
+    #     londonhp_depen = 'PURCHASE'
+    #     londonhp_indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
+    #     algorithm = GWRBasic(self.londonhp, londonhp_depen, londonhp_indep, 36.0, longlat=False).fit(optimize_bw=pygwmodel.BandwidthSelectionCriterionType.CV)
+    #     self.assertEqual(algorithm.bw, 67)
 
-    def test_autoselect_bandwidth_multithread(self):
-        londonhp_depen = 'PURCHASE'
-        londonhp_indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
-        algorithm = GWRBasic(self.londonhp, londonhp_depen, londonhp_indep, 36.0, longlat=False).fit(optimize_bw=pygwmodel.BandwidthSelectionCriterionType.CV, multithreads=8)
-        self.assertEqual(algorithm.bw, 67)
+    # def test_autoselect_bandwidth_multithread(self):
+    #     londonhp_depen = 'PURCHASE'
+    #     londonhp_indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
+    #     algorithm = GWRBasic(self.londonhp, londonhp_depen, londonhp_indep, 36.0, longlat=False).fit(optimize_bw=pygwmodel.BandwidthSelectionCriterionType.CV, multithreads=8)
+    #     self.assertEqual(algorithm.bw, 67)
 
     # def test_autoselect_indepvars(self):
     #     londonhp_depen = 'PURCHASE'

@@ -29,7 +29,7 @@ add_custom_target(testPythonDeps ALL
         ${PYTHON_TEST_SCRIPT_DIR}
 )
 
-set(PYTHON_TEST_DATA londonhp100.csv)
+set(PYTHON_TEST_DATA ${CMAKE_CURRENT_SOURCE_DIR}/londonhp100.csv)
 add_test(
     NAME testPythonGWRBasic
     COMMAND ${PYTHON_EXECUTABLE} testGWRBasic.py ${PYTHON_TEST_DATA}

@@ -15,6 +15,7 @@ cdef extern from "armadillo" namespace "arma":
         vec()
         vec(int n_rows) except +
         vec(double* aux_mem, int n_rows) except +
+        int n_rows
         int n_elem
         double* memptr()
     
