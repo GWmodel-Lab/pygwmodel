@@ -5,7 +5,7 @@ requires = [
     "scikit-build>=0.12",
     "cmake>=3.18",
     "ninja",
-    "cython",
+    "cython>=3.0.0",
     "numpy",
     "pandas",
     "geopandas"

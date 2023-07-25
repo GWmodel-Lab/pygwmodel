@@ -68,3 +68,4 @@ dist
 build
 _skbuild
 eggs
+__pycache__

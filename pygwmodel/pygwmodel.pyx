@@ -1,18 +1,15 @@
 # distutils: language = c++
-
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.pair cimport pair
 import numpy as np
 cimport numpy as np
 import geopandas as gp
-from .gwmodel cimport mat, cube
-from .gwmodel cimport CGwmSimpleLayer
-from .gwmodel cimport GwmVariable
-from .gwmodel cimport CGwmDistance, CGwmCRSDistance
-from .gwmodel cimport CGwmWeight, CGwmBandwidthWeight
-from .gwmodel cimport CGwmSpatialWeight
-from .gwmodel cimport CGwmGWRBasic, CGwmGWRBase, CGwmGWPCA, CGwmGWSS, GwmRegressionDiagnostic
+from .gwmodel cimport mat, vec, cube
+from .gwmodel cimport Distance, CRSDistance
+from .gwmodel cimport Weight, BandwidthWeight
+from .gwmodel cimport SpatialWeight
+from .gwmodel cimport GWRBasic, RegressionDiagnostic
 from .gwmodel cimport BandwidthCriterionList, VariablesCriterionList
 from .gwmodel cimport ParallelType
 
@@ -21,6 +18,10 @@ cdef mat numpy2mat(double[::1, :] array):
     cdef unsigned long long rows = array.shape[0]
     cdef unsigned long long cols = array.shape[1]
     return mat(&array[0, 0], rows, cols)
+
+cdef vec numpy2vec(double[::1] array):
+    cdef unsigned long long rows = array.shape[0]
+    return vec(&array[0], rows)
 
 
 cdef mat2numpy(const mat& arma_mat):
@@ -49,109 +50,13 @@ cdef cube2numpy(const cube& arma_cube):
                 dst[k, i, j] = src[k * cols * rows + j * rows + i]
     return result
 
-cdef vector[string] name_list2vector(list names):
-    cdef size_t size = len(names)
-    cdef int i
-    cdef string cname
-    cdef vector[string] cnames
-    for i in range(size):
-        cname = names[i]
-        cnames.push_back(cname)
-    return cnames
-
-
-cdef name_vector2list(vector[string] instance):
-    names = []
-    cdef int size = instance.size(), i
-    cdef string name
-    for i in range(size):
-        names.append(instance.at(i))
-    return names
-
-
-cdef class CySimpleLayer:
-    cdef CGwmSimpleLayer _c_instance
-
-    def __cinit__(self, double[::1, :] points, double[::1, :] data, list fields):
-        self._c_instance = CGwmSimpleLayer(numpy2mat(points), numpy2mat(data), name_list2vector(fields))
-    
-    @property
-    def points(self):
-        return mat2numpy(self._c_instance.points())
-    
-    # @points.setter
-    # def points(self, double[::1, :] value):
-    #     self._c_instance.points = numpy2mat(value)
-
-    @property
-    def data(self):
-        return mat2numpy(self._c_instance.data())
-    
-    # @data.setter
-    # def data(self, double[::1, :] value):
-    #     self._c_instance.data = numpy2mat(value)
-
-    @property
-    def fields(self):
-        return name_vector2list(self._c_instance.fields())
-    
-    # @fields.setter
-    # def fields(self, list value):
-    #     self._c_instance.fields = name_list2vector(value)
-    
-    @property
-    def featureCount(self):
-        return self._c_instance.featureCount()
-
-
-cdef class CyVariable:
-    cdef GwmVariable _c_instance
-
-    def __cinit__(self, int i, bint numeric, const unsigned char[:] n):
-        self._c_instance = GwmVariable(i, numeric, bytes(n))
-    
-    @property
-    def index(self):
-        return self._c_instance.index
-    
-    # @index.setter
-    # def index(self, int value):
-    #     self._c_instance.index = value
-    
-    @property
-    def is_numeric(self):
-        return self._c_instance.isNumeric
-
-    # @is_numeric.setter
-    # def is_numeric(self, bint value):
-    #     self._c_instance.isNumeric = value
-    
-    @property
-    def name(self):
-        return self._c_instance.name
-
-    # @name.setter
-    # def name(self, str value):
-    #     self._c_instance.name = value
-
-
-cdef class CyVariableList:
-    cdef vector[GwmVariable] _c_instance
-
-    def __cinit__(self, list var_list):
-        cdef size_t size = len(var_list)
-        cdef int i
-        cdef GwmVariable cvar
-        cdef vector[GwmVariable] cvars
-        for i in range(size):
-            cvar = (<CyVariable>(var_list[i]))._c_instance
-            cvars.push_back(cvar)
-        self._c_instance = cvars
-
 
 cdef class CyDistance:
     __type = None
-    cdef CGwmDistance* _c_instance
+    cdef Distance* _c_instance
+
+    def __cinit__(self):
+        self._c_instance = NULL
 
     def distance_type(self):
         return self.__type
@@ -161,12 +66,15 @@ cdef class CyCRSDistance(CyDistance):
     __type = "CRS"
 
     def __cinit__(self, bint geographic):
-        self._c_instance = new CGwmCRSDistance(geographic);
+        self._c_instance = new CRSDistance(geographic)
 
 
 cdef class CyWeight:
     __type = None
-    cdef CGwmWeight* _c_instance
+    cdef Weight* _c_instance
+
+    def __cinit__(self):
+        self._c_instance = NULL
 
     def weight_type(self):
         return self.__type
@@ -176,24 +84,24 @@ cdef class CyBandwidthWeight(CyWeight):
     __type = "Bandwidth"
     
     def __cinit__(self, double size, bint adaptive, int kernel):
-        self._c_instance = new CGwmBandwidthWeight(size, adaptive, <CGwmBandwidthWeight.KernelFunctionType>kernel)
+        self._c_instance = new BandwidthWeight(size, adaptive, <BandwidthWeight.KernelFunctionType>kernel)
 
 
 cdef class CyGWRBasic:
-    cdef CGwmGWRBasic* _c_instance
+    cdef GWRBasic* _c_instance
 
-    def __cinit__(self, CySimpleLayer layer, CyVariable depen_var, CyVariableList indep_var_list, CyWeight weight, CyDistance distance, bint hatmatrix):
-        self._c_instance = new CGwmGWRBasic()
-        self._c_instance.setSourceLayer(layer._c_instance)
-        self._c_instance.setDependentVariable(depen_var._c_instance)
-        self._c_instance.setIndependentVariables(indep_var_list._c_instance)
-        cdef CGwmSpatialWeight spatial = CGwmSpatialWeight(weight._c_instance, distance._c_instance)
+    def __cinit__(self, double[::1, :] coords, double[::1] depen_var, double[::1, :] indep_vars, CyWeight weight, CyDistance distance, bint hatmatrix):
+        self._c_instance = new GWRBasic()
+        self._c_instance.setCoords(numpy2mat(coords))
+        self._c_instance.setDependentVariable(numpy2vec(depen_var))
+        self._c_instance.setIndependentVariables(numpy2mat(indep_vars))
+        cdef SpatialWeight spatial = SpatialWeight(weight._c_instance, distance._c_instance)
         self._c_instance.setSpatialWeight(spatial)
         self._c_instance.setHasHatMatrix(hatmatrix)
     
     def enable_bandwidth_autoselection(self, int criterion):
         self._c_instance.setIsAutoselectBandwidth(True)
-        self._c_instance.setBandwidthSelectionCriterion(<CGwmGWRBasic.BandwidthSelectionCriterionType>criterion)
+        self._c_instance.setBandwidthSelectionCriterion(<GWRBasic.BandwidthSelectionCriterionType>criterion)
     
     def enable_indep_var_autoselection(self, double threshold):
         self._c_instance.setIsAutoselectIndepVars(True)
@@ -202,15 +110,21 @@ cdef class CyGWRBasic:
     def enable_openmp(self, int threads):
         self._c_instance.setParallelType(ParallelType.OpenMP)
         self._c_instance.setOmpThreadNum(threads)
-    
-    def set_predict_layer(self, CySimpleLayer predict_layer):
-        self._c_instance.setPredictLayer(&predict_layer._c_instance)
 
-    def run(self):
-        self._c_instance.run()
+    def fit(self):
+        self._c_instance.fit()
     
+    @property
+    def betas(self):
+        return mat2numpy(self._c_instance.betas())
+    
+    @property
+    def betasSE(self):
+        return mat2numpy(self._c_instance.betasSE())
+    
+    @property
     def diagnostic(self):
-        cdef GwmRegressionDiagnostic diag = self._c_instance.diagnostic()
+        cdef RegressionDiagnostic diag = self._c_instance.diagnostic()
         return {
             "RSS": diag.RSS,
             "AIC": diag.AIC,
@@ -221,6 +135,7 @@ cdef class CyGWRBasic:
             "RSquareAdjust": diag.RSquareAdjust
         }
     
+    @property
     def bandwidth_select_criterions(self):
         cdef BandwidthCriterionList criterion_c = self._c_instance.bandwidthSelectionCriterionList()
         criterion_py = []
@@ -231,139 +146,135 @@ cdef class CyGWRBasic:
             criterion_py.append((item.first, item.second))
         return criterion_py
 
-    def indep_var_select_criterions(self):
-        cdef VariablesCriterionList criterion_c = self._c_instance.indepVarsSelectionCriterionList()
-        criterion_py = []
-        cdef unsigned long long criterion_size = criterion_c.size()
-        cdef pair[vector[GwmVariable],double] item
-        cdef vector[GwmVariable] var_list
-        cdef unsigned long long var_size
-        cdef string var
-        for i in range(criterion_size):
-            item = criterion_c.at(i)
-            var_list = item.first
-            var_size = var_list.size()
-            var_list_py = []
-            for j in range(var_size):
-                var = var_list.at(j).name
-                var_list_py.append(var.decode())
-            criterion_py.append((var_list_py, item.second))
-        return criterion_py
-    
+    # @property
+    # def indep_var_select_criterions(self):
+    #     cdef VariablesCriterionList criterion_c = self._c_instance.indepVarsSelectionCriterionList()
+    #     criterion_py = []
+    #     cdef unsigned long long criterion_size = criterion_c.size()
+    #     cdef pair[vector[Variable],double] item
+    #     cdef vector[Variable] var_list
+    #     cdef unsigned long long var_size
+    #     cdef string var
+    #     for i in range(criterion_size):
+    #         item = criterion_c.at(i)
+    #         var_list = item.first
+    #         var_size = var_list.size()
+    #         var_list_py = []
+    #         for j in range(var_size):
+    #             var = var_list.at(j).name
+    #             var_list_py.append(var.decode())
+    #         criterion_py.append((var_list_py, item.second))
+    #     return criterion_py
+
+    @property
     def bandwidth(self):
-        cdef CGwmSpatialWeight spatial_weight = self._c_instance.spatialWeight()
-        return (<CGwmBandwidthWeight*>(spatial_weight.weight())).bandwidth()
+        cdef SpatialWeight spatial_weight = self._c_instance.spatialWeight()
+        return (<BandwidthWeight*>(spatial_weight.weight())).bandwidth()
     
-    def indep_vars(self):
-        cdef CGwmSimpleLayer* layer = self._c_instance.resultLayer()
-        cdef mat betas = self._c_instance.betas()
-        return name_vector2list(layer.fields())[1:betas.n_cols]
+    # @property
+    # def indep_vars(self):
+    #     cdef SimpleLayer* layer = self._c_instance.resultLayer()
+    #     cdef mat betas = self._c_instance.betas()
+    #     return name_vector2list(layer.fields())[1:betas.n_cols]
+
+
+# cdef class CyGWSS:
+#     cdef GWSS* _c_instance
+
+#     def __cinit__(self, CySimpleLayer layer, CyVariableList variable_list, CyWeight weight, CyDistance distance, bint quantile, bint first_only):
+#         self._c_instance = new GWSS()
+#         self._c_instance.setSourceLayer(layer._c_instance)
+#         self._c_instance.setVariables(variable_list._c_instance)
+#         cdef SpatialWeight spatial = SpatialWeight(weight._c_instance, distance._c_instance)
+#         self._c_instance.setSpatialWeight(spatial)
+#         self._c_instance.setQuantile(quantile)
+#         self._c_instance.setIsCorrWithFirstOnly(first_only)
     
-    @property
-    def result_layer(self):
-        cdef CGwmSimpleLayer* layer = self._c_instance.resultLayer()
-        return CySimpleLayer(mat2numpy(layer.points()), 
-                             mat2numpy(layer.data()),
-                             name_vector2list(layer.fields()))
-
-
-cdef class CyGWSS:
-    cdef CGwmGWSS* _c_instance
-
-    def __cinit__(self, CySimpleLayer layer, CyVariableList variable_list, CyWeight weight, CyDistance distance, bint quantile, bint first_only):
-        self._c_instance = new CGwmGWSS()
-        self._c_instance.setSourceLayer(layer._c_instance)
-        self._c_instance.setVariables(variable_list._c_instance)
-        cdef CGwmSpatialWeight spatial = CGwmSpatialWeight(weight._c_instance, distance._c_instance)
-        self._c_instance.setSpatialWeight(spatial)
-        self._c_instance.setQuantile(quantile)
-        self._c_instance.setIsCorrWithFirstOnly(first_only)
+#     def enable_openmp(self, int threads):
+#         self._c_instance.setParallelType(ParallelType.OpenMP)
+#         self._c_instance.setOmpThreadNum(threads)
     
-    def enable_openmp(self, int threads):
-        self._c_instance.setParallelType(ParallelType.OpenMP)
-        self._c_instance.setOmpThreadNum(threads)
+#     def valid(self):
+#         return self._c_instance.isValid()
     
-    def valid(self):
-        return self._c_instance.isValid()
+#     def run(self):
+#         self._c_instance.run()
+
+#     def local_mean(self):
+#         return mat2numpy(self._c_instance.localMean())
+
+#     def local_sdev(self):
+#         return mat2numpy(self._c_instance.localSDev())
+
+#     def local_skewness(self):
+#         return mat2numpy(self._c_instance.localSkewness())
+
+#     def local_cv(self):
+#         return mat2numpy(self._c_instance.localCV())
+
+#     def local_var(self):
+#         return mat2numpy(self._c_instance.localVar())
+
+#     def local_median(self):
+#         return mat2numpy(self._c_instance.localMedian())
+
+#     def iqr(self):
+#         return mat2numpy(self._c_instance.iqr())
+
+#     def qi(self):
+#         return mat2numpy(self._c_instance.qi())
+
+#     def local_cov(self):
+#         return mat2numpy(self._c_instance.localCov())
+
+#     def local_corr(self):
+#         return mat2numpy(self._c_instance.localCorr())
+
+#     def local_scorr(self):
+#         return mat2numpy(self._c_instance.localSCorr())
     
-    def run(self):
-        self._c_instance.run()
+#     @property
+#     def result_layer(self):
+#         cdef SimpleLayer* layer = self._c_instance.resultLayer()
+#         return CySimpleLayer(mat2numpy(layer.points()), 
+#                              mat2numpy(layer.data()),
+#                              name_vector2list(layer.fields()))
 
-    def local_mean(self):
-        return mat2numpy(self._c_instance.localMean())
 
-    def local_sdev(self):
-        return mat2numpy(self._c_instance.localSDev())
-
-    def local_skewness(self):
-        return mat2numpy(self._c_instance.localSkewness())
-
-    def local_cv(self):
-        return mat2numpy(self._c_instance.localCV())
-
-    def local_var(self):
-        return mat2numpy(self._c_instance.localVar())
-
-    def local_median(self):
-        return mat2numpy(self._c_instance.localMedian())
-
-    def iqr(self):
-        return mat2numpy(self._c_instance.iqr())
-
-    def qi(self):
-        return mat2numpy(self._c_instance.qi())
-
-    def local_cov(self):
-        return mat2numpy(self._c_instance.localCov())
-
-    def local_corr(self):
-        return mat2numpy(self._c_instance.localCorr())
-
-    def local_scorr(self):
-        return mat2numpy(self._c_instance.localSCorr())
+# cdef class CyGWPCA:
+#     cdef GWPCA* _c_instance
     
-    @property
-    def result_layer(self):
-        cdef CGwmSimpleLayer* layer = self._c_instance.resultLayer()
-        return CySimpleLayer(mat2numpy(layer.points()), 
-                             mat2numpy(layer.data()),
-                             name_vector2list(layer.fields()))
+#     def __cinit__(self, CySimpleLayer layer, CyVariableList variable_list, CyWeight weight, CyDistance distance, int keepComponents):
+#         self._c_instance = new GWPCA()
+#         self._c_instance.setSourceLayer(layer._c_instance)
+#         self._c_instance.setVariables(variable_list._c_instance)
+#         cdef SpatialWeight spatial = SpatialWeight(weight._c_instance, distance._c_instance)
+#         self._c_instance.setSpatialWeight(spatial)
+#         self._c_instance.setKeepComponents(keepComponents)
+    
+#     def valid(self):
+#         return self._c_instance.isValid()
+    
+#     def run(self):
+#         self._c_instance.run()
+    
+#     def local_pv(self):
+#         return mat2numpy(self._c_instance.localPV())
 
+#     def sdev(self):
+#         return mat2numpy(self._c_instance.sdev())
+    
+#     def loadings(self):
+#         return cube2numpy(self._c_instance.loadings())
 
-cdef class CyGWPCA:
-    cdef CGwmGWPCA* _c_instance
+#     def scores(self):
+#         return cube2numpy(self._c_instance.scores())
     
-    def __cinit__(self, CySimpleLayer layer, CyVariableList variable_list, CyWeight weight, CyDistance distance, int keepComponents):
-        self._c_instance = new CGwmGWPCA()
-        self._c_instance.setSourceLayer(layer._c_instance)
-        self._c_instance.setVariables(variable_list._c_instance)
-        cdef CGwmSpatialWeight spatial = CGwmSpatialWeight(weight._c_instance, distance._c_instance)
-        self._c_instance.setSpatialWeight(spatial)
-        self._c_instance.setKeepComponents(keepComponents)
-    
-    def valid(self):
-        return self._c_instance.isValid()
-    
-    def run(self):
-        self._c_instance.run()
-    
-    def local_pv(self):
-        return mat2numpy(self._c_instance.localPV())
-
-    def sdev(self):
-        return mat2numpy(self._c_instance.sdev())
-    
-    def loadings(self):
-        return cube2numpy(self._c_instance.loadings())
-
-    def scores(self):
-        return cube2numpy(self._c_instance.scores())
-    
-    @property
-    def result_layer(self):
-        cdef CGwmSimpleLayer* layer = self._c_instance.resultLayer()
-        return CySimpleLayer(mat2numpy(layer.points()), 
-                             mat2numpy(layer.data()),
-                             name_vector2list(layer.fields()))
+#     @property
+#     def result_layer(self):
+#         cdef SimpleLayer* layer = self._c_instance.resultLayer()
+#         return CySimpleLayer(mat2numpy(layer.points()), 
+#                              mat2numpy(layer.data()),
+#                              name_vector2list(layer.fields()))
         
 

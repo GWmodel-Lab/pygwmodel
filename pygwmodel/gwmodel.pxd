@@ -1,4 +1,3 @@
-from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.pair cimport pair
 
@@ -9,6 +8,13 @@ cdef extern from "armadillo" namespace "arma":
         mat(double * aux_mem, int n_rows, int n_cols) except +
         int n_rows
         int n_cols
+        int n_elem
+        double* memptr()
+    
+    cdef cppclass vec:
+        vec()
+        vec(int n_rows) except +
+        vec(double* aux_mem, int n_rows) except +
         int n_elem
         double* memptr()
     
@@ -23,48 +29,33 @@ cdef extern from "armadillo" namespace "arma":
         double* memptr()
         mat slice(unsigned long long slice_number)
 
-cdef extern from "CGwmSimpleLayer.h":
-    cdef cppclass CGwmSimpleLayer:
-        CGwmSimpleLayer() except +
-        CGwmSimpleLayer(const mat& points, const mat& data, const vector[string]& fields) except +
-        mat points() const;
-        mat data() const;
-        vector[string] fields() const;
-        unsigned long long featureCount() const;
+cdef extern from "spatialweight/Distance.h" namespace "gwm":
+    cdef cppclass Distance:
+        distance()
+        maxDistance()
+        minDistance()
 
-cdef extern from "GwmVariable.h":
-    cdef cppclass GwmVariable:
-        GwmVariable()
-        GwmVariable(int i, bint numeric, string n)
-        int index
-        bint isNumeric
-        string name
-
-cdef extern from "spatialweight/CGwmDistance.h":
-    cdef cppclass CGwmDistance:
-        CGwmDistance()
-
-cdef extern from "spatialweight/CGwmCRSDistance.h":
-    cdef cppclass CGwmCRSDistance(CGwmDistance):
-        CGwmCRSDistance()
-        CGwmCRSDistance(bint isGeographic)
+cdef extern from "spatialweight/CRSDistance.h" namespace "gwm":
+    cdef cppclass CRSDistance(Distance):
+        CRSDistance()
+        CRSDistance(bint isGeographic)
         bint geographic() const
         void setGeographic(bint geographic)
 
-cdef extern from "spatialweight/CGwmWeight.h":
-    cdef cppclass CGwmWeight:
-        CGwmWeight()
+cdef extern from "spatialweight/Weight.h" namespace "gwm":
+    cdef cppclass Weight:
+        weight()
 
-cdef extern from "spatialweight/CGwmBandwidthWeight.h":
-    cdef cppclass CGwmBandwidthWeight(CGwmWeight):
+cdef extern from "spatialweight/BandwidthWeight.h" namespace "gwm":
+    cdef cppclass BandwidthWeight(Weight):
         enum KernelFunctionType:
             Gaussian = 0
             Exponential = 1
             Bisquare = 2
             Tricube = 3
             Boxcar = 4
-        CGwmBandwidthWeight()
-        CGwmBandwidthWeight(double size, bint adaptive, KernelFunctionType kernel)
+        BandwidthWeight()
+        BandwidthWeight(double size, bint adaptive, KernelFunctionType kernel)
         double bandwidth() const
         void setBandwidth(double bandwidth)
         bint adaptive() const
@@ -72,63 +63,65 @@ cdef extern from "spatialweight/CGwmBandwidthWeight.h":
         KernelFunctionType kernel() const
         void setKernel(const KernelFunctionType &kernel)
 
-cdef extern from "spatialweight/CGwmSpatialWeight.h":
-    cdef cppclass CGwmSpatialWeight:
-        CGwmSpatialWeight()
-        CGwmSpatialWeight(CGwmWeight* weight, CGwmDistance* distance)
-        CGwmWeight *weight() const
-        void setWeight(CGwmWeight *weight)
-        CGwmDistance *distance() const
-        void setDistance(CGwmDistance *distance)
+cdef extern from "spatialweight/SpatialWeight.h" namespace "gwm":
+    cdef cppclass SpatialWeight:
+        SpatialWeight()
+        SpatialWeight(Weight* weight, Distance* distance)
+        Weight *weight() const
+        void setWeight(Weight *weight)
+        Distance *distance() const
+        void setDistance(Distance *distance)
 
 
-cdef extern from "CGwmAlgorithm.h":
-    cdef cppclass CGwmAlgorithm:
-        CGwmAlgorithm()
+cdef extern from "Status.h" namespace "gwm":
+    cdef enum class Status:
+        Success
+        Terminated
+
+
+cdef extern from "Algorithm.h" namespace "gwm":
+    cdef cppclass Algorithm:
+        Algorithm()
         bint isValid()
-        void run()
 
 
-cdef extern from "CGwmSpatialAlgorithm.h":
-    cdef cppclass CGwmSpatialAlgorithm(CGwmAlgorithm):
-        CGwmSpatialAlgorithm()
-        CGwmSimpleLayer* sourceLayer()
-        void setSourceLayer(CGwmSimpleLayer* layer)
-        void setSourceLayer(const CGwmSimpleLayer& layer)
-        CGwmSimpleLayer* resultLayer() const
-        void setResultLayer(CGwmSimpleLayer* layer);
+cdef extern from "SpatialAlgorithm.h" namespace "gwm":
+    cdef cppclass SpatialAlgorithm(Algorithm):
+        SpatialAlgorithm()
+        mat coords()
+        void setCoords(const mat& coords)
 
 
-cdef extern from "CGwmSpatialMonoscaleAlgorithm.h":
-    cdef cppclass CGwmSpatialMonoscaleAlgorithm(CGwmSpatialAlgorithm):
-        CGwmSpatialMonoscaleAlgorithm()
-        CGwmSpatialWeight spatialWeight() const
-        void setSpatialWeight(const CGwmSpatialWeight &spatialWeight)
+cdef extern from "SpatialMonoscaleAlgorithm.h" namespace "gwm":
+    cdef cppclass SpatialMonoscaleAlgorithm(SpatialAlgorithm):
+        SpatialMonoscaleAlgorithm()
+        SpatialWeight spatialWeight() const
+        void setSpatialWeight(const SpatialWeight &spatialWeight)
 
 
-cdef extern from "IGwmMultivariableAnalysis.h":
-    cdef cppclass IGwmMultivariableAnalysis:
-        vector[GwmVariable] variables() const
-        void setVariables(const vector[GwmVariable]& variables)
+cdef extern from "IMultivariableAnalysis.h" namespace "gwm":
+    cdef cppclass IMultivariableAnalysis:
+        mat variables() const
+        void setVariables(const mat& variables)
 
 
-cdef extern from "IGwmParallelizable.h":
+cdef extern from "IParallelizable.h" namespace "gwm":
     enum ParallelType:
         SerialOnly = 1
         OpenMP = 2
         CUDA = 4
 
-    cdef cppclass IGwmParallelizable:
+    cdef cppclass IParallelizable:
         int parallelAbility() const
         ParallelType parallelType() const
         void setParallelType(const ParallelType& type)
     
-    cdef cppclass IGwmOpenmpParallelizable(IGwmParallelizable):
+    cdef cppclass IParallelOpenmpEnabled(IParallelizable):
         void setOmpThreadNum(const int threadNum)
 
 
-cdef extern from "GwmRegressionDiagnostic.h":
-    cdef cppclass GwmRegressionDiagnostic:
+cdef extern from "RegressionDiagnostic.h" namespace "gwm":
+    cdef cppclass RegressionDiagnostic:
         double RSS
         double AIC
         double AICc
@@ -138,41 +131,44 @@ cdef extern from "GwmRegressionDiagnostic.h":
         double RSquareAdjust
 
 
-cdef extern from "IGwmRegressionAnalysis.h":
-    cdef cppclass IGwmRegressionAnalysis:
-        GwmVariable dependentVariable() const
-        void setDependentVariable(const GwmVariable& variable)
-        vector[GwmVariable] independentVariables() const
-        void setIndependentVariables(const vector[GwmVariable]& variables)
-        GwmRegressionDiagnostic diagnostic() const
+cdef extern from "IRegressionAnalysis.h" namespace "gwm":
+    cdef cppclass IRegressionAnalysis:
+        vec dependentVariable() const
+        void setDependentVariable(const vec& variable)
+        mat independentVariables() const
+        void setIndependentVariables(const mat& variables)
+        RegressionDiagnostic diagnostic() const
+        bint hasIntercept() const
+        void setHasIntercept(const bint has)
+        mat predict(const mat& locations)
+        mat fit()
 
 
-cdef extern from "IGwmBandwidthSelectable.h":
-    cdef cppclass IGwmBandwidthSelectable:
-        double getCriterion(CGwmBandwidthWeight* weight)
+cdef extern from "IBandwidthSelectable.h" namespace "gwm":
+    cdef cppclass IBandwidthSelectable:
+        pass
     ctypedef vector[pair[double, double] ] BandwidthCriterionList
 
 
-cdef extern from "IGwmVarialbeSelectable.h":
-    cdef cppclass IGwmVarialbeSelectable:
-        double getCriterion(const vector[GwmVariable]& variables)
-    ctypedef vector[pair[vector[GwmVariable], double] ] VariablesCriterionList
+cdef extern from "IVarialbeSelectable.h" namespace "gwm":
+    cdef cppclass IVarialbeSelectable:
+        vector[size_t] selectedVariables;
+    ctypedef vector[pair[vector[size_t], double] ] VariablesCriterionList
 
 
-cdef extern from "CGwmGWRBase.h":
-    cdef cppclass CGwmGWRBase(CGwmSpatialMonoscaleAlgorithm, IGwmRegressionAnalysis):
-        CGwmGWRBase()
+cdef extern from "GWRBase.h" namespace "gwm":
+    cdef cppclass GWRBase(SpatialMonoscaleAlgorithm, IRegressionAnalysis):
+        GWRBase()
         mat betas() const
-        CGwmSimpleLayer* predictLayer() const;
-        void setPredictLayer(CGwmSimpleLayer* layer);
 
 
-cdef extern from "CGwmGWRBasic.h":
-    cdef cppclass CGwmGWRBasic(CGwmGWRBase, IGwmBandwidthSelectable, IGwmVarialbeSelectable, IGwmOpenmpParallelizable):
+cdef extern from "GWRBasic.h" namespace "gwm":
+    cdef cppclass GWRBasic(GWRBase, IBandwidthSelectable, IVarialbeSelectable, IParallelOpenmpEnabled):
         enum BandwidthSelectionCriterionType:
             AIC = 0
             CV = 1
-        CGwmGWRBasic()
+        GWRBasic()
+        GWRBasic(const mat& x, const vec& y, const mat& coords, const SpatialWeight& spatialWeight, bint hasHatMatrix, bint hasIntercept)
         bint isAutoselectBandwidth() const
         void setIsAutoselectBandwidth(bint isAutoSelect)
         BandwidthSelectionCriterionType bandwidthSelectionCriterion() const
@@ -185,36 +181,40 @@ cdef extern from "CGwmGWRBasic.h":
         BandwidthCriterionList bandwidthSelectionCriterionList() const
         bint hasHatMatrix() const
         void setHasHatMatrix(const bint has)
+        mat betasSE()
+        vec sHat()
+        vec qDiag()
+        mat s()
+        vector[size_t] selectedVariables()
 
 
-cdef extern from "CGwmGWSS.h":
-    cdef cppclass CGwmGWSS(CGwmSpatialMonoscaleAlgorithm, IGwmMultivariableAnalysis, IGwmOpenmpParallelizable):
-        CGwmGWSS()
-        bint quantile() const;
-        void setQuantile(bint quantile);
-        bint isCorrWithFirstOnly() const;
-        void setIsCorrWithFirstOnly(bint corrWithFirstOnly);
-        mat localMean() const;
-        mat localSDev() const;
-        mat localSkewness() const;
-        mat localCV() const;
-        mat localVar() const;
-        mat localMedian() const;
-        mat iqr() const;
-        mat qi() const;
-        mat localCov() const;
-        mat localCorr() const;
-        mat localSCorr() const;
+
+# cdef extern from "GWSS.h" namespace "gwm":
+#     cdef cppclass GWSS(SpatialMonoscaleAlgorithm, IMultivariableAnalysis, IParallelOpenmpEnabled):
+#         GWSS()
+#         bint quantile() const;
+#         void setQuantile(bint quantile);
+#         bint isCorrWithFirstOnly() const;
+#         void setIsCorrWithFirstOnly(bint corrWithFirstOnly);
+#         mat localMean() const;
+#         mat localSDev() const;
+#         mat localSkewness() const;
+#         mat localCV() const;
+#         mat localVar() const;
+#         mat localMedian() const;
+#         mat iqr() const;
+#         mat qi() const;
+#         mat localCov() const;
+#         mat localCorr() const;
+#         mat localSCorr() const;
 
 
-cdef extern from "CGwmGWPCA.h":
-    cdef cppclass CGwmGWPCA(CGwmSpatialMonoscaleAlgorithm, IGwmMultivariableAnalysis):
-        CGwmGWPCA()
-        int keepComponents();
-        void setKeepComponents(int k);
-        mat localPV()
-        mat sdev()
-        cube loadings();
-        cube scores();
-
-        
+# cdef extern from "GWPCA.h" namespace "gwm":
+#     cdef cppclass GWPCA(SpatialMonoscaleAlgorithm, IMultivariableAnalysis):
+#         GWPCA()
+#         int keepComponents();
+#         void setKeepComponents(int k);
+#         mat localPV()
+#         mat sdev()
+#         cube loadings();
+#         cube scores();
