@@ -165,36 +165,34 @@ cdef class CyGWRBasic:
             criterion_py.append((item.first, item.second))
         return criterion_py
 
-    # @property
-    # def indep_var_select_criterions(self):
-    #     cdef VariablesCriterionList criterion_c = self._c_instance.indepVarsSelectionCriterionList()
-    #     criterion_py = []
-    #     cdef unsigned long long criterion_size = criterion_c.size()
-    #     cdef pair[vector[Variable],double] item
-    #     cdef vector[Variable] var_list
-    #     cdef unsigned long long var_size
-    #     cdef string var
-    #     for i in range(criterion_size):
-    #         item = criterion_c.at(i)
-    #         var_list = item.first
-    #         var_size = var_list.size()
-    #         var_list_py = []
-    #         for j in range(var_size):
-    #             var = var_list.at(j).name
-    #             var_list_py.append(var.decode())
-    #         criterion_py.append((var_list_py, item.second))
-    #     return criterion_py
+    @property
+    def indep_var_select_criterions(self):
+        cdef VariablesCriterionList criterion_c = self._c_instance.indepVarsSelectionCriterionList()
+        criterion_py = []
+        cdef unsigned long long criterion_size = criterion_c.size()
+        cdef pair[vector[size_t], double] item
+        cdef vector[size_t] var_list
+        cdef unsigned long long var_size
+        cdef size_t var
+        for i in range(criterion_size):
+            item = criterion_c.at(i)
+            var_list = item.first
+            var_size = var_list.size()
+            var_list_py = []
+            for j in range(var_size):
+                var = var_list.at(j)
+                var_list_py.append(var)
+            criterion_py.append((var_list_py, item.second))
+        return criterion_py
 
     @property
     def bandwidth(self):
         cdef SpatialWeight spatial_weight = self._c_instance.spatialWeight()
         return (<BandwidthWeight*>(spatial_weight.weight())).bandwidth()
     
-    # @property
-    # def indep_vars(self):
-    #     cdef SimpleLayer* layer = self._c_instance.resultLayer()
-    #     cdef mat betas = self._c_instance.betas()
-    #     return name_vector2list(layer.fields())[1:betas.n_cols]
+    @property
+    def selected_indep_vars(self):
+        return [i for i in self._c_instance.selectedVariables()]
 
 
 # cdef class CyGWSS:

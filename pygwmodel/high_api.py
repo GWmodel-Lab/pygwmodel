@@ -1,8 +1,6 @@
+from typing import List, Union, Optional
 import numpy as np
-import pandas as pd
 import geopandas as gp
-from shapely.geometry import Point
-from typing import List, Union
 from enum import Enum
 from .pygwmodel import CyCRSDistance
 from .pygwmodel import CyBandwidthWeight
@@ -38,10 +36,10 @@ class GWRBasic:
         self.longlat = longlat
         self.result_layer = None
         self.diagnostic = None
-        self.bandwidth_select_criterions = None
-        self.indep_var_select_criterions = None
+        self.bandwidth_select_criterions: Optional[list[tuple[float, float]]] = None
+        self.indep_var_select_criterions: Optional[list[tuple[list[str], float]]] = None
     
-    def fit(self, hatmatrix: bool=True, optimize_bw: BandwidthSelectionCriterionType=None, optimize_var: float=None, multithreads: int=None):
+    def fit(self, hatmatrix: bool=True, optimize_bw: Optional[BandwidthSelectionCriterionType]=None, optimize_var: Optional[float]=None, multithreads: Optional[int]=None):
         """
         Run algorithm and return result
         """
@@ -52,7 +50,6 @@ class GWRBasic:
         ''' Create cython GWR
         '''
         cyg_depen_var = np.asfortranarray(self.sdf[self.depen_var])
-        indep_var_names = (['Intercept'] if self.has_intercept else []) + self.indep_vars
         cyg_indep_vars = np.asfortranarray(self.sdf[self.indep_vars])
         if (self.has_intercept):
             cyg_indep_vars = np.hstack([np.ones((cyg_indep_vars.shape[0], 1)), cyg_indep_vars])
@@ -77,13 +74,14 @@ class GWRBasic:
                 raise ValueError("multithreads must be a positive integer")
         cyg_gwr_basic.fit()
         if self.bw is None or optimize_bw is not None:
-            self.bw = cyg_gwr_basic.bandwidth()
-        #     self.bandwidth_select_criterions = cyg_gwr_basic.bandwidth_select_criterions()
-        # if optimize_var is not None:
-        #     self.indep_vars = [v.decode() for v in cyg_gwr_basic.indep_vars()]
-        #     self.indep_var_select_criterions = cyg_gwr_basic.indep_var_select_criterions()
+            self.bw = cyg_gwr_basic.bandwidth
+            self.bandwidth_select_criterions = cyg_gwr_basic.bandwidth_select_criterions
+        if optimize_var is not None:
+            self.indep_var_select_criterions = [([self.indep_vars[v - int(self.has_intercept)] for v in varlist], criterion) for varlist, criterion in cyg_gwr_basic.indep_var_select_criterions]
+            self.indep_vars = [self.indep_vars[v - int(self.has_intercept)] for v in cyg_gwr_basic.selected_indep_vars]
         ''' Get result layer
         '''
+        indep_var_names = (['Intercept'] if self.has_intercept else []) + self.indep_vars
         result_data = {
             **{f: cyg_gwr_basic.betas[:, i] for i, f in enumerate(indep_var_names)},
             **{f'{f}_SE': cyg_gwr_basic.betas[:, i] for i, f in enumerate(indep_var_names)},
