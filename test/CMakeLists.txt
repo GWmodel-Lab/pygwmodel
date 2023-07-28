@@ -29,6 +29,10 @@ add_custom_target(testPythonDeps ALL
         ${PYTHON_TEST_SCRIPT_DIR}
 )
 
+if(ENABLE_OpenMP)
+    set($ENV{ENABLE_OPENMP} "true")
+endif(ENABLE_OpenMP)
+
 set(PYTHON_TEST_DATA ${CMAKE_CURRENT_SOURCE_DIR}/londonhp100.csv)
 add_test(
     NAME testPythonGWRBasic
