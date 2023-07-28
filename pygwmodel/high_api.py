@@ -88,14 +88,11 @@ class GWRBasic:
             **{f: cyg_gwr_basic.betas[:, i] for i, f in enumerate(indep_var_names)},
             **{f'{f}_SE': cyg_gwr_basic.betas[:, i] for i, f in enumerate(indep_var_names)},
         }
-        self.result_layer = gp.GeoDataFrame({
-            **result_data,
-            "geometry": self.sdf.geometry
-        })
+        self.result_layer = gp.GeoDataFrame(result_data, geometry=self.sdf.geometry)
         ''' Get diagnostic
         '''
         if hatmatrix:
-            self.diagnostic = cyg_gwr_basic.diagnostic()
+            self.diagnostic = cyg_gwr_basic.diagnostic
         return self
 
     # def predict(self, targets: gp.GeoDataFrame, multithreads: int=None):
