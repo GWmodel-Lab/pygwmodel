@@ -30,7 +30,7 @@ cdef mat2numpy(const mat& arma_mat):
     cdef unsigned long long cols = arma_mat.n_cols
     result = np.zeros((rows, cols), dtype=np.float64, order="F")
     cdef double[::1, :] dst = result
-    cdef unsigned long long i
+    cdef unsigned long long i, j
     for i in range(cols):
         for j in range(rows):
             dst[j, i] = src[i * rows + j]
