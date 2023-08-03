@@ -104,6 +104,7 @@ cdef extern from "IMultivariableAnalysis.h" namespace "gwm":
     cdef cppclass IMultivariableAnalysis:
         mat variables() const
         void setVariables(const mat& variables)
+        void run()
 
 
 cdef extern from "IParallelizable.h" namespace "gwm":
@@ -153,7 +154,7 @@ cdef extern from "IBandwidthSelectable.h" namespace "gwm":
 
 cdef extern from "IVarialbeSelectable.h" namespace "gwm":
     cdef cppclass IVarialbeSelectable:
-        vector[size_t] selectedVariables;
+        vector[size_t] selectedVariables
     ctypedef vector[pair[vector[size_t], double] ] VariablesCriterionList
 
 
@@ -189,33 +190,40 @@ cdef extern from "GWRBasic.h" namespace "gwm":
         vector[size_t] selectedVariables()
 
 
+cdef extern from "GWSS.h" namespace "gwm::GWSS":
+    cdef enum class GWSSMode:
+        Average
+        Correlation
 
-# cdef extern from "GWSS.h" namespace "gwm":
-#     cdef cppclass GWSS(SpatialMonoscaleAlgorithm, IMultivariableAnalysis, IParallelOpenmpEnabled):
-#         GWSS()
-#         bint quantile() const;
-#         void setQuantile(bint quantile);
-#         bint isCorrWithFirstOnly() const;
-#         void setIsCorrWithFirstOnly(bint corrWithFirstOnly);
-#         mat localMean() const;
-#         mat localSDev() const;
-#         mat localSkewness() const;
-#         mat localCV() const;
-#         mat localVar() const;
-#         mat localMedian() const;
-#         mat iqr() const;
-#         mat qi() const;
-#         mat localCov() const;
-#         mat localCorr() const;
-#         mat localSCorr() const;
+
+cdef extern from "GWSS.h" namespace "gwm":
+    cdef cppclass GWSS(SpatialMonoscaleAlgorithm, IMultivariableAnalysis, IParallelOpenmpEnabled):
+        GWSS() except +
+        GWSS(const mat x, const mat coords, const SpatialWeight& spatialWeight) except +
+        bint quantile() const
+        void setQuantile(bint quantile)
+        bint isCorrWithFirstOnly() const
+        void setIsCorrWithFirstOnly(bint corrWithFirstOnly)
+        mat localMean() const
+        mat localSDev() const
+        mat localSkewness() const
+        mat localCV() const
+        mat localVar() const
+        mat localMedian() const
+        mat iqr() const
+        mat qi() const
+        mat localCov() const
+        mat localCorr() const
+        mat localSCorr() const
+        void setGWSSMode(GWSSMode mode)
 
 
 # cdef extern from "GWPCA.h" namespace "gwm":
 #     cdef cppclass GWPCA(SpatialMonoscaleAlgorithm, IMultivariableAnalysis):
 #         GWPCA()
-#         int keepComponents();
-#         void setKeepComponents(int k);
+#         int keepComponents()
+#         void setKeepComponents(int k)
 #         mat localPV()
 #         mat sdev()
-#         cube loadings();
-#         cube scores();
+#         cube loadings()
+#         cube scores()
