@@ -97,31 +97,48 @@ class GWRBasic:
             self.diagnostic = cyg_gwr_basic.diagnostic
         return self
 
-    # def predict(self, targets: gp.GeoDataFrame, multithreads: int=None):
-    #     """
-    #     Predict
-    #     """
-    #     if self.bw is None:
-    #         raise ValueError("Bandwidth cannot be None when predicting")
-    #     ''' Extract data
-    #     '''
-    #     cyg_distance = CyCRSDistance(self.longlat)
-    #     cyg_weight = CyBandwidthWeight(self.bw, self.adaptive, self.kernel.value)
-    #     ''' Create cython GWR
-    #     '''
-    #     cyg_depen_var = self.sdf.loc[self.depen_var]
-    #     cyg_indep_vars = self.sdf.loc[self.indep_vars]
-    #     cyg_gwr_basic = CyGWRBasic(cyg_depen_var, cyg_indep_vars, cyg_weight, cyg_distance, False)
-    #     cyg_gwr_basic.set_predict_layer(cyg_predict_layer)
-    #     if multithreads is not None:
-    #         if isinstance(multithreads, int) and multithreads > 0:
-    #             cyg_gwr_basic.enable_openmp(multithreads)
-    #         else:
-    #             raise ValueError("multithreads must be a positive integer")
-    #     ''' Get result layer
-    #     '''
-    #     cyg_gwr_basic.run()
-    #     return layer_to_sdf(cyg_gwr_basic.result_layer, targets.geometry)
+    def predict(self, targets: gp.GeoDataFrame, multithreads: int=None):
+        """
+        Predict
+        """
+        if self.bw is None:
+            raise ValueError("Bandwidth cannot be None when predicting")
+        ''' Extract data
+        '''
+        cyg_distance = CyCRSDistance(self.longlat)
+        cyg_weight = CyBandwidthWeight(self.bw, self.adaptive, self.kernel.value)
+        cyg_depen_var = np.asfortranarray(self.sdf[self.depen_var])
+        cyg_indep_vars = np.asfortranarray(self.sdf[self.indep_vars])
+        if (self.has_intercept):
+            cyg_indep_vars = np.hstack([np.ones((cyg_indep_vars.shape[0], 1)), cyg_indep_vars])
+        cyg_coords = np.asfortranarray(self.sdf.geometry.centroid.get_coordinates())
+        ''' Create cython GWR
+        '''
+        cyg_gwr_basic = CyGWRBasic(cyg_coords, cyg_depen_var, cyg_indep_vars, cyg_weight, cyg_distance, self.has_intercept)
+        cyg_predict_locations = np.asfortranarray(targets.centroid.get_coordinates())
+        if multithreads is not None:
+            if isinstance(multithreads, int) and multithreads > 0:
+                cyg_gwr_basic.enable_openmp(multithreads)
+            else:
+                raise ValueError("multithreads must be a positive integer")
+        cyg_gwr_predict = cyg_gwr_basic.predict(cyg_predict_locations)
+        ''' Get result layer
+        '''
+        indep_var_names = (['Intercept'] if self.has_intercept else []) + self.indep_vars
+        result_data = {
+            **{f: cyg_gwr_predict[:, i] for i, f in enumerate(indep_var_names)}
+        }
+        if all([x in targets.columns for x in self.indep_vars]):
+            ''' If all variables are in predicting targets, calculate estimated y
+            '''
+            px = np.asfortranarray(targets[self.indep_vars])
+            if self.has_intercept:
+                px = np.hstack([np.ones((cyg_coords.shape[0], 1)), px])
+            result_data['y_hat'] = np.sum(px * cyg_gwr_predict, axis=1)
+            if self.depen_var in targets.columns:
+                py = targets[self.depen_var]
+                result_data["residual"] = py - result_data["y_hat"]
+        return gp.GeoDataFrame(result_data, geometry=targets.geometry)
 
 
 class GWSS:
