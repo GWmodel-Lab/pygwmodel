@@ -1,18 +1,22 @@
 from typing import List, Union, Optional
 import numpy as np
 import geopandas as gp
-from enum import Enum
+from enum import IntEnum
 from .pygwmodel import CyCRSDistance
 from .pygwmodel import CyBandwidthWeight
-from .pygwmodel import CyGWRBasic
+from .pygwmodel import CyGWRBasic, CyGWSS
 
 
-class KernelType(Enum):
+class KernelType(IntEnum):
     GAUSSIAN = 0
 
-class BandwidthSelectionCriterionType(Enum):
+class BandwidthSelectionCriterionType(IntEnum):
     AIC = 0
     CV = 1
+
+class GWSSMode(IntEnum):
+    Average = 0
+    Correlation = 1
 
 
 class GWRBasic:
@@ -120,48 +124,70 @@ class GWRBasic:
     #     return layer_to_sdf(cyg_gwr_basic.result_layer, targets.geometry)
 
 
-# class GWSS:
-#     """
-#     GWSS python high api class.
-#     """
+class GWSS:
+    """
+    GWSS python high api class.
+    """
 
-#     def __init__(self, sdf: gp.GeoDataFrame, variables: List[str], bw: float, adaptive: bool=True, kernel: KernelType=KernelType.GAUSSIAN, longlat: bool=True, quantile: bool=False, first_only: bool=False):
-#         """
-#         docstring
-#         """
-#         if not isinstance(sdf, gp.GeoDataFrame):
-#             raise ValueError("sdf must be a GeoDataFrame")
-#         self.sdf = sdf
-#         self.variables = variables
-#         self.bw = bw
-#         self.kernel = kernel
-#         self.adaptive = adaptive
-#         self.longlat = longlat
-#         self.result_layer = None
-#         self.quantile = quantile
-#         self.first_only = first_only
+    def __init__(self, sdf: gp.GeoDataFrame, variables: List[str], bw: float, adaptive: bool=True, kernel: KernelType=KernelType.GAUSSIAN, longlat: bool=True):
+        """
+        docstring
+        """
+        if not isinstance(sdf, gp.GeoDataFrame):
+            raise ValueError("sdf must be a GeoDataFrame")
+        self.sdf = sdf
+        self.variables = variables
+        self.bw = bw
+        self.kernel = kernel
+        self.adaptive = adaptive
+        self.longlat = longlat
+        self.result_layer = None
 
-#     def fit(self, multithreads: int=None):
-#         """
-#         Run algorithm and return result
-#         """
-#         ''' Extract data
-#         '''
-#         cyg_data_layer = sdf_to_layer(self.sdf, self.variables)
-#         cyg_distance = CyCRSDistance(self.longlat)
-#         cyg_weight = CyBandwidthWeight(self.bw, self.adaptive, self.kernel.value)
-#         cyg_in_vars = CyVariableList([CyVariable(i, True, n.encode("utf-8")) for i, n in enumerate(self.variables)])
-#         ''' Create cython GWSS
-#         '''
-#         cyg_gwss = CyGWSS(cyg_data_layer, cyg_in_vars, cyg_weight, cyg_distance, self.quantile, self.first_only)
-#         if multithreads is not None:
-#             if isinstance(multithreads, int) and multithreads > 0:
-#                 cyg_gwss.enable_openmp(multithreads)
-#             else:
-#                 raise ValueError("multithreads must be a positive integer")
-#         cyg_gwss.run()
-#         self.result_layer = layer_to_sdf(cyg_gwss.result_layer, self.sdf.geometry)
-#         return self
+    def fit(self, mode: GWSSMode=GWSSMode.Average, quantile: bool=False, first_only: bool=False, multithreads: int=None):
+        """
+        Run algorithm and return result
+        """
+        ''' Extract data
+        '''
+        cyg_distance = CyCRSDistance(self.longlat)
+        cyg_weight = CyBandwidthWeight(self.bw, self.adaptive, self.kernel.value)
+        cyg_vars = np.asfortranarray(self.sdf[self.variables])
+        cyg_coords = np.asfortranarray(self.sdf.geometry.centroid.get_coordinates())
+        ''' Create cython GWSS
+        '''
+        cyg_gwss = CyGWSS(cyg_coords, cyg_vars, cyg_weight, cyg_distance, int(mode), quantile, first_only)
+        if multithreads is not None:
+            if isinstance(multithreads, int) and multithreads > 0:
+                cyg_gwss.enable_openmp(multithreads)
+            else:
+                raise ValueError("multithreads must be a positive integer")
+        cyg_gwss.run()
+        if mode == GWSSMode.Average:
+            result_data = {
+                **{f"{f}_Mean": cyg_gwss.local_mean[:, i] for i, f in enumerate(self.variables)},
+                **{f"{f}_SDev": cyg_gwss.local_sdev[:, i] for i, f in enumerate(self.variables)},
+                **{f"{f}_Skew": cyg_gwss.local_skewness[:, i] for i, f in enumerate(self.variables)},
+                **{f"{f}_CV": cyg_gwss.local_cv[:, i] for i, f in enumerate(self.variables)},
+                **{f"{f}_Var": cyg_gwss.local_var[:, i] for i, f in enumerate(self.variables)}
+            }
+            if quantile:
+                result_data = {
+                    **result_data,
+                    **{f"{f}_Median": cyg_gwss.local_median[:, i] for i, f in enumerate(self.variables)},
+                    **{f"{f}_IQR": cyg_gwss.iqr[:, i] for i, f in enumerate(self.variables)},
+                    **{f"{f}_QI": cyg_gwss.qi[:, i] for i, f in enumerate(self.variables)}
+                }
+        else:
+            var_pairs = [(v1, v2) for i1, v1 in enumerate(self.variables) for i2, v2 in enumerate(self.variables) if i2 > i1]
+            result_data = {
+                **{f"{f}_Mean": cyg_gwss.local_mean[:, i] for i, f in enumerate(self.variables)},
+                **{f"{f}_Var": cyg_gwss.local_var[:, i] for i, f in enumerate(self.variables)},
+                **{f"{f1}.{f2}_Cov": cyg_gwss.local_cov[:, i] for i, (f1, f2) in enumerate(var_pairs)},
+                **{f"{f1}.{f2}_Corr": cyg_gwss.local_corr[:, i] for i, (f1, f2) in enumerate(var_pairs)},
+                **{f"{f1}.{f2}_SCorr": cyg_gwss.local_scorr[:, i] for i, (f1, f2) in enumerate(var_pairs)}
+            }
+        self.result_layer = gp.GeoDataFrame(result_data, geometry=self.sdf.geometry)
+        return self
 
 
 # class GWPCA:
