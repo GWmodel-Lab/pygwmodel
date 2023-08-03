@@ -119,6 +119,9 @@ cdef class CyGWRBasic:
         self._c_instance.setHasHatMatrix(hatmatrix)
         self._c_instance.fit()
     
+    def predict(self, double[::1, :] locations):
+        return mat2numpy(self._c_instance.predict(numpy2mat(locations)))
+    
     @property
     def dependent_variable(self):
         return vec2numpy(self._c_instance.dependentVariable())
