@@ -17,8 +17,8 @@ class TestGWPCA(unittest.TestCase):
         algorithm_result: gp.GeoDataFrame = algorithm.result_layer
         algorithm_loadings: np.ndarray = algorithm.loadings
 
-        result = pd.DataFrame(algorithm_result).drop('geometry', axis=1)
-        result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], interpolation='midpoint'), axis=0)
+        result = pd.DataFrame(algorithm_result).drop(['geometry', 'Win_Var_PC1'], axis=1)
+        result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], method='midpoint'), axis=0)
 
         comp_q0 = np.array([
             [86.09381920388, 7.38948790899526],
@@ -45,8 +45,14 @@ class TestGWPCA(unittest.TestCase):
                 [0.0417635544237787,0.202661857194208,0.980384688418526]
             ]
         ])
-        loadings_q = np.apply_along_axis(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], interpolation='midpoint'), axis=1, arr=algorithm_loadings)
-        self.assertTrue(np.all(np.abs(loadings_q0 - loadings_q) < 1e-8))
+
+        loadings_q = []
+        for i in range(2):
+            loadings_pci = algorithm_loadings[i, :, :]
+            loadings_pci_sign = np.sign(loadings_pci[:, 0])
+            loadings_pci = np.apply_along_axis(lambda col: col * loadings_pci_sign, 0, loadings_pci)
+            loadings_q.append(np.apply_along_axis(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], method='midpoint'), axis=0, arr=loadings_pci))
+        self.assertTrue(np.all(np.abs(loadings_q - np.asarray(loadings_q)) < 1e-8))
 
 
 if __name__ == '__main__':

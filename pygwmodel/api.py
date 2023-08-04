@@ -4,7 +4,7 @@ import geopandas as gp
 from enum import IntEnum
 from .pygwmodel import CyCRSDistance
 from .pygwmodel import CyBandwidthWeight
-from .pygwmodel import CyGWRBasic, CyGWSS
+from .pygwmodel import CyGWRBasic, CyGWSS, CyGWPCA
 
 
 class KernelType(IntEnum):
@@ -207,46 +207,52 @@ class GWSS:
         return self
 
 
-# class GWPCA:
-#     """
-#     GWPCA python high api class.
-#     """
-#     result_layer = None
-#     loadings = None
-#     local_pv = None
+class GWPCA:
+    """
+    GWPCA python high api class.
+    """
+    result_layer = None
+    loadings = None
+    local_pv = None
 
-#     def __init__(self, sdf: gp.GeoDataFrame, variables: List[str], bw: float, adaptive: bool=True, kernel: KernelType=KernelType.GAUSSIAN, longlat: bool=True, keepComponents: int=2):
-#         """
-#         docstring
-#         """
-#         if not isinstance(sdf, gp.GeoDataFrame):
-#             raise ValueError("sdf must be a GeoDataFrame")
-#         self.sdf = sdf
-#         self.variables = variables
-#         self.bw = bw
-#         self.kernel = kernel
-#         self.adaptive = adaptive
-#         self.longlat = longlat
-#         self.keepComponents = keepComponents
+    def __init__(self, sdf: gp.GeoDataFrame, variables: List[str], bw: float, adaptive: bool=True, kernel: KernelType=KernelType.GAUSSIAN, longlat: bool=True, keepComponents: int=2):
+        """
+        docstring
+        """
+        if not isinstance(sdf, gp.GeoDataFrame):
+            raise ValueError("sdf must be a GeoDataFrame")
+        self.sdf = sdf
+        self.variables = variables
+        self.bw = bw
+        self.kernel = kernel
+        self.adaptive = adaptive
+        self.longlat = longlat
+        self.keepComponents = keepComponents
 
-#     def fit(self):
-#         """
-#         Run algorithm and return result
-#         """
-#         ''' Extract data
-#         '''
-#         cyg_data_layer = sdf_to_layer(self.sdf, self.variables)
-#         cyg_distance = CyCRSDistance(self.longlat)
-#         cyg_weight = CyBandwidthWeight(self.bw, self.adaptive, self.kernel.value)
-#         # cyg_spatial_weight = cyg_sw.SpatialWeight(cyg_distance, cyg_weight)
-#         cyg_in_vars = CyVariableList([CyVariable(i, True, n.encode("utf-8")) for i, n in enumerate(self.variables)])
-#         ''' Create cython GWPCA
-#         '''
-#         cyg_gwpca = CyGWPCA(cyg_data_layer, cyg_in_vars, cyg_weight, cyg_distance, self.keepComponents)
-#         cyg_gwpca.run()
-#         self.result_layer = layer_to_sdf(cyg_gwpca.result_layer, self.sdf.geometry)
-#         ''' Get loadings
-#         '''
-#         self.local_pv = cyg_gwpca.local_pv()
-#         self.loadings = cyg_gwpca.loadings()
-#         return self
+    def fit(self):
+        """
+        Run algorithm and return result
+        """
+        ''' Extract data
+        '''
+        cyg_coords = np.asfortranarray(self.sdf.centroid.get_coordinates())
+        cyg_distance = CyCRSDistance(self.longlat)
+        cyg_weight = CyBandwidthWeight(self.bw, self.adaptive, self.kernel.value)
+        cyg_variables = np.asfortranarray(self.sdf[self.variables])
+        ''' Create cython GWPCA
+        '''
+        cyg_gwpca = CyGWPCA(cyg_coords, cyg_variables, cyg_weight, cyg_distance, self.keepComponents)
+        cyg_gwpca.run()
+        ''' Get loadings
+        '''
+        self.local_pv = cyg_gwpca.local_pv
+        self.loadings = cyg_gwpca.loadings
+        ''' Create result layer
+        '''
+        result_data = {
+            **{f"Comp.{i + 1}_PV": self.local_pv[:, i] for i in range(self.keepComponents)},
+            "local_CP": np.sum(self.local_pv, axis=1),
+            "Win_Var_PC1": [self.variables[i] for i in np.argmax(self.loadings[0, :, :], axis=1)]
+        }
+        self.result_layer = gp.GeoDataFrame(result_data, geometry=self.sdf.geometry)
+        return self
