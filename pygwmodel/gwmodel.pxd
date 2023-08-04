@@ -218,12 +218,13 @@ cdef extern from "GWSS.h" namespace "gwm":
         void setGWSSMode(GWSSMode mode)
 
 
-# cdef extern from "GWPCA.h" namespace "gwm":
-#     cdef cppclass GWPCA(SpatialMonoscaleAlgorithm, IMultivariableAnalysis):
-#         GWPCA()
-#         int keepComponents()
-#         void setKeepComponents(int k)
-#         mat localPV()
-#         mat sdev()
-#         cube loadings()
-#         cube scores()
+cdef extern from "GWPCA.h" namespace "gwm":
+    cdef cppclass GWPCA(SpatialMonoscaleAlgorithm, IMultivariableAnalysis):
+        GWPCA() except +
+        GWPCA(const mat x, const mat coords, const SpatialWeight& spatialWeight) except +
+        int keepComponents()
+        void setKeepComponents(int k)
+        mat localPV()
+        mat sdev()
+        cube loadings()
+        cube scores()

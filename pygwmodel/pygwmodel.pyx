@@ -257,40 +257,32 @@ cdef class CyGWSS:
         return mat2numpy(self._c_instance.localSCorr())
 
 
-# cdef class CyGWPCA:
-#     cdef GWPCA* _c_instance
+cdef class CyGWPCA:
+    cdef GWPCA* _c_instance
     
-#     def __cinit__(self, CySimpleLayer layer, CyVariableList variable_list, CyWeight weight, CyDistance distance, int keepComponents):
-#         self._c_instance = new GWPCA()
-#         self._c_instance.setSourceLayer(layer._c_instance)
-#         self._c_instance.setVariables(variable_list._c_instance)
-#         cdef SpatialWeight spatial = SpatialWeight(weight._c_instance, distance._c_instance)
-#         self._c_instance.setSpatialWeight(spatial)
-#         self._c_instance.setKeepComponents(keepComponents)
+    def __cinit__(self, double[::1, :] coords, double[::1, :] variables, CyWeight weight, CyDistance distance, int keepComponents):
+        cdef SpatialWeight spatial = SpatialWeight(weight._c_instance, distance._c_instance)
+        self._c_instance = new GWPCA(numpy2mat(variables), numpy2mat(coords), spatial)
+        self._c_instance.setKeepComponents(keepComponents)
     
-#     def valid(self):
-#         return self._c_instance.isValid()
+    def valid(self):
+        return self._c_instance.isValid()
     
-#     def run(self):
-#         self._c_instance.run()
+    def run(self):
+        self._c_instance.run()
     
-#     def local_pv(self):
-#         return mat2numpy(self._c_instance.localPV())
+    @property
+    def local_pv(self):
+        return mat2numpy(self._c_instance.localPV())
 
-#     def sdev(self):
-#         return mat2numpy(self._c_instance.sdev())
+    @property
+    def sdev(self):
+        return mat2numpy(self._c_instance.sdev())
     
-#     def loadings(self):
-#         return cube2numpy(self._c_instance.loadings())
+    @property
+    def loadings(self):
+        return cube2numpy(self._c_instance.loadings())
 
-#     def scores(self):
-#         return cube2numpy(self._c_instance.scores())
-    
-#     @property
-#     def result_layer(self):
-#         cdef SimpleLayer* layer = self._c_instance.resultLayer()
-#         return CySimpleLayer(mat2numpy(layer.points()), 
-#                              mat2numpy(layer.data()),
-#                              name_vector2list(layer.fields()))
-        
-
+    @property
+    def scores(self):
+        return cube2numpy(self._c_instance.scores())

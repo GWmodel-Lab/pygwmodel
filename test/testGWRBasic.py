@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import geopandas as gp
 from pygwmodel import GWRBasic
-
+import pygwmodel
 
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 
