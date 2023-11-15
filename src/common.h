@@ -9,8 +9,6 @@
 namespace nb = nanobind;
 
 using nvec = nb::ndarray<nb::numpy, const double, nb::shape<nb::any>>;
-// using ncvec = nb::ndarray<nb::numpy, const double, nb::shape<nb::any, 1>, nb::f_contig>;
-// using nrvec = nb::ndarray<nb::numpy, const double, nb::shape<1, nb::any>, nb::f_contig>;
 using nmat = nb::ndarray<nb::numpy, const double, nb::shape<nb::any, nb::any>, nb::f_contig>;
 
 inline arma::mat as(nmat src)
@@ -26,7 +24,6 @@ inline arma::vec as(nvec src)
 inline auto wrap(const arma::mat& src)
 {
     return nmat(src.memptr(), { src.n_rows, src.n_cols }, nb::handle(), { 1, int64_t(src.n_rows) });
-    // return nmat(src.mem, { src.n_cols, src.n_rows });
 }
 
 inline auto wrap(const arma::vec& src)
