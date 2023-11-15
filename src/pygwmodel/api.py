@@ -2,8 +2,8 @@ from typing import List, Union, Optional
 import numpy as np
 import geopandas as gp
 from enum import IntEnum
-from spatial_weight import SpatialWeight
-from gwr_basic import GWRBasic
+from .py_gwr_basic import GWRBasic as GWRBasicBind
+from .py_spatial_weight import SpatialWeight as SpatialWeightBind
 
 class KernelType(IntEnum):
     GAUSSIAN = 0
@@ -49,7 +49,7 @@ class GWRBasic:
         '''
         # cyg_distance = CyCRSDistance(self.longlat)
         # cyg_weight = CyBandwidthWeight(self.bw, self.adaptive, self.kernel.value)
-        sw = SpatialWeight()
+        sw = SpatialWeightBind()
         sw.set_distance_crs(self.longlat)
         sw.set_weight_bandwidth(self.bw, self.adaptive, self.kernel.value)
         ''' Create cython GWR
@@ -60,7 +60,7 @@ class GWRBasic:
             indep_vars = np.hstack([np.ones((indep_vars.shape[0], 1)), indep_vars])
         coords = np.asfortranarray(self.sdf.geometry.centroid.get_coordinates())
         # algorithm = CyGWRBasic(coords, depen_var, indep_vars, cyg_weight, cyg_distance, self.has_intercept)
-        algorithm = GWRBasic()
+        algorithm = GWRBasicBind()
         algorithm.coords = coords
         algorithm.dependent = depen_var
         algorithm.independent = indep_vars

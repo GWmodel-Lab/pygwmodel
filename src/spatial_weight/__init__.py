@@ -1,1 +1,0 @@
-from .py_spatial_weight import SpatialWeight
