@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import pandas as pd
 import geopandas as gp
-from pygwmodel import GWSS, GWSSMode
+from src import GWSS, GWSSMode
 
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 

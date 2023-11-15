@@ -4,8 +4,8 @@ import unittest
 import numpy as np
 import pandas as pd
 import geopandas as gp
-from pygwmodel import GWRBasic
-import pygwmodel
+from src import GWRBasic
+import src
 
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 
@@ -43,7 +43,7 @@ class TestGWRBasic(unittest.TestCase):
     def test_autoselect_bandwidth(self):
         for p in self.parallel_case:
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(optimize_bw=pygwmodel.BandwidthSelectionCriterionType.CV, multithreads=p)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(optimize_bw=src.BandwidthSelectionCriterionType.CV, multithreads=p)
                 self.assertEqual(algorithm.bw, 67)
 
     def test_autoselect_indepvars(self):
@@ -68,7 +68,7 @@ class TestGWRBasic(unittest.TestCase):
     def test_autoselect_all(self):
         for p in self.parallel_case:
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(optimize_var=3.0, optimize_bw=pygwmodel.BandwidthSelectionCriterionType.CV, multithreads=p)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(optimize_var=3.0, optimize_bw=src.BandwidthSelectionCriterionType.CV, multithreads=p)
                 criterion = algorithm.indep_var_select_criterions
                 self.assertSequenceEqual(criterion[0][0], ['UNEMPLOY'])
                 self.assertSequenceEqual(criterion[1][0], ['PROF'])

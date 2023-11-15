@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 import geopandas as gp
-from pygwmodel import GWPCA
+from src import GWPCA
 
 class TestGWPCA(unittest.TestCase):
 
