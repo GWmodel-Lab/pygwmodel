@@ -18,17 +18,20 @@ NB_MODULE(py_gwr_basic, m)
         .def_prop_rw(
             "dependent",
             [](gwm::GWRBasic &instance){ return wrap(instance.dependentVariable()); },
-            [](gwm::GWRBasic &instance, nvec y){ instance.setDependentVariable(as(y)); }
+            [](gwm::GWRBasic &instance, nvec y){ instance.setDependentVariable(as(y)); },
+            nb::rv_policy::copy
         )
         .def_prop_rw(
             "independent",
             [](gwm::GWRBasic &instance){ return wrap(instance.independentVariables()); },
-            [](gwm::GWRBasic &instance, nmat x){ instance.setIndependentVariables(as(x)); }
+            [](gwm::GWRBasic &instance, nmat x){ instance.setIndependentVariables(as(x)); },
+            nb::rv_policy::copy
         )
         .def_prop_rw(
             "coords",
             [](gwm::GWRBasic &instance){ return wrap(instance.coords()); },
-            [](gwm::GWRBasic &instance, nmat coords){ instance.setCoords(as(coords)); }
+            [](gwm::GWRBasic &instance, nmat coords){ instance.setCoords(as(coords)); },
+            nb::rv_policy::copy
         )
         .def_prop_rw(
             "spatial_weight",

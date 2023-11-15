@@ -4,33 +4,47 @@
 #include <armadillo>
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
+#include <RegressionDiagnostic.h>
 
 namespace nb = nanobind;
 
-using nvec = nb::ndarray<double_t, nb::shape<nb::any>, nb::device::cpu, nb::f_contig>;
-using nmat = nb::ndarray<double_t, nb::shape<nb::any, nb::any>, nb::device::cpu, nb::f_contig>;
-using pnvec = nb::ndarray<nb::numpy, const double, nb::shape<nb::any>, nb::f_contig>;
-using pnmat = nb::ndarray<nb::numpy, const double, nb::shape<nb::any, nb::any>, nb::f_contig>;
+using nvec = nb::ndarray<nb::numpy, const double, nb::shape<nb::any>>;
+// using ncvec = nb::ndarray<nb::numpy, const double, nb::shape<nb::any, 1>, nb::f_contig>;
+// using nrvec = nb::ndarray<nb::numpy, const double, nb::shape<1, nb::any>, nb::f_contig>;
+using nmat = nb::ndarray<nb::numpy, const double, nb::shape<nb::any, nb::any>, nb::f_contig>;
 
-inline arma::mat as(nmat src) {
-    size_t rows = src.shape(0);
-    size_t cols = src.shape(1);
-    return arma::mat(src.data(), rows, cols);
+inline arma::mat as(nmat src)
+{
+    return arma::mat(src.data(), src.shape(0), src.shape(1));
 }
 
-inline arma::vec as(nvec src) {
-    size_t rows = src.shape(0);
-    return arma::vec(src.data(), rows);
+inline arma::vec as(nvec src)
+{
+    return arma::vec(src.data(), src.shape(0));
 }
 
-inline auto wrap(const arma::mat& src) {
-    size_t shape[2] = { src.n_rows, src.n_cols };
-    return pnmat(src.mem, 2, shape);
+inline auto wrap(const arma::mat& src)
+{
+    return nmat(src.memptr(), { src.n_rows, src.n_cols }, nb::handle(), { 1, int64_t(src.n_rows) });
+    // return nmat(src.mem, { src.n_cols, src.n_rows });
 }
 
-inline auto wrap(const arma::vec& src) {
-    size_t shape[1] = { src.n_elem };
-    return pnvec(src.mem, 1, shape);
+inline auto wrap(const arma::vec& src)
+{
+    return nvec(src.memptr(), { src.n_elem }, nb::handle(), { 1 });
+}
+
+inline auto wrap(const gwm::RegressionDiagnostic& diagnostic)
+{
+    nb::dict result;
+    result["RSS"] = diagnostic.RSS;
+    result["AIC"] = diagnostic.AIC;
+    result["AICc"] = diagnostic.AICc;
+    result["ENP"] = diagnostic.ENP;
+    result["EDF"] = diagnostic.EDF;
+    result["RSquare"] = diagnostic.RSquare;
+    result["RSquareAdjust"] = diagnostic.RSquareAdjust;
+    return result;
 }
 
 #endif  // UTILS_H
