@@ -23,12 +23,16 @@ inline arma::vec as(nvec src)
 
 inline auto wrap(const arma::mat& src)
 {
-    return nmat(src.memptr(), { src.n_rows, src.n_cols }, nb::handle(), { 1, int64_t(src.n_rows) });
+    arma::mat *temp = new arma::mat(src.mem, src.n_rows, src.n_cols);
+    auto owner = nb::capsule(temp, [](void *p) noexcept { delete (arma::mat*)p; });
+    return nmat(temp->memptr(), { temp->n_rows, temp->n_cols }, nb::handle(), { 1, int64_t(temp->n_rows) });
 }
 
 inline auto wrap(const arma::vec& src)
 {
-    return nvec(src.memptr(), { src.n_elem }, nb::handle(), { 1 });
+    arma::vec *temp = new arma::vec(src.mem, src.n_elem);
+    auto owner = nb::capsule(temp, [](void *p) noexcept { delete (arma::vec*)p; });
+    return nvec(temp->memptr(), { temp->n_elem }, owner, { 1 });
 }
 
 inline auto wrap(const gwm::RegressionDiagnostic& diagnostic)

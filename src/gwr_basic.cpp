@@ -19,19 +19,19 @@ NB_MODULE(py_gwr_basic, m)
             "dependent",
             [](gwm::GWRBasic &instance){ return wrap(instance.dependentVariable()); },
             [](gwm::GWRBasic &instance, nvec y){ instance.setDependentVariable(as(y)); },
-            nb::rv_policy::copy
+            nb::rv_policy::move
         )
         .def_prop_rw(
             "independent",
             [](gwm::GWRBasic &instance){ return wrap(instance.independentVariables()); },
             [](gwm::GWRBasic &instance, nmat x){ instance.setIndependentVariables(as(x)); },
-            nb::rv_policy::copy
+            nb::rv_policy::move
         )
         .def_prop_rw(
             "coords",
             [](gwm::GWRBasic &instance){ return wrap(instance.coords()); },
             [](gwm::GWRBasic &instance, nmat coords){ instance.setCoords(as(coords)); },
-            nb::rv_policy::copy
+            nb::rv_policy::move
         )
         .def_prop_rw(
             "spatial_weight",
@@ -71,22 +71,22 @@ NB_MODULE(py_gwr_basic, m)
         .def_prop_ro(
             "diagnostic",
             [](gwm::GWRBasic &instance){ return wrap(instance.diagnostic()); },
-            nb::rv_policy::copy
+            nb::rv_policy::move
         )
         .def_prop_ro(
             "betas",
             [](gwm::GWRBasic &instance){ return wrap(instance.betas()); },
-            nb::rv_policy::copy
+            nb::rv_policy::move
         )
         .def_prop_ro(
             "betasSE",
             [](gwm::GWRBasic &instance){ return wrap(instance.betasSE()); },
-            nb::rv_policy::copy
+            nb::rv_policy::move
         )
         .def_prop_ro(
             "fitted",
             [](gwm::GWRBasic &instance){ return wrap(instance.Fitted(instance.independentVariables(), instance.betas())); },
-            nb::rv_policy::copy
+            nb::rv_policy::move
         )
         ;
 }
