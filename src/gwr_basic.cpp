@@ -64,10 +64,29 @@ NB_MODULE(py_gwr_basic, m)
             [](gwm::GWRBasic &instance){ return instance.indepVarSelectionThreshold(); },
             [](gwm::GWRBasic &instance, double threshold){ instance.setIndepVarSelectionThreshold(threshold); }
         )
-        .def("fit", &gwm::GWRBasic::fit)
+        .def(
+            "fit",
+            [](gwm::GWRBasic &instance){ instance.fit(); }
+        )
+        .def_prop_ro(
+            "diagnostic",
+            [](gwm::GWRBasic &instance){ return wrap(instance.diagnostic()); },
+            nb::rv_policy::copy
+        )
         .def_prop_ro(
             "betas",
-            [](gwm::GWRBasic &instance){ return instance.betas(); }
+            [](gwm::GWRBasic &instance){ return wrap(instance.betas()); },
+            nb::rv_policy::copy
+        )
+        .def_prop_ro(
+            "betasSE",
+            [](gwm::GWRBasic &instance){ return wrap(instance.betasSE()); },
+            nb::rv_policy::copy
+        )
+        .def_prop_ro(
+            "fitted",
+            [](gwm::GWRBasic &instance){ return wrap(instance.Fitted(instance.independentVariables(), instance.betas())); },
+            nb::rv_policy::copy
         )
         ;
 }

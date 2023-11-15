@@ -54,16 +54,17 @@ class GWRBasic:
         sw.set_weight_bandwidth(self.bw, self.adaptive, self.kernel.value)
         ''' Create cython GWR
         '''
-        depen_var = np.asfortranarray(self.sdf[self.depen_var])
-        indep_vars = np.asfortranarray(self.sdf[self.indep_vars])
+        depen_var = np.asfortranarray(self.sdf[self.depen_var], dtype=np.float64)
+        indep_vars = np.asfortranarray(self.sdf[self.indep_vars], dtype=np.float64)
         if (self.has_intercept):
             indep_vars = np.hstack([np.ones((indep_vars.shape[0], 1)), indep_vars])
-        coords = np.asfortranarray(self.sdf.geometry.centroid.get_coordinates())
+        coords = np.asfortranarray(self.sdf.geometry.centroid.get_coordinates(), dtype=np.float64)
         # algorithm = CyGWRBasic(coords, depen_var, indep_vars, cyg_weight, cyg_distance, self.has_intercept)
         algorithm = GWRBasicBind()
         algorithm.coords = coords
-        algorithm.dependent = depen_var
         algorithm.independent = indep_vars
+        algorithm.dependent = depen_var
+        algorithm.spatial_weight = sw
         if self.bw is None and optimize_bw is None:
             optimize_bw = BandwidthSelectionCriterionType.CV
         if optimize_bw is not None:
@@ -96,13 +97,14 @@ class GWRBasic:
         indep_var_names = (['Intercept'] if self.has_intercept else []) + self.indep_vars
         result_data = {
             **{f: algorithm.betas[:, i] for i, f in enumerate(indep_var_names)},
-            # **{f'{f}_SE': algorithm.betas[:, i] for i, f in enumerate(indep_var_names)},
+            **{f'{f}_SE': algorithm.betasSE[:, i] for i, f in enumerate(indep_var_names)},
+            'fitted': algorithm.fitted
         }
         self.result_layer = gp.GeoDataFrame(result_data, geometry=self.sdf.geometry)
         ''' Get diagnostic
         '''
-        # if hatmatrix:
-        #     self.diagnostic = algorithm.diagnostic
+        if hatmatrix:
+            self.diagnostic = algorithm.diagnostic
         return self
 
     # def predict(self, targets: gp.GeoDataFrame, multithreads: int=None):

@@ -53,8 +53,8 @@ add_subdirectory(libgwmodel)
 
 add_subdirectory(src)
 
-# if(WITH_PYTESTS)
-#     enable_testing()
-#     add_subdirectory(test)
-# endif(WITH_PYTESTS)
+if(WITH_PYTESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif(WITH_PYTESTS)
 
