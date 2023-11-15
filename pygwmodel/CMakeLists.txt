@@ -21,9 +21,10 @@ endif(ARMADILLO_FOUND)
 set(LIBGWMODEL_INCLUDE_DIR ../libgwmodel/include)
 include_directories(${LIBGWMODEL_INCLUDE_DIR}/gwmodelpp)
 
-add_cython_target(pygwmodel.pyx CXX)
-add_library(pygwmodel MODULE ${pygwmodel})
-target_link_libraries(pygwmodel gwmodel ${ARMADILLO_LIBRARIES} ${PYTHON_LIBRARY} Python3::NumPy)
-python_extension_module(pygwmodel)
+nanobind_add_module(py_gwr_basic common.h gwr_basic.cpp)
+target_link_libraries(py_gwr_basic PRIVATE gwmodel)
 
-install(TARGETS pygwmodel LIBRARY DESTINATION pygwmodel)
+nanobind_add_module(py_spatial_weight spatial_weight.cpp)
+target_link_libraries(py_spatial_weight PRIVATE gwmodel)
+
+# install(TARGETS pygwmodel LIBRARY DESTINATION pygwmodel)

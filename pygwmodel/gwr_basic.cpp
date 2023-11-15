@@ -1,0 +1,67 @@
+#include <nanobind/nanobind.h>
+#include <GWRBasic.h>
+#include "common.h"
+
+namespace nb = nanobind;
+
+NB_MODULE(py_gwr_basic, m)
+{
+    nb::class_<gwm::GWRBasic> gwr_basic(m, "GWRBasic");
+
+    nb::enum_<gwm::GWRBasic::BandwidthSelectionCriterionType>(gwr_basic, "BandwidthSelectionCriterionType")
+        .value("AIC", gwm::GWRBasic::BandwidthSelectionCriterionType::AIC)
+        .value("CV", gwm::GWRBasic::BandwidthSelectionCriterionType::CV)
+        .export_values();
+
+    gwr_basic
+        .def(nb::init<>())
+        .def_prop_rw(
+            "dependent",
+            [](gwm::GWRBasic &instance){ return wrap(instance.dependentVariable()); },
+            [](gwm::GWRBasic &instance, nvec y){ instance.setDependentVariable(as(y)); }
+        )
+        .def_prop_rw(
+            "independent",
+            [](gwm::GWRBasic &instance){ return wrap(instance.independentVariables()); },
+            [](gwm::GWRBasic &instance, nmat x){ instance.setIndependentVariables(as(x)); }
+        )
+        .def_prop_rw(
+            "coords",
+            [](gwm::GWRBasic &instance){ return wrap(instance.coords()); },
+            [](gwm::GWRBasic &instance, nmat coords){ instance.setCoords(as(coords)); }
+        )
+        .def_prop_rw(
+            "spatial_weight",
+            [](gwm::GWRBasic &instance){ return; },
+            [](gwm::GWRBasic &instance, nb::handle_t<gwm::SpatialWeight> sw)
+            {
+                instance.setSpatialWeight(nb::cast<gwm::SpatialWeight &>(sw));
+            }
+        )
+        .def_prop_rw(
+            "select_bandwidth",
+            [](gwm::GWRBasic &instance){ return instance.isAutoselectBandwidth(); },
+            [](gwm::GWRBasic &instance, bool flag){ instance.setIsAutoselectBandwidth(flag); }
+        )
+        .def_prop_rw(
+            "select_bandwidth_criterion",
+            [](gwm::GWRBasic &instance){ return instance.bandwidthSelectionCriterion(); },
+            [](gwm::GWRBasic &instance, int criterion){ instance.setBandwidthSelectionCriterion((gwm::GWRBasic::BandwidthSelectionCriterionType)criterion); }
+        )
+        .def_prop_rw(
+            "select_variables",
+            [](gwm::GWRBasic &instance){ return instance.isAutoselectIndepVars(); },
+            [](gwm::GWRBasic &instance, bool flag){ instance.setIsAutoselectIndepVars(flag); }
+        )
+        .def_prop_rw(
+            "select_variables_threshold",
+            [](gwm::GWRBasic &instance){ return instance.indepVarSelectionThreshold(); },
+            [](gwm::GWRBasic &instance, double threshold){ instance.setIndepVarSelectionThreshold(threshold); }
+        )
+        .def("fit", &gwm::GWRBasic::fit)
+        .def_prop_ro(
+            "betas",
+            [](gwm::GWRBasic &instance){ return instance.betas(); }
+        )
+        ;
+}
