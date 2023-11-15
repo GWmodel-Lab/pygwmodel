@@ -21,10 +21,13 @@ endif(ARMADILLO_FOUND)
 set(LIBGWMODEL_INCLUDE_DIR ../libgwmodel/include)
 include_directories(${LIBGWMODEL_INCLUDE_DIR}/gwmodelpp)
 
-nanobind_add_module(py_gwr_basic common.h gwr_basic.cpp)
+nanobind_add_module(py_gwr_basic STABLE_ABI common.h gwr_basic.cpp)
 target_link_libraries(py_gwr_basic PRIVATE gwmodel)
 
-nanobind_add_module(py_spatial_weight spatial_weight.cpp)
+nanobind_add_module(py_spatial_weight STABLE_ABI spatial_weight.cpp)
 target_link_libraries(py_spatial_weight PRIVATE gwmodel)
 
-# install(TARGETS pygwmodel LIBRARY DESTINATION pygwmodel)
+install(TARGETS 
+    py_gwr_basic
+    py_spatial_weight
+    LIBRARY DESTINATION pygwmodel)

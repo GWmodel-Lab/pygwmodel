@@ -32,7 +32,10 @@ NB_MODULE(py_gwr_basic, m)
         )
         .def_prop_rw(
             "spatial_weight",
-            [](gwm::GWRBasic &instance){ return; },
+            [](gwm::GWRBasic &instance)
+            {
+                return nb::cast(instance.spatialWeight());
+            },
             [](gwm::GWRBasic &instance, nb::handle_t<gwm::SpatialWeight> sw)
             {
                 instance.setSpatialWeight(nb::cast<gwm::SpatialWeight &>(sw));
