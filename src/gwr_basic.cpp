@@ -46,25 +46,29 @@ NB_MODULE(py_gwr_basic, m)
                 instance.setSpatialWeight(nb::cast<gwm::SpatialWeight &>(sw));
             }
         )
-        .def_prop_rw(
-            "select_bandwidth",
-            [](gwm::GWRBasic &instance){ return instance.isAutoselectBandwidth(); },
-            [](gwm::GWRBasic &instance, bool flag){ instance.setIsAutoselectBandwidth(flag); }
+        .def_prop_ro(
+            "select_bandwidth_enabled",
+            [](gwm::GWRBasic &instance){ return instance.isAutoselectBandwidth(); }
         )
-        .def_prop_rw(
-            "select_bandwidth_criterion",
-            [](gwm::GWRBasic &instance){ return instance.bandwidthSelectionCriterion(); },
-            [](gwm::GWRBasic &instance, int criterion){ instance.setBandwidthSelectionCriterion((gwm::GWRBasic::BandwidthSelectionCriterionType)criterion); }
+        .def(
+            "enable_select_bandwidth",
+            [](gwm::GWRBasic &instance, int criterion)
+            {
+                instance.setIsAutoselectBandwidth(true);
+                instance.setBandwidthSelectionCriterion((gwm::GWRBasic::BandwidthSelectionCriterionType)criterion); 
+            }
         )
-        .def_prop_rw(
-            "select_variables",
-            [](gwm::GWRBasic &instance){ return instance.isAutoselectIndepVars(); },
-            [](gwm::GWRBasic &instance, bool flag){ instance.setIsAutoselectIndepVars(flag); }
+        .def_prop_ro(
+            "select_variables_enabled",
+            [](gwm::GWRBasic &instance){ return instance.isAutoselectIndepVars(); }
         )
-        .def_prop_rw(
-            "select_variables_threshold",
-            [](gwm::GWRBasic &instance){ return instance.indepVarSelectionThreshold(); },
-            [](gwm::GWRBasic &instance, double threshold){ instance.setIndepVarSelectionThreshold(threshold); }
+        .def(
+            "enable_select_variables",
+            [](gwm::GWRBasic &instance, double threshold)
+            { 
+                instance.setIsAutoselectIndepVars(true);
+                instance.setIndepVarSelectionThreshold(threshold); 
+            }
         )
         .def_prop_ro(
             "parallel_type",

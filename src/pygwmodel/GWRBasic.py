@@ -84,14 +84,12 @@ class GWRBasic:
             optimize_bw = GWRBasic.BandwidthSelectionCriterionType.CV
         if optimize_bw is not None:
             if optimize_bw == GWRBasic.BandwidthSelectionCriterionType.AIC or optimize_bw == GWRBasic.BandwidthSelectionCriterionType.CV:
-                self.algorithm.select_bandwidth = True
-                self.algorithm.select_bandwidth_criterion = optimize_bw.value
+                self.algorithm.enable_select_bandwidth(optimize_bw.value)
             else:
                 raise ValueError("optimize_bw must be BandwidthSelectionCriterionType.AIC(0) or BandwidthSelectionCriterionType.CV(1)")
         if optimize_var is not None:
             if isinstance(optimize_var, float) and optimize_var > 0:
-                self.algorithm.select_variables = True
-                self.algorithm.select_variables_threshold = optimize_var
+                self.algorithm.enable_select_variables(optimize_var)
             else:
                 raise ValueError("optimize_var must be a positive real number")
         self.algorithm.fit()
