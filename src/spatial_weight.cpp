@@ -7,6 +7,16 @@ namespace nb = nanobind;
 
 NB_MODULE(py_spatial_weight, m)
 {
+    nb::class_<gwm::BandwidthWeight> bandwidth_weight(m, "BandwidthWeight");
+
+    nb::enum_<gwm::BandwidthWeight::KernelFunctionType>(bandwidth_weight, "BandwidthKernelType")
+        .value("Gaussian", gwm::BandwidthWeight::KernelFunctionType::Gaussian)
+        .value("Exponential", gwm::BandwidthWeight::KernelFunctionType::Exponential)
+        .value("Bisquare", gwm::BandwidthWeight::KernelFunctionType::Bisquare)
+        .value("Tricube", gwm::BandwidthWeight::KernelFunctionType::Tricube)
+        .value("Boxcar", gwm::BandwidthWeight::KernelFunctionType::Boxcar)
+        .export_values();
+
     nb::class_<gwm::SpatialWeight>(m, "SpatialWeight")
         .def(nb::init<>())
         .def(

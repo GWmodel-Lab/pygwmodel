@@ -1,6 +1,8 @@
 from typing import Optional
 from enum import IntEnum
 from .py_spatial_weight import SpatialWeight as SpatialWeightBind
+from .py_spatial_weight import BandwidthWeight as BandwidthWeightBind
+
 
 
 class Distance:
@@ -20,14 +22,6 @@ class CRSDistance(Distance):
         return (self.is_geographic,)
 
 
-class BandwidthKernel(IntEnum):
-    Gaussian = 0
-    Exponential = 1
-    Bisquare = 2
-    Tricube = 3
-    Boxcar = 4
-
-
 class Weight:
 
     def as_args(self) -> tuple:
@@ -35,11 +29,19 @@ class Weight:
 
 
 class BandwidthWeight(Weight):
+
+    class Kernel(IntEnum):
+        Gaussian = BandwidthWeightBind.Gaussian
+        Exponential = BandwidthWeightBind.Exponential
+        Bisquare = BandwidthWeightBind.Bisquare
+        Tricube = BandwidthWeightBind.Tricube
+        Boxcar = BandwidthWeightBind.Boxcar
+
     bandwidth: Optional[float] = None
     adaptive: bool = False
-    kernel: BandwidthKernel = BandwidthKernel.Gaussian
+    kernel: Kernel = Kernel.Gaussian
 
-    def __init__(self, bandwidth: Optional[float]=None, adaptive: bool=False, kernel: BandwidthKernel=BandwidthKernel.Gaussian) -> None:
+    def __init__(self, bandwidth: Optional[float]=None, adaptive: bool=False, kernel: Kernel=Kernel.Gaussian) -> None:
         super().__init__()
         self.bandwidth = bandwidth
         self.adaptive = adaptive
