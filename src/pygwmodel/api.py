@@ -39,7 +39,7 @@ class GWRBasic:
         self.depen_var: str = depen_var
         self.indep_vars: List[str] = indep_vars
         self.has_intercept: bool = has_intercept
-        self.bw: float = bw
+        self.bw: Optional[float] = bw
         self.kernel: KernelType = kernel
         self.adaptive: bool = adaptive
         self.longlat: bool = longlat
