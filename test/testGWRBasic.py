@@ -86,13 +86,13 @@ class TestGWRBasic(unittest.TestCase):
                 self.assertSequenceEqual(algorithm.indep_vars, ['FLOORSZ', 'PROF'])
                 self.assertEqual(algorithm.bw, 31)
     
-    # def test_predict(self):
-    #    for p, pargs in self.parallel_case.items():
-    #         with self.subTest(parallel=p):
-    #             algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit()
-    #             prediction = algorithm.predict(self.londonhp, )
-    #             self.assertIn("y_hat", prediction.columns)
-    #             self.assertIn("residual", prediction.columns)
+    def test_predict(self):
+       for p, pargs in self.parallel_case.items():
+            with self.subTest(parallel=p):
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit()
+                prediction = algorithm.predict(self.londonhp)
+                self.assertIn("y_hat", prediction.columns)
+                self.assertIn("residual", prediction.columns)
 
 
 if __name__ == '__main__':

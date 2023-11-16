@@ -91,6 +91,11 @@ NB_MODULE(py_gwr_basic, m)
             "fit",
             [](gwm::GWRBasic &instance){ instance.fit(); }
         )
+        .def(
+            "predict",
+            [](gwm::GWRBasic &instance, nmat locs){ return wrap(instance.predict(as(locs))); },
+            nb::rv_policy::move
+        )
         .def_prop_ro(
             "diagnostic",
             [](gwm::GWRBasic &instance){ return wrap(instance.diagnostic()); },
