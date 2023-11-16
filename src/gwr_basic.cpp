@@ -66,6 +66,27 @@ NB_MODULE(py_gwr_basic, m)
             [](gwm::GWRBasic &instance){ return instance.indepVarSelectionThreshold(); },
             [](gwm::GWRBasic &instance, double threshold){ instance.setIndepVarSelectionThreshold(threshold); }
         )
+        .def_prop_ro(
+            "parallel_type",
+            [](gwm::GWRBasic &instance){ return int(instance.parallelType()); }
+        )
+        .def(
+            "parallel_omp",
+            [](gwm::GWRBasic &instance, int threadNum)
+            {
+                instance.setParallelType(gwm::ParallelType::OpenMP);
+                instance.setOmpThreadNum(threadNum);
+            }
+        )
+        .def(
+            "parallel_cuda",
+            [](gwm::GWRBasic &instance, int gpuId, int groupSize)
+            {
+                instance.setParallelType(gwm::ParallelType::CUDA);
+                instance.setGPUId(gpuId);
+                instance.setGroupSize(groupSize);
+            }
+        )
         .def(
             "fit",
             [](gwm::GWRBasic &instance){ instance.fit(); }

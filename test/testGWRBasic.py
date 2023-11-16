@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import pandas as pd
 import geopandas as gp
-from pygwmodel import GWRBasic
+from pygwmodel import GWRBasic, ParallelType
 
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 
@@ -16,14 +16,16 @@ class TestGWRBasic(unittest.TestCase):
         self.londonhp = gp.GeoDataFrame(londonhp_csv, geometry=gp.points_from_xy(londonhp_csv.x, londonhp_csv.y))
         self.depen = 'PURCHASE'
         self.indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
-        self.parallel_case = [None]
+        self.parallel_case = {
+            ParallelType.Serial: dict()
+        }
         if ENABLE_OPENMP:
-            self.parallel_case.append(4)
+            self.parallel_case[ParallelType.OpenMP] = {'threads': 4}
 
     def test_minimal(self):
-        for p in self.parallel_case:
+        for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(multithreads=p)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit()
 
                 diagnostic0 = np.array([
                     2436.60445730413,
@@ -40,15 +42,15 @@ class TestGWRBasic(unittest.TestCase):
                 self.assertTrue(np.all(np.abs(diagnostic0 - diagnostic) < 1e-8))
 
     def test_autoselect_bandwidth(self):
-        for p in self.parallel_case:
+        for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(optimize_bw=GWRBasic.BandwidthSelectionCriterionType.CV, multithreads=p)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit(optimize_bw=GWRBasic.BandwidthSelectionCriterionType.CV)
                 self.assertEqual(algorithm.bw, 67)
 
     def test_autoselect_indepvars(self):
-        for p in self.parallel_case:
+        for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(optimize_var=3.0, multithreads=p)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit(optimize_var=3.0)
                 criterion = algorithm.indep_var_select_criterions
                 self.assertSequenceEqual(criterion[0][0], ['UNEMPLOY'])
                 self.assertSequenceEqual(criterion[1][0], ['PROF'])
@@ -65,9 +67,9 @@ class TestGWRBasic(unittest.TestCase):
                 self.assertSequenceEqual(algorithm.indep_vars, ['FLOORSZ', 'PROF'])
 
     def test_autoselect_all(self):
-        for p in self.parallel_case:
+        for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(optimize_var=3.0, optimize_bw=GWRBasic.BandwidthSelectionCriterionType.CV, multithreads=p)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit(optimize_var=3.0, optimize_bw=GWRBasic.BandwidthSelectionCriterionType.CV)
                 criterion = algorithm.indep_var_select_criterions
                 self.assertSequenceEqual(criterion[0][0], ['UNEMPLOY'])
                 self.assertSequenceEqual(criterion[1][0], ['PROF'])
@@ -85,10 +87,10 @@ class TestGWRBasic(unittest.TestCase):
                 self.assertEqual(algorithm.bw, 31)
     
     # def test_predict(self):
-    #     for p in self.parallel_case:
+    #    for p, pargs in self.parallel_case.items():
     #         with self.subTest(parallel=p):
-    #             algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).fit(multithreads=p)
-    #             prediction = algorithm.predict(self.londonhp, multithreads=p)
+    #             algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit()
+    #             prediction = algorithm.predict(self.londonhp, )
     #             self.assertIn("y_hat", prediction.columns)
     #             self.assertIn("residual", prediction.columns)
 
