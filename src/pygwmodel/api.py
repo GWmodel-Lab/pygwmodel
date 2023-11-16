@@ -35,7 +35,7 @@ class GWRBasic:
         """
         if not isinstance(sdf, gp.GeoDataFrame):
             raise ValueError("sdf must be a GeoDataFrame")
-        self.sdf: gp.GeoDataFrame = sdf
+        self.geometry = sdf.geometry
         self.depen_var: str = depen_var
         self.indep_vars: List[str] = indep_vars
         self.has_intercept: bool = has_intercept
@@ -47,13 +47,13 @@ class GWRBasic:
         sw = SpatialWeightBind()
         sw.set_distance_crs(self.longlat)
         sw.set_weight_bandwidth(self.bw, self.adaptive, self.kernel.value)
-        indep_vars_data = np.asfortranarray(self.sdf[self.indep_vars], dtype=np.float64)
+        indep_vars_data = np.asfortranarray(sdf[self.indep_vars], dtype=np.float64)
         if (self.has_intercept):
             indep_vars_data = np.hstack([np.ones((indep_vars_data.shape[0], 1)), indep_vars_data])
         self.algorithm = GWRBasicBind()
-        self.algorithm.coords = np.asfortranarray(self.sdf.geometry.centroid.get_coordinates(), dtype=np.float64)
+        self.algorithm.coords = np.asfortranarray(sdf.geometry.centroid.get_coordinates(), dtype=np.float64)
         self.algorithm.independent = indep_vars_data
-        self.algorithm.dependent = np.asfortranarray(self.sdf[self.depen_var], dtype=np.float64)
+        self.algorithm.dependent = np.asfortranarray(sdf[self.depen_var], dtype=np.float64)
         self.algorithm.spatial_weight = sw
     
     def enable_parallel_omp(self, threads: int=8):
@@ -114,7 +114,7 @@ class GWRBasic:
             **{f'{f}_SE': self.algorithm.betasSE[:, i] for i, f in enumerate(indep_var_names)},
             'fitted': self.algorithm.fitted
         }
-        self.result_layer = gp.GeoDataFrame(result_data, geometry=self.sdf.geometry)
+        self.result_layer = gp.GeoDataFrame(result_data, geometry=self.geometry)
         return self
 
     @property
