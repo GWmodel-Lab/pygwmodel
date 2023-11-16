@@ -1,4 +1,5 @@
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/tuple.h>
 #include <GWRBasic.h>
 #include "common.h"
 
@@ -13,7 +14,7 @@ NB_MODULE(py_spatial_weight, m)
             [](gwm::SpatialWeight &sw)
             {
                 auto bw = sw.weight<gwm::BandwidthWeight>();
-                return nb::make_tuple("BandwidthWeight", bw->bandwidth(), bw->adaptive(), bw->kernel());
+                return std::make_tuple("BandwidthWeight", bw->bandwidth(), bw->adaptive(), int(bw->kernel()));
             }
         )
         .def(
@@ -25,7 +26,7 @@ NB_MODULE(py_spatial_weight, m)
                 case gwm::Distance::DistanceType::CRSDistance:
                 {
                     auto dist = sw.distance<gwm::CRSDistance>();
-                    return nb::make_tuple("CRSDistance", dist->geographic());
+                    return std::make_tuple("CRSDistance", dist->geographic());
                 }
                 default:
                     throw nb::type_error("Unsupported distance type.");

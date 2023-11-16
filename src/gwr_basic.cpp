@@ -1,4 +1,6 @@
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/vector.h>
+#include <nanobind/stl/pair.h>
 #include <GWRBasic.h>
 #include "common.h"
 
@@ -87,6 +89,18 @@ NB_MODULE(py_gwr_basic, m)
             "fitted",
             [](gwm::GWRBasic &instance){ return wrap(instance.Fitted(instance.independentVariables(), instance.betas())); },
             nb::rv_policy::move
+        )
+        .def_prop_ro(
+            "bandwidth_criterions",
+            &gwm::GWRBasic::bandwidthSelectionCriterionList
+        )
+        .def_prop_ro(
+            "variables_criterions",
+            &gwm::GWRBasic::indepVarsSelectionCriterionList
+        )
+        .def_prop_ro(
+            "selected_variables",
+            &gwm::GWRBasic::selectedVariables
         )
         ;
 }

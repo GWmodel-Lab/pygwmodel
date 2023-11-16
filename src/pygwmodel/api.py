@@ -2,15 +2,12 @@ from typing import List, Union, Optional
 import numpy as np
 import geopandas as gp
 from enum import IntEnum
-from .py_gwr_basic import GWRBasic as GWRBasicBind
 from .py_spatial_weight import SpatialWeight as SpatialWeightBind
+from .py_gwr_basic import GWRBasic as GWRBasicBind
 
 class KernelType(IntEnum):
     GAUSSIAN = 0
 
-class BandwidthSelectionCriterionType(IntEnum):
-    AIC = 0
-    CV = 1
 
 class GWSSMode(IntEnum):
     Average = 0
@@ -21,6 +18,10 @@ class GWRBasic:
     """
     Basic GWR python high api class.
     """
+
+    class BandwidthSelectionCriterionType(IntEnum):
+        AIC = GWRBasicBind.AIC
+        CV = GWRBasicBind.CV
 
     def __init__(self, sdf: gp.GeoDataFrame, depen_var: str, indep_vars: List[str], bw: Union[float, None]=None, adaptive: bool=True, kernel: KernelType=KernelType.GAUSSIAN, longlat: bool=True, has_intercept=True):
         """
@@ -66,9 +67,9 @@ class GWRBasic:
         algorithm.dependent = depen_var
         algorithm.spatial_weight = sw
         if self.bw is None and optimize_bw is None:
-            optimize_bw = BandwidthSelectionCriterionType.CV
+            optimize_bw = GWRBasic.BandwidthSelectionCriterionType.CV
         if optimize_bw is not None:
-            if optimize_bw == BandwidthSelectionCriterionType.AIC or optimize_bw == BandwidthSelectionCriterionType.CV:
+            if optimize_bw == GWRBasic.BandwidthSelectionCriterionType.AIC or optimize_bw == GWRBasic.BandwidthSelectionCriterionType.CV:
                 algorithm.select_bandwidth = True
                 algorithm.select_bandwidth_criterion = optimize_bw.value
             else:
@@ -86,11 +87,11 @@ class GWRBasic:
         #         raise ValueError("multithreads must be a positive integer")
         algorithm.fit()
         if self.bw is None or optimize_bw is not None:
-            self.bw = algorithm.spatial_weight.weight[1]
-            # self.bandwidth_select_criterions = algorithm.bandwidth_select_criterions
+            self.bw = algorithm.spatial_weight.weight()[1]
+            self.bandwidth_select_criterions = algorithm.bandwidth_criterions
         if optimize_var is not None:
-            # self.indep_var_select_criterions = [([self.indep_vars[v - int(self.has_intercept)] for v in varlist], criterion) for varlist, criterion in algorithm.indep_var_select_criterions]
-            # self.indep_vars = [self.indep_vars[v - int(self.has_intercept)] for v in algorithm.selected_indep_vars]
+            self.indep_var_select_criterions = [([self.indep_vars[v - int(self.has_intercept)] for v in varlist], criterion) for varlist, criterion in algorithm.variables_criterions]
+            self.indep_vars = [self.indep_vars[v - int(self.has_intercept)] for v in algorithm.selected_variables]
             pass
         ''' Get result layer
         '''
