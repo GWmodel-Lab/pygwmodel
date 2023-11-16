@@ -81,7 +81,7 @@ class GWRBasic:
             self.enable_parallel_cuda(**kvargs)
         return self
     
-    def fit(self, hatmatrix: bool=True, optimize_bw: Optional[BandwidthSelectionCriterionType]=None, optimize_var: Optional[float]=None):
+    def fit(self, optimize_bw: Optional[BandwidthSelectionCriterionType]=None, optimize_var: Optional[float]=None):
         """
         Run algorithm and return result
         """
