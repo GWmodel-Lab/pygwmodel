@@ -4,7 +4,6 @@ from .py_spatial_weight import SpatialWeight as SpatialWeightBind
 from .py_spatial_weight import BandwidthWeight as BandwidthWeightBind
 
 
-
 class Distance:
 
     def as_args(self) -> tuple:

@@ -5,14 +5,11 @@ from enum import IntEnum
 from .spatial_weight import SpatialWeight, Distance, BandwidthWeight
 from .py_gwr_basic import GWRBasic as GWRBasicBind
 
+
 class ParallelType(IntEnum):
     Serial = 1
     OpenMP = 1 << 1
     CUDA = 1 << 2
-
-
-class KernelType(IntEnum):
-    GAUSSIAN = 0
 
 
 class GWRBasic:
