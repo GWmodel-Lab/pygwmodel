@@ -2,7 +2,7 @@ from typing import List, Union, Optional
 import numpy as np
 import geopandas as gp
 from enum import IntEnum
-from .py_spatial_weight import SpatialWeight as SpatialWeightBind
+from .spatial_weight import SpatialWeight, Distance, BandwidthWeight
 from .py_gwr_basic import GWRBasic as GWRBasicBind
 
 class ParallelType(IntEnum):
@@ -24,7 +24,7 @@ class GWRBasic:
         AIC = GWRBasicBind.AIC
         CV = GWRBasicBind.CV
 
-    def __init__(self, sdf: gp.GeoDataFrame, depen_var: str, indep_vars: List[str], bw: Union[float, None]=None, adaptive: bool=True, kernel: KernelType=KernelType.GAUSSIAN, longlat: bool=True, has_intercept=True):
+    def __init__(self, sdf: gp.GeoDataFrame, depen_var: str, indep_vars: List[str], weight: BandwidthWeight, distance: Distance, has_intercept=True):
         """
         docstring
         """
@@ -34,14 +34,9 @@ class GWRBasic:
         self.depen_var: str = depen_var
         self.indep_vars: List[str] = indep_vars
         self.has_intercept: bool = has_intercept
-        self.bw: Optional[float] = bw
-        self.kernel: KernelType = kernel
-        self.adaptive: bool = adaptive
-        self.longlat: bool = longlat
+        self.weight = weight
+        self.distance = distance
         self.result_layer: Optional[gp.GeoDataFrame] = None
-        sw = SpatialWeightBind()
-        sw.set_distance_crs(self.longlat)
-        sw.set_weight_bandwidth(self.bw, self.adaptive, self.kernel.value)
         indep_vars_data = np.asfortranarray(sdf[self.indep_vars], dtype=np.float64)
         if (self.has_intercept):
             indep_vars_data = np.hstack([np.ones((indep_vars_data.shape[0], 1)), indep_vars_data])
@@ -49,7 +44,7 @@ class GWRBasic:
         self.algorithm.coords = np.asfortranarray(sdf.geometry.centroid.get_coordinates(), dtype=np.float64)
         self.algorithm.independent = indep_vars_data
         self.algorithm.dependent = np.asfortranarray(sdf[self.depen_var], dtype=np.float64)
-        self.algorithm.spatial_weight = sw
+        self.algorithm.spatial_weight = SpatialWeight.create(distance, weight)
     
     def enable_parallel_omp(self, threads: int=8):
         if self.algorithm is None:
@@ -80,7 +75,7 @@ class GWRBasic:
         """
         Run algorithm and return result
         """
-        if self.bw is None and optimize_bw is None:
+        if self.weight.bandwidth is None and optimize_bw is None:
             optimize_bw = GWRBasic.BandwidthSelectionCriterionType.CV
         if optimize_bw is not None:
             if optimize_bw == GWRBasic.BandwidthSelectionCriterionType.AIC or optimize_bw == GWRBasic.BandwidthSelectionCriterionType.CV:
@@ -93,8 +88,8 @@ class GWRBasic:
             else:
                 raise ValueError("optimize_var must be a positive real number")
         self.algorithm.fit()
-        if self.bw is None or optimize_bw is not None:
-            self.bw = self.algorithm.spatial_weight.weight()[1]
+        if self.weight.bandwidth is None or optimize_bw is not None:
+            self.weight.bandwidth = self.algorithm.spatial_weight.weight()[1]
         if optimize_var is not None:
             self._indep_vars_old = self.indep_vars
             self.indep_vars = [self.indep_vars[v - int(self.has_intercept)] for v in self.algorithm.selected_variables]
@@ -127,7 +122,7 @@ class GWRBasic:
         """
         Predict
         """
-        if self.bw is None:
+        if self.weight.bandwidth is None:
             raise ValueError("Bandwidth cannot be None when predicting")
         predict_locations = np.asfortranarray(targets.centroid.get_coordinates())
         coef_predict = self.algorithm.predict(predict_locations)

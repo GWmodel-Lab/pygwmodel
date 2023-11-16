@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import pandas as pd
 import geopandas as gp
-from pygwmodel import GWRBasic, ParallelType
+from pygwmodel import GWRBasic, ParallelType, BandwidthWeight, CRSDistance
 
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 
@@ -19,13 +19,15 @@ class TestGWRBasic(unittest.TestCase):
         self.parallel_case = {
             ParallelType.Serial: dict()
         }
+        self.weight = BandwidthWeight(36.0, True)
+        self.distance = CRSDistance(False)
         if ENABLE_OPENMP:
             self.parallel_case[ParallelType.OpenMP] = {'threads': 4}
 
     def test_minimal(self):
         for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit()
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, self.weight, self.distance).enable_parallel(p, **pargs).fit()
 
                 diagnostic0 = np.array([
                     2436.60445730413,
@@ -44,13 +46,13 @@ class TestGWRBasic(unittest.TestCase):
     def test_autoselect_bandwidth(self):
         for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit(optimize_bw=GWRBasic.BandwidthSelectionCriterionType.CV)
-                self.assertEqual(algorithm.bw, 67)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, self.weight, self.distance).enable_parallel(p, **pargs).fit(optimize_bw=GWRBasic.BandwidthSelectionCriterionType.CV)
+                self.assertEqual(algorithm.weight.bandwidth, 67)
 
     def test_autoselect_indepvars(self):
         for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit(optimize_var=3.0)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, self.weight, self.distance).enable_parallel(p, **pargs).fit(optimize_var=3.0)
                 criterion = algorithm.indep_var_select_criterions
                 self.assertSequenceEqual(criterion[0][0], ['UNEMPLOY'])
                 self.assertSequenceEqual(criterion[1][0], ['PROF'])
@@ -69,7 +71,7 @@ class TestGWRBasic(unittest.TestCase):
     def test_autoselect_all(self):
         for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit(optimize_var=3.0, optimize_bw=GWRBasic.BandwidthSelectionCriterionType.CV)
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, self.weight, self.distance).enable_parallel(p, **pargs).fit(optimize_var=3.0, optimize_bw=GWRBasic.BandwidthSelectionCriterionType.CV)
                 criterion = algorithm.indep_var_select_criterions
                 self.assertSequenceEqual(criterion[0][0], ['UNEMPLOY'])
                 self.assertSequenceEqual(criterion[1][0], ['PROF'])
@@ -84,12 +86,12 @@ class TestGWRBasic(unittest.TestCase):
                 self.assertAlmostEqual(criterion[4][1], 2450.59642666509, delta=1e-8)
                 self.assertAlmostEqual(criterion[5][1], 2452.80388934625, delta=1e-8)
                 self.assertSequenceEqual(algorithm.indep_vars, ['FLOORSZ', 'PROF'])
-                self.assertEqual(algorithm.bw, 31)
+                self.assertEqual(algorithm.weight.bandwidth, 31)
     
     def test_predict(self):
        for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, 36.0, longlat=False).enable_parallel(p, **pargs).fit()
+                algorithm = GWRBasic(self.londonhp, self.depen, self.indep, self.weight, self.distance).enable_parallel(p, **pargs).fit()
                 prediction = algorithm.predict(self.londonhp)
                 self.assertIn("y_hat", prediction.columns)
                 self.assertIn("residual", prediction.columns)
