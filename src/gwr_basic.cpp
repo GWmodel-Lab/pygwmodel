@@ -19,20 +19,20 @@ NB_MODULE(py_gwr_basic, m)
         .def(nb::init<>())
         .def_prop_rw(
             "dependent",
-            [](gwm::GWRBasic &instance){ return wrap(instance.dependentVariable()); },
-            [](gwm::GWRBasic &instance, nvec y){ instance.setDependentVariable(as(y)); },
+            [](gwm::GWRBasic &instance){ return instance.dependentVariable(); },
+            [](gwm::GWRBasic &instance, arma::vec y){ instance.setDependentVariable(y); },
             nb::rv_policy::move
         )
         .def_prop_rw(
             "independent",
-            [](gwm::GWRBasic &instance){ return wrap(instance.independentVariables()); },
-            [](gwm::GWRBasic &instance, nmat x){ instance.setIndependentVariables(as(x)); },
+            [](gwm::GWRBasic &instance){ return instance.independentVariables(); },
+            [](gwm::GWRBasic &instance, arma::mat x){ instance.setIndependentVariables(x); },
             nb::rv_policy::move
         )
         .def_prop_rw(
             "coords",
-            [](gwm::GWRBasic &instance){ return wrap(instance.coords()); },
-            [](gwm::GWRBasic &instance, nmat coords){ instance.setCoords(as(coords)); },
+            [](gwm::GWRBasic &instance){ return instance.coords(); },
+            [](gwm::GWRBasic &instance, arma::mat coords){ instance.setCoords(coords); },
             nb::rv_policy::move
         )
         .def_prop_rw(
@@ -93,27 +93,26 @@ NB_MODULE(py_gwr_basic, m)
         )
         .def(
             "predict",
-            [](gwm::GWRBasic &instance, nmat locs){ return wrap(instance.predict(as(locs))); },
+            [](gwm::GWRBasic &instance, arma::mat locs){ return instance.predict(locs); },
             nb::rv_policy::move
         )
         .def_prop_ro(
             "diagnostic",
-            [](gwm::GWRBasic &instance){ return wrap(instance.diagnostic()); },
-            nb::rv_policy::move
+            [](gwm::GWRBasic &instance){ return wrap(instance.diagnostic()); }
         )
         .def_prop_ro(
             "betas",
-            [](gwm::GWRBasic &instance){ return wrap(instance.betas()); },
+            [](gwm::GWRBasic &instance){ return instance.betas(); },
             nb::rv_policy::move
         )
         .def_prop_ro(
             "betasSE",
-            [](gwm::GWRBasic &instance){ return wrap(instance.betasSE()); },
+            [](gwm::GWRBasic &instance){ return instance.betasSE(); },
             nb::rv_policy::move
         )
         .def_prop_ro(
             "fitted",
-            [](gwm::GWRBasic &instance){ return wrap(instance.Fitted(instance.independentVariables(), instance.betas())); },
+            [](gwm::GWRBasic &instance){ return instance.Fitted(instance.independentVariables(), instance.betas()); },
             nb::rv_policy::move
         )
         .def_prop_ro(
