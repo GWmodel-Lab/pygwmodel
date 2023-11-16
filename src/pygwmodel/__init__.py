@@ -1,4 +1,4 @@
-from .api import GWRBasic, KernelType, ParallelType
+from .GWRBasic import GWRBasic, KernelType, ParallelType
 
 if __name__ == "__main__":
     print("PyGWmodel Package.")

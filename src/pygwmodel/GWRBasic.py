@@ -15,11 +15,6 @@ class KernelType(IntEnum):
     GAUSSIAN = 0
 
 
-class GWSSMode(IntEnum):
-    Average = 0
-    Correlation = 1
-
-
 class GWRBasic:
     """
     Basic GWR python high api class.

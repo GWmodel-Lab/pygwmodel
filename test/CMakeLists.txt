@@ -10,6 +10,9 @@ else()
 set(PYTHON_TEST_SCRIPT_DIR ${pygwmodel_BINARY_DIR}/bin)
 endif()
 
+file(GLOB PYGWM_PYTHON_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/../src/pygwmodel/*.py")
+file(GLOB PYGWM_PYTHON_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/test*.py")
+
 add_custom_target(testPythonDeps ALL 
     VERBATIM 
     COMMAND_EXPAND_LISTS
@@ -18,16 +21,13 @@ add_custom_target(testPythonDeps ALL
         ${PYTHON_TEST_SCRIPT_DIR}/pygwmodel
     COMMAND ${CMAKE_COMMAND} -E
         copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/pygwmodel/__init__.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/pygwmodel/api.py
+        ${PYGWM_PYTHON_SCRIPTS}
         $<TARGET_FILE:py_gwr_basic>
         $<TARGET_FILE:py_spatial_weight>
         ${PYTHON_TEST_SCRIPT_DIR}/pygwmodel
     COMMAND ${CMAKE_COMMAND} -E
         copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/testGWRBasic.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/testGWSS.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/testGWPCA.py
+        ${PYGWM_PYTHON_TESTS}
         ${PYTHON_TEST_SCRIPT_DIR}
 )
 
