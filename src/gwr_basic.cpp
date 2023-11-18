@@ -2,20 +2,21 @@
 #include <nanobind/stl/vector.h>
 #include <nanobind/stl/pair.h>
 #include <GWRBasic.h>
-#include "common.h"
+#include "common.hpp"
+#include "parallel.hpp"
 
 namespace nb = nanobind;
 
 void init_gwr_basic(nb::module_& m)
 {
-    nb::class_<gwm::GWRBasic, gwm::GWRBase> gwr_basic(m, "_GWRBasic");
+    nb::class_<gwm::GWRBasic, gwm::GWRBase> _GWRBasic(m, "_GWRBasic");
 
-    nb::enum_<gwm::GWRBasic::BandwidthSelectionCriterionType>(gwr_basic, "BandwidthSelectionCriterionType")
+    nb::enum_<gwm::GWRBasic::BandwidthSelectionCriterionType>(_GWRBasic, "BandwidthSelectionCriterionType")
         .value("AIC", gwm::GWRBasic::BandwidthSelectionCriterionType::AIC)
         .value("CV", gwm::GWRBasic::BandwidthSelectionCriterionType::CV)
         .export_values();
 
-    gwr_basic
+    _GWRBasic
         .def(nb::init<>())
         .def_prop_ro(
             "select_bandwidth_enabled",
@@ -39,27 +40,6 @@ void init_gwr_basic(nb::module_& m)
             { 
                 instance.setIsAutoselectIndepVars(true);
                 instance.setIndepVarSelectionThreshold(threshold); 
-            }
-        )
-        .def_prop_ro(
-            "parallel_type",
-            [](gwm::GWRBasic &instance){ return int(instance.parallelType()); }
-        )
-        .def(
-            "parallel_omp",
-            [](gwm::GWRBasic &instance, int threadNum)
-            {
-                instance.setParallelType(gwm::ParallelType::OpenMP);
-                instance.setOmpThreadNum(threadNum);
-            }
-        )
-        .def(
-            "parallel_cuda",
-            [](gwm::GWRBasic &instance, int gpuId, int groupSize)
-            {
-                instance.setParallelType(gwm::ParallelType::CUDA);
-                instance.setGPUId(gpuId);
-                instance.setGroupSize(groupSize);
             }
         )
         .def(
@@ -94,4 +74,8 @@ void init_gwr_basic(nb::module_& m)
             &gwm::GWRBasic::selectedVariables
         )
         ;
+    
+    def_parallel_info(_GWRBasic);
+    def_parallel_openmp(_GWRBasic);
+    def_parallel_cuda(_GWRBasic);
 }

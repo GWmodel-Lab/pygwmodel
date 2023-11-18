@@ -4,12 +4,15 @@
 #include <GWRBase.h>
 #include <IRegressionAnalysis.h>
 #include <IParallelizable.h>
-#include "common.h"
+#include "common.hpp"
+#include "parallel.hpp"
 
 namespace nb = nanobind;
 
 void init_base(nb::module_& m)
 {
+    init_parallel(m);
+
     nb::class_<gwm::SpatialAlgorithm>(m, "_SpatialAlgorithm")
         .def_prop_rw(
             "coords",

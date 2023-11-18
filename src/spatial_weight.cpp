@@ -1,7 +1,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/tuple.h>
 #include <GWRBasic.h>
-#include "common.h"
+#include "common.hpp"
 
 namespace nb = nanobind;
 

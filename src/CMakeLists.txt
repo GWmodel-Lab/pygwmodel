@@ -21,12 +21,13 @@ endif(ARMADILLO_FOUND)
 set(LIBGWMODEL_INCLUDE_DIR ../libgwmodel/include)
 include_directories(${LIBGWMODEL_INCLUDE_DIR}/gwmodelpp)
 
-nanobind_add_module(_regression STABLE_ABI common.h base.cpp gwr_basic.cpp regression.cpp)
-target_link_libraries(_regression PRIVATE gwmodel)
-
 nanobind_add_module(_spatial_weight STABLE_ABI spatial_weight.cpp)
 target_link_libraries(_spatial_weight PRIVATE gwmodel)
-nanobind_add_module(_analysis STABLE_ABI common.hpp analysis.cpp gwss.cpp)
+
+nanobind_add_module(_regression STABLE_ABI common.hpp parallel.hpp parallel.cpp base.cpp gwr_basic.cpp regression.cpp)
+target_link_libraries(_regression PRIVATE gwmodel)
+
+nanobind_add_module(_analysis STABLE_ABI common.hpp base.cpp parallel.hpp parallel.cpp analysis.cpp gwss.cpp)
 target_link_libraries(_analysis PRIVATE gwmodel)
 
 install(TARGETS 

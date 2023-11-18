@@ -1,6 +1,6 @@
 #include <nanobind/nanobind.h>
 #include <GWRBase.h>
-#include "common.h"
+#include "common.hpp"
 
 namespace nb = nanobind;
 

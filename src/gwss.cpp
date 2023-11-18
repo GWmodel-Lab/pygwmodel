@@ -1,6 +1,7 @@
 #include <nanobind/nanobind.h>
 #include <GWSS.h>
 #include "common.hpp"
+#include "parallel.hpp"
 
 namespace nb = nanobind;
 
@@ -31,4 +32,7 @@ void init_gwss(nb::module_& m)
         .def_prop_ro("local_corr", &gwm::GWSS::localCorr)
         .def_prop_ro("local_s_corr", &gwm::GWSS::localSCorr)
         ;
+    
+    def_parallel_info(_GWSS);
+    def_parallel_openmp(_GWSS);
 }
