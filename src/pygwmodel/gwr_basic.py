@@ -3,13 +3,8 @@ import numpy as np
 import geopandas as gp
 from enum import IntEnum
 from .spatial_weight import SpatialWeight, Distance, BandwidthWeight
+from .parallel import ParallelType
 from ._regression import _GWRBasic
-
-
-class ParallelType(IntEnum):
-    Serial = 1
-    OpenMP = 1 << 1
-    CUDA = 1 << 2
 
 
 class GWRBasic:

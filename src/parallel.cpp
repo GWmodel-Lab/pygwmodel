@@ -1,10 +1,13 @@
-#include "parallel.hpp"
+#include <nanobind/nanobind.h>
+#include <IParallelizable.h>
 
-void init_parallel(nb::module_& m)
+namespace nb = nanobind;
+
+NB_MODULE(_parallel, m)
 {
     nb::enum_<gwm::ParallelType>(m, "_ParallelType")
         .value("SerialOnly", gwm::ParallelType::SerialOnly)
         .value("OpenMP", gwm::ParallelType::OpenMP)
         .value("CUDA", gwm::ParallelType::CUDA)
-        .export_values();
+        ;
 }

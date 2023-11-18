@@ -3,7 +3,7 @@
 
 namespace nb = nanobind;
 
-void init_parallel(nb::module_& m);
+// void init_parallel(nb::module_& m);
 
 template <typename T, typename... Ts>
 void def_parallel_info(nb::class_<T, Ts...>& c)

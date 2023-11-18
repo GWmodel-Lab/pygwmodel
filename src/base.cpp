@@ -11,8 +11,6 @@ namespace nb = nanobind;
 
 void init_base(nb::module_& m)
 {
-    init_parallel(m);
-
     nb::class_<gwm::SpatialAlgorithm>(m, "_SpatialAlgorithm")
         .def_prop_rw(
             "coords",

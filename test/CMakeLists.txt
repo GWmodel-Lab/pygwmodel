@@ -22,8 +22,10 @@ add_custom_target(testPythonDeps ALL
     COMMAND ${CMAKE_COMMAND} -E
         copy_if_different
         ${PYGWM_PYTHON_SCRIPTS}
-        $<TARGET_FILE:_regression>
         $<TARGET_FILE:_spatial_weight>
+        $<TARGET_FILE:_parallel>
+        $<TARGET_FILE:_regression>
+        $<TARGET_FILE:_analysis>
         ${PYTHON_TEST_SCRIPT_DIR}/pygwmodel
     COMMAND ${CMAKE_COMMAND} -E
         copy_if_different
