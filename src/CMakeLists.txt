@@ -36,4 +36,6 @@ target_link_libraries(_analysis PRIVATE gwmodel)
 install(TARGETS 
     _regression
     _spatial_weight
+    _parallel
+    _analysis
     LIBRARY DESTINATION pygwmodel)
