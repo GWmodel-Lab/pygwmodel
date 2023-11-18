@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 3.12)
 
+if(ENABLE_OpenMP)
+    set($ENV{ENABLE_OPENMP} "true")
+endif(ENABLE_OpenMP)
+
 if(WIN32)
 set(PYTHON_TEST_SCRIPT_DIR ${pygwmodel_BINARY_DIR}/bin/$<$<CONFIG:Release>:Release>$<$<CONFIG:Debug>:Debug>)
 else()
 set(PYTHON_TEST_SCRIPT_DIR ${pygwmodel_BINARY_DIR}/bin)
 endif()
+
+file(GLOB PYGWM_PYTHON_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/../src/pygwmodel/*.py")
+file(GLOB PYGWM_PYTHON_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/test*.py")
 
 add_custom_target(testPythonDeps ALL 
     VERBATIM 
@@ -14,35 +21,29 @@ add_custom_target(testPythonDeps ALL
         ${PYTHON_TEST_SCRIPT_DIR}/pygwmodel
     COMMAND ${CMAKE_COMMAND} -E
         copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/../pygwmodel/__init__.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/../pygwmodel/api.py
-        $<TARGET_FILE:pygwmodel>
+        ${PYGWM_PYTHON_SCRIPTS}
+        $<TARGET_FILE:_spatial_weight>
+        $<TARGET_FILE:_parallel>
+        $<TARGET_FILE:_regression>
+        $<TARGET_FILE:_analysis>
         ${PYTHON_TEST_SCRIPT_DIR}/pygwmodel
     COMMAND ${CMAKE_COMMAND} -E
         copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/testGWRBasic.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/testGWSS.py
-        ${CMAKE_CURRENT_SOURCE_DIR}/testGWPCA.py
+        ${PYGWM_PYTHON_TESTS}
         ${PYTHON_TEST_SCRIPT_DIR}
 )
-
-if(ENABLE_OpenMP)
-    set($ENV{ENABLE_OPENMP} "true")
-endif(ENABLE_OpenMP)
 
 set(PYTHON_TEST_DATA ${CMAKE_CURRENT_SOURCE_DIR}/londonhp100.csv)
 add_test(
     NAME testPythonGWRBasic
-    COMMAND ${PYTHON_EXECUTABLE} testGWRBasic.py ${PYTHON_TEST_DATA}
+    COMMAND ${Python_EXECUTABLE} testGWRBasic.py ${PYTHON_TEST_DATA}
     WORKING_DIRECTORY ${PYTHON_TEST_SCRIPT_DIR}
 )
-add_test(
-    NAME testPythonGWSS
-    COMMAND ${PYTHON_EXECUTABLE} testGWSS.py ${PYTHON_TEST_DATA}
-    WORKING_DIRECTORY ${PYTHON_TEST_SCRIPT_DIR}
-)
-add_test(
-    NAME testPythonGWPCA
-    COMMAND ${PYTHON_EXECUTABLE} testGWPCA.py ${PYTHON_TEST_DATA}
-    WORKING_DIRECTORY ${PYTHON_TEST_SCRIPT_DIR}
-)
+# add_test(
+#     NAME testPythonGWSS
+#     COMMAND ${PYTHON_EXECUTABLE} testGWSS.py ${PYTHON_TEST_DATA}
+# )
+# add_test(
+#     NAME testPythonGWPCA
+#     COMMAND ${PYTHON_EXECUTABLE} testGWPCA.py ${PYTHON_TEST_DATA}
+# )

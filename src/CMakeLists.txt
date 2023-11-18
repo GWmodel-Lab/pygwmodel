@@ -21,9 +21,21 @@ endif(ARMADILLO_FOUND)
 set(LIBGWMODEL_INCLUDE_DIR ../libgwmodel/include)
 include_directories(${LIBGWMODEL_INCLUDE_DIR}/gwmodelpp)
 
-add_cython_target(pygwmodel.pyx CXX)
-add_library(pygwmodel MODULE ${pygwmodel})
-target_link_libraries(pygwmodel gwmodel ${ARMADILLO_LIBRARIES} ${PYTHON_LIBRARY} Python3::NumPy)
-python_extension_module(pygwmodel)
+nanobind_add_module(_parallel STABLE_ABI parallel.cpp)
+target_link_libraries(_parallel PRIVATE gwmodel)
 
-install(TARGETS pygwmodel LIBRARY DESTINATION pygwmodel)
+nanobind_add_module(_spatial_weight STABLE_ABI spatial_weight.cpp)
+target_link_libraries(_spatial_weight PRIVATE gwmodel)
+
+nanobind_add_module(_regression STABLE_ABI common.hpp parallel.hpp base.cpp gwr_basic.cpp regression.cpp)
+target_link_libraries(_regression PRIVATE gwmodel)
+
+nanobind_add_module(_analysis STABLE_ABI common.hpp base.cpp parallel.hpp analysis.cpp gwss.cpp)
+target_link_libraries(_analysis PRIVATE gwmodel)
+
+install(TARGETS 
+    _regression
+    _spatial_weight
+    _parallel
+    _analysis
+    LIBRARY DESTINATION pygwmodel)
