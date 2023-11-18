@@ -6,9 +6,37 @@
 
 namespace nb = nanobind;
 
-NB_MODULE(py_gwr_basic, m)
+void init_base(nb::module_& m);
+
+NB_MODULE(_gwr_basic, m)
 {
-    nb::class_<gwm::GWRBasic> gwr_basic(m, "GWRBasic");
+    init_base(m);
+
+    nb::class_<gwm::GWRBase, gwm::SpatialMonoscaleAlgorithm>(m, "_GWRBase")
+        .def_prop_ro(
+            "betas",
+            [](gwm::GWRBase &instance){ return instance.betas(); },
+            nb::rv_policy::move
+        )
+        .def_prop_ro(
+            "diagnostic",
+            [](gwm::GWRBase &instance){ return wrap(instance.diagnostic()); }
+        )
+        .def_prop_rw(
+            "dependent",
+            [](gwm::GWRBase &instance){ return instance.dependentVariable(); },
+            [](gwm::GWRBase &instance, arma::vec y){ instance.setDependentVariable(y); },
+            nb::rv_policy::move
+        )
+        .def_prop_rw(
+            "independent",
+            [](gwm::GWRBase &instance){ return instance.independentVariables(); },
+            [](gwm::GWRBase &instance, arma::mat x){ instance.setIndependentVariables(x); },
+            nb::rv_policy::move
+        )
+        ;
+
+    nb::class_<gwm::GWRBasic, gwm::GWRBase> gwr_basic(m, "_GWRBasic");
 
     nb::enum_<gwm::GWRBasic::BandwidthSelectionCriterionType>(gwr_basic, "BandwidthSelectionCriterionType")
         .value("AIC", gwm::GWRBasic::BandwidthSelectionCriterionType::AIC)
@@ -17,35 +45,6 @@ NB_MODULE(py_gwr_basic, m)
 
     gwr_basic
         .def(nb::init<>())
-        .def_prop_rw(
-            "dependent",
-            [](gwm::GWRBasic &instance){ return instance.dependentVariable(); },
-            [](gwm::GWRBasic &instance, arma::vec y){ instance.setDependentVariable(y); },
-            nb::rv_policy::move
-        )
-        .def_prop_rw(
-            "independent",
-            [](gwm::GWRBasic &instance){ return instance.independentVariables(); },
-            [](gwm::GWRBasic &instance, arma::mat x){ instance.setIndependentVariables(x); },
-            nb::rv_policy::move
-        )
-        .def_prop_rw(
-            "coords",
-            [](gwm::GWRBasic &instance){ return instance.coords(); },
-            [](gwm::GWRBasic &instance, arma::mat coords){ instance.setCoords(coords); },
-            nb::rv_policy::move
-        )
-        .def_prop_rw(
-            "spatial_weight",
-            [](gwm::GWRBasic &instance)
-            {
-                return nb::cast(instance.spatialWeight());
-            },
-            [](gwm::GWRBasic &instance, nb::handle_t<gwm::SpatialWeight> sw)
-            {
-                instance.setSpatialWeight(nb::cast<gwm::SpatialWeight &>(sw));
-            }
-        )
         .def_prop_ro(
             "select_bandwidth_enabled",
             [](gwm::GWRBasic &instance){ return instance.isAutoselectBandwidth(); }
@@ -98,15 +97,6 @@ NB_MODULE(py_gwr_basic, m)
         .def(
             "predict",
             [](gwm::GWRBasic &instance, arma::mat locs){ return instance.predict(locs); },
-            nb::rv_policy::move
-        )
-        .def_prop_ro(
-            "diagnostic",
-            [](gwm::GWRBasic &instance){ return wrap(instance.diagnostic()); }
-        )
-        .def_prop_ro(
-            "betas",
-            [](gwm::GWRBasic &instance){ return instance.betas(); },
             nb::rv_policy::move
         )
         .def_prop_ro(

@@ -5,9 +5,9 @@
 
 namespace nb = nanobind;
 
-NB_MODULE(py_spatial_weight, m)
+NB_MODULE(_spatial_weight, m)
 {
-    nb::class_<gwm::BandwidthWeight> bandwidth_weight(m, "BandwidthWeight");
+    nb::class_<gwm::BandwidthWeight> bandwidth_weight(m, "_BandwidthWeight");
 
     nb::enum_<gwm::BandwidthWeight::KernelFunctionType>(bandwidth_weight, "BandwidthKernelType")
         .value("Gaussian", gwm::BandwidthWeight::KernelFunctionType::Gaussian)
@@ -17,7 +17,7 @@ NB_MODULE(py_spatial_weight, m)
         .value("Boxcar", gwm::BandwidthWeight::KernelFunctionType::Boxcar)
         .export_values();
 
-    nb::class_<gwm::SpatialWeight>(m, "SpatialWeight")
+    nb::class_<gwm::SpatialWeight>(m, "_SpatialWeight")
         .def(nb::init<>())
         .def(
             "weight",

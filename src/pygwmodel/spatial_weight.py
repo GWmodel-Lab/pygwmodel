@@ -1,7 +1,7 @@
 from typing import Optional
 from enum import IntEnum
-from .py_spatial_weight import SpatialWeight as SpatialWeightBind
-from .py_spatial_weight import BandwidthWeight as BandwidthWeightBind
+from ._spatial_weight import _SpatialWeight
+from ._spatial_weight import _BandwidthWeight
 
 
 class Distance:
@@ -30,11 +30,11 @@ class Weight:
 class BandwidthWeight(Weight):
 
     class Kernel(IntEnum):
-        Gaussian = BandwidthWeightBind.Gaussian
-        Exponential = BandwidthWeightBind.Exponential
-        Bisquare = BandwidthWeightBind.Bisquare
-        Tricube = BandwidthWeightBind.Tricube
-        Boxcar = BandwidthWeightBind.Boxcar
+        Gaussian = _BandwidthWeight.Gaussian
+        Exponential = _BandwidthWeight.Exponential
+        Bisquare = _BandwidthWeight.Bisquare
+        Tricube = _BandwidthWeight.Tricube
+        Boxcar = _BandwidthWeight.Boxcar
 
     bandwidth: Optional[float] = None
     adaptive: bool = False
@@ -54,7 +54,7 @@ class SpatialWeight:
     
     @staticmethod
     def create(distance: Distance, weight: Weight) -> None:
-        sw = SpatialWeightBind()
+        sw = _SpatialWeight()
         ''' Set distance
         '''
         if isinstance(distance, CRSDistance):

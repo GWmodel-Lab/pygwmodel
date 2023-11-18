@@ -3,7 +3,7 @@ import numpy as np
 import geopandas as gp
 from enum import IntEnum
 from .spatial_weight import SpatialWeight, Distance, BandwidthWeight
-from .py_gwr_basic import GWRBasic as GWRBasicBind
+from ._gwr_basic import _GWRBasic
 
 
 class ParallelType(IntEnum):
@@ -18,8 +18,8 @@ class GWRBasic:
     """
 
     class BandwidthSelectionCriterionType(IntEnum):
-        AIC = GWRBasicBind.AIC
-        CV = GWRBasicBind.CV
+        AIC = _GWRBasic.AIC
+        CV = _GWRBasic.CV
 
     def __init__(self, sdf: gp.GeoDataFrame, depen_var: str, indep_vars: List[str], weight: BandwidthWeight, distance: Distance, has_intercept=True):
         """
@@ -37,7 +37,7 @@ class GWRBasic:
         indep_vars_data = np.asfortranarray(sdf[self.indep_vars], dtype=np.float64)
         if (self.has_intercept):
             indep_vars_data = np.hstack([np.ones((indep_vars_data.shape[0], 1)), indep_vars_data])
-        self.algorithm = GWRBasicBind()
+        self.algorithm = _GWRBasic()
         self.algorithm.coords = np.asfortranarray(sdf.geometry.centroid.get_coordinates(), dtype=np.float64)
         self.algorithm.independent = indep_vars_data
         self.algorithm.dependent = np.asfortranarray(sdf[self.depen_var], dtype=np.float64)
