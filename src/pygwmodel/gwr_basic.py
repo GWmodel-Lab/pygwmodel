@@ -3,7 +3,7 @@ import numpy as np
 import geopandas as gp
 from enum import IntEnum
 from .spatial_weight import SpatialWeight, Distance, BandwidthWeight
-from ._gwr_basic import _GWRBasic
+from ._regression import _GWRBasic
 
 
 class ParallelType(IntEnum):
