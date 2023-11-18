@@ -19,7 +19,7 @@ void init_gwr_basic(nb::module_& m)
         .def(nb::init<>())
         .def_prop_ro(
             "select_bandwidth_enabled",
-            [](gwm::GWRBasic &instance){ return instance.isAutoselectBandwidth(); }
+            &gwm::GWRBasic::isAutoselectBandwidth
         )
         .def(
             "enable_select_bandwidth",
@@ -31,7 +31,7 @@ void init_gwr_basic(nb::module_& m)
         )
         .def_prop_ro(
             "select_variables_enabled",
-            [](gwm::GWRBasic &instance){ return instance.isAutoselectIndepVars(); }
+            &gwm::GWRBasic::isAutoselectIndepVars
         )
         .def(
             "enable_select_variables",
@@ -73,7 +73,7 @@ void init_gwr_basic(nb::module_& m)
         )
         .def_prop_ro(
             "betasSE",
-            [](gwm::GWRBasic &instance){ return instance.betasSE(); },
+            &gwm::GWRBasic::betasSE,
             nb::rv_policy::move
         )
         .def_prop_ro(

@@ -14,7 +14,7 @@ NB_MODULE(_regression, m)
     nb::class_<gwm::GWRBase, gwm::SpatialMonoscaleAlgorithm>(m, "_GWRBase")
         .def_prop_ro(
             "betas",
-            [](gwm::GWRBase &instance){ return instance.betas(); },
+            &gwm::GWRBase::betas,
             nb::rv_policy::move
         )
         .def_prop_ro(
@@ -23,14 +23,14 @@ NB_MODULE(_regression, m)
         )
         .def_prop_rw(
             "dependent",
-            [](gwm::GWRBase &instance){ return instance.dependentVariable(); },
-            [](gwm::GWRBase &instance, arma::vec y){ instance.setDependentVariable(y); },
+            &gwm::GWRBase::dependentVariable,
+            &gwm::GWRBase::setDependentVariable,
             nb::rv_policy::move
         )
         .def_prop_rw(
             "independent",
-            [](gwm::GWRBase &instance){ return instance.independentVariables(); },
-            [](gwm::GWRBase &instance, arma::mat x){ instance.setIndependentVariables(x); },
+            &gwm::GWRBase::independentVariables,
+            &gwm::GWRBase::setIndependentVariables,
             nb::rv_policy::move
         )
         ;

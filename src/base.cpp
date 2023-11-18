@@ -13,8 +13,8 @@ void init_base(nb::module_& m)
     nb::class_<gwm::SpatialAlgorithm>(m, "_SpatialAlgorithm")
         .def_prop_rw(
             "coords",
-            [](gwm::SpatialAlgorithm &instance){ return instance.coords(); },
-            [](gwm::SpatialAlgorithm &instance, arma::mat coords){ instance.setCoords(coords); },
+            &gwm::SpatialAlgorithm::coords,
+            &gwm::SpatialAlgorithm::setCoords,
             nb::rv_policy::move
         )
         ;
