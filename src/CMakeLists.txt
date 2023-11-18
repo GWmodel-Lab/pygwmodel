@@ -26,6 +26,8 @@ target_link_libraries(_regression PRIVATE gwmodel)
 
 nanobind_add_module(_spatial_weight STABLE_ABI spatial_weight.cpp)
 target_link_libraries(_spatial_weight PRIVATE gwmodel)
+nanobind_add_module(_analysis STABLE_ABI common.hpp analysis.cpp gwss.cpp)
+target_link_libraries(_analysis PRIVATE gwmodel)
 
 install(TARGETS 
     _regression
