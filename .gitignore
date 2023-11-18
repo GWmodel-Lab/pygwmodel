@@ -231,5 +231,5 @@ cython_debug/
 #.idea/
 
 # Sphinx
-!/Makefile
+!/doc/Makefile
 _build/

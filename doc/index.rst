@@ -10,7 +10,7 @@ Welcome to pygwmodel's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   doc/api/modules.rst
+   api/modules.rst
 
 Indices and tables
 ==================
