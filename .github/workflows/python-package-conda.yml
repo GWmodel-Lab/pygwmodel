@@ -22,6 +22,7 @@ jobs:
         conda install -c conda-forge armadillo gsl catch2 nanobind scikit-build-core numpy geopandas 
     - name: Build package and test package
       run: |
+        conda activate
         cmake -B build -S . -DWITH_TESTS=OFF
         cd build
         cmake --build . --target testPythonDeps
