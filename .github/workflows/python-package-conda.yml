@@ -1,0 +1,32 @@
+name: Python Package using Conda
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install dependencies
+      run: |
+        conda install armadillo gsl batch2 nanobind scikit-build-core numpy geopandas 
+    - name: Build package and test package
+      run: |
+        cmake -B build -S . -DWITH_TESTS=OFF
+        cd build
+        cmake --build . --target testPythonDeps
+        ctest --output-on-failure
+
