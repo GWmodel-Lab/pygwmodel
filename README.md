@@ -19,9 +19,23 @@ We highly recommend installing this package in a conda environment,
 especially on Windows.
 
 ```bash
-conda install armadillo gsl openblas numpy pandas geopandas scikit-build cython
+conda install armadillo gsl openblas catch2 numpy geopandas nanobind scikit-build-core
 git clone https://github.com/GWmodel-Lab/pygwmodel.git
 pip install ./pygwmodel
+```
+
+On Windows, it is very important to use the **OpenBLAS** library instead of that bundled with Python to avoid segmentation fault.
+To do so, set the environment variable `CMAKE_ARGS`:
+
+```powershell
+# powershell
+$Env:CMAKE_ARGS="-DBLA_VENDOR=OpenBLAS"
+```
+
+In command line prompt, it can be done like this:
+
+```bat
+set CMAKE_ARGS="-DBLA_VENDOR=OpenBLAS"
 ```
 
 ## Getting started
