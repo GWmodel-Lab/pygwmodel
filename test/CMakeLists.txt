@@ -41,9 +41,10 @@ add_test(
 )
 add_test(
     NAME testPythonGWSS
-    COMMAND ${PYTHON_EXECUTABLE} test_gwss.py ${PYTHON_TEST_DATA}
+    COMMAND ${Python_EXECUTABLE} test_gwss.py ${PYTHON_TEST_DATA}
+    WORKING_DIRECTORY ${PYTHON_TEST_SCRIPT_DIR}
 )
 # add_test(
 #     NAME testPythonGWPCA
-#     COMMAND ${PYTHON_EXECUTABLE} testGWPCA.py ${PYTHON_TEST_DATA}
+#     COMMAND ${Python_EXECUTABLE} testGWPCA.py ${PYTHON_TEST_DATA}
 # )
