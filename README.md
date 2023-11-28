@@ -30,12 +30,20 @@ To do so, set the environment variable `CMAKE_ARGS`:
 ```powershell
 # powershell
 $Env:CMAKE_ARGS="-DBLA_VENDOR=OpenBLAS"
+pip install .
 ```
 
 In command line prompt, it can be done like this:
 
 ```bat
 set CMAKE_ARGS="-DBLA_VENDOR=OpenBLAS"
+pip install .
+```
+
+Or using the following line to install this package:
+
+```powershell
+pip install . --config-settings=cmake.args=-DBLA_VENDOR=OpenBLAS
 ```
 
 ## Getting started
