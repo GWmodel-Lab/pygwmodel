@@ -1,5 +1,4 @@
 from typing import List, Optional
-from enum import IntEnum
 import numpy as np
 import geopandas as gp
 from .spatial_weight import SpatialWeight, Distance, BandwidthWeight, CRSDistance
@@ -12,18 +11,9 @@ class GWRMultiscale:
     Multiscale GWR python high api class.
     """
 
-    class BandwidthInitilizeType(IntEnum):
-        Null = _GWRMultiscale.BandwidthInitilizeType.Null
-        Initial = _GWRMultiscale.BandwidthInitilizeType.Initial
-        Specified = _GWRMultiscale.BandwidthInitilizeType.Specified
-
-    class BandwidthSelectionCriterionType(IntEnum):
-        CV = _GWRMultiscale.BandwidthSelectionCriterionType.CV
-        AIC = _GWRMultiscale.BandwidthSelectionCriterionType.AIC
-
-    class BackFittingCriterionType(IntEnum):
-        CVR = _GWRMultiscale.BackFittingCriterionType.CVR
-        dCVR = _GWRMultiscale.BackFittingCriterionType.dCVR
+    BandwidthInitilizeType = _GWRMultiscale.BandwidthInitilizeType
+    BandwidthSelectionCriterionType = _GWRMultiscale.BandwidthSelectionCriterionType
+    BackFittingCriterionType = _GWRMultiscale.BackFittingCriterionType
 
     def __init__(self, sdf: gp.GeoDataFrame, depen_var: str, indep_vars: List[str],
                  weights: List[BandwidthWeight], distance: Distance = CRSDistance(),

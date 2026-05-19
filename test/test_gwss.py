@@ -17,7 +17,7 @@ class TestGWSS(unittest.TestCase):
         self.londonhp = gp.GeoDataFrame(londonhp_csv, geometry=gp.points_from_xy(londonhp_csv.x, londonhp_csv.y))
         self.londonhp_vars = ["PURCHASE", "FLOORSZ", "UNEMPLOY", "PROF"]
         self.parallel_case = {
-            ParallelType.Serial: dict()
+            ParallelType.SerialOnly: dict()
         }
         if ENABLE_OPENMP:
             self.parallel_case[ParallelType.OpenMP] = {'threads': 4}

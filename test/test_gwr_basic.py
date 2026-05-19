@@ -17,7 +17,7 @@ class TestGWRBasic(unittest.TestCase):
         self.depen = 'PURCHASE'
         self.indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
         self.parallel_case = {
-            ParallelType.Serial: dict()
+            ParallelType.SerialOnly: dict()
         }
         self.weight = BandwidthWeight(36.0, True)
         self.distance = CRSDistance(False)

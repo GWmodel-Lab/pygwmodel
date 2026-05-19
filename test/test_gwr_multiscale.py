@@ -17,7 +17,7 @@ class TestGWRMultiscale(unittest.TestCase):
         self.depen = 'PURCHASE'
         self.indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
         self.parallel_case = {
-            ParallelType.Serial: dict()
+            ParallelType.SerialOnly: dict()
         }
         if ENABLE_OPENMP:
             self.parallel_case[ParallelType.OpenMP] = {'threads': 4}

@@ -17,12 +17,12 @@ constexpr int ndim_v = is_vector_v<T> ? 1 : 2;
 
 template <typename T, typename Scalar = typename T::elem_type>
 using array_for_arma_t = nb::ndarray<
-    nb::numpy,
     Scalar,
+    nb::numpy,
     std::conditional_t<
         is_vector_v<T> == 1,
-        nb::shape<nb::any>,
-        nb::shape<nb::any, nb::any>
+        nb::ndim<1>,
+        nb::ndim<2>
     >,
     std::conditional_t<
         is_vector_v<T> == 1,
@@ -32,7 +32,7 @@ using array_for_arma_t = nb::ndarray<
 >;
 
 template<typename T>
-struct nb::detail::type_caster<T, nb::detail::enable_if_t<std::is_arithmetic_v<typename T::elem_type>>>
+struct nb::detail::type_caster<T, nb::detail::enable_if_t<nb::detail::is_ndarray_scalar_v<typename T::elem_type>>>
 {
     using Scalar = typename T::elem_type;
     using NDArray = array_for_arma_t<T>;
@@ -68,20 +68,20 @@ struct nb::detail::type_caster<T, nb::detail::enable_if_t<std::is_arithmetic_v<t
 
     static handle from_cpp(const T &v, rv_policy policy, nb::detail::cleanup_list *cleanup) noexcept
     {
-        size_t shape[ndim_v<T>];
-        int64_t strides[ndim_v<T>];
+        size_t shape[2];
+        int64_t strides[2];
 
         if constexpr (is_vector_v<T> == 1)
         {
-            shape[0] = v.n_elem;
+            shape[0] = (size_t)v.n_elem;
             strides[0] = 1;
         }
         else
         {
-            shape[0] = v.n_rows;
-            shape[1] = v.n_cols;
+            shape[0] = (size_t)v.n_rows;
+            shape[1] = (size_t)v.n_cols;
             strides[0] = 1;
-            strides[1] = v.n_rows;
+            strides[1] = (int64_t)v.n_rows;
         }
 
         void *ptr = (void *)v.memptr();
