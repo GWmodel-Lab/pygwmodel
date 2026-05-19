@@ -25,13 +25,11 @@ build-dir = "build/{wheel_tag}"
 wheel.py-api = "cp312"
 
 [tool.cibuildwheel]
-# Necessary to see build output from the actual compilation
 build-verbosity = 1
-
-# Run pytest to ensure that the package was correctly built
-test-command = "pytest {project}/tests"
+build = "cp312-*"
+skip = "pp* *-musllinux* *-manylinux_i686* *-win32 *-macosx_x86_64"
+test-command = "pytest {project}/tests -v"
 test-requires = "pytest"
 
-# Needed for full C++17 support
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "10.14"

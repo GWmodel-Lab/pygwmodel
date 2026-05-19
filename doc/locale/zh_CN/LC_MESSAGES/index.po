@@ -1,0 +1,156 @@
+# Chinese translation for pygwmodel documentation.
+# Copyright (C) 2023, GWmodel-Lab
+# This file is distributed under the same license as the pygwmodel package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pygwmodel 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:38+0800\n"
+"PO-Revision-Date: 2026-05-19 17:40+0800\n"
+"Last-Translator: GWmodel-Lab\n"
+"Language-Team: zh_CN <>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../index.rst:2
+msgid "pygwmodel Documentation"
+msgstr "pygwmodel 文档"
+
+#: ../../index.rst:4
+msgid "**pygwmodel** is a Python package providing conscious and easy-to-use interfaces to high-performance C++ implementations of geographically weighted (GW) models, based on `libgwmodel <https://github.com/GWmodel-Lab/libgwmodel>`_ and **GeoPandas**."
+msgstr "**pygwmodel** 是一个 Python 包，为基于 `libgwmodel <https://github.com/GWmodel-Lab/libgwmodel>`_ 和 **GeoPandas** 的高性能 C++ 地理加权（GW）模型实现提供清晰、易用的接口。"
+
+#: ../../index.rst:8
+msgid "GW models are a branch of spatial statistics suited to situations where data are not well described by some global model, but where spatial regions exist where a suitably localized calibration provides a better description."
+msgstr "GW 模型是空间统计学的一个分支，适用于数据不能被某个全局模型很好描述，但存在某些空间区域通过适当的局部拟合能提供更好描述的场合。"
+
+#: ../../index.rst:13
+msgid "Implemented Models"
+msgstr "已实现的模型"
+
+#: ../../index.rst:15
+msgid "**GWRBasic** — Basic Geographically Weighted Regression with a single bandwidth."
+msgstr "**GWRBasic** — 基本地理加权回归，使用单一带宽。"
+
+#: ../../index.rst:16
+msgid "**GWRMultiscale** — Multiscale GWR (MGWR) with parameter-specific bandwidths and backfitting algorithm."
+msgstr "**GWRMultiscale** — 多尺度GWR（MGWR），每个变量拥有独立的带宽，采用后向迭代算法。"
+
+#: ../../index.rst:18
+msgid "**GWSS** — Geographically Weighted Summary Statistics (averages and correlations)."
+msgstr "**GWSS** — 地理加权汇总统计（均值和相关性）。"
+
+#: ../../index.rst:21
+msgid "Installation"
+msgstr "安装"
+
+#: ../../index.rst:23
+msgid "We highly recommend installing in a conda environment:"
+msgstr "强烈推荐在 conda 环境中安装："
+
+#: ../../index.rst:33
+msgid "On Windows, set the environment variable to use OpenBLAS:"
+msgstr "在 Windows 上，需设置环境变量以使用 OpenBLAS："
+
+#: ../../index.rst:41
+msgid "Quick Start"
+msgstr "快速入门"
+
+#: ../../index.rst:44
+msgid "Basic GWR"
+msgstr "基本地理加权回归"
+
+#: ../../index.rst:62
+msgid "Multiscale GWR (MGWR)"
+msgstr "多尺度GWR（MGWR）"
+
+#: ../../index.rst:84
+msgid "Algorithm Parameters"
+msgstr "算法参数"
+
+#: ../../index.rst:87
+msgid "GWRBasic"
+msgstr "GWRBasic"
+
+#: ../../index.rst:89
+msgid "``weight`` — A single :class:`~pygwmodel.spatial_weight.BandwidthWeight` shared by all variables."
+msgstr "``weight`` — 所有变量共用的单一 :class:`~pygwmodel.spatial_weight.BandwidthWeight`。"
+
+#: ../../index.rst:91
+msgid "``fit(optimize_bw=...)`` — Optionally auto-select bandwidth via CV or AIC."
+msgstr "``fit(optimize_bw=...)`` — 可选地通过 CV 或 AIC 自动优选带宽。"
+
+#: ../../index.rst:92
+msgid "``fit(optimize_var=...)`` — Optionally auto-select variables via forward selection."
+msgstr "``fit(optimize_var=...)`` — 可选地通过前向选择自动优选变量。"
+
+#: ../../index.rst:96
+msgid "GWRMultiscale"
+msgstr "GWRMultiscale"
+
+#: ../../index.rst:98
+msgid "``weights`` — A list of :class:`~pygwmodel.spatial_weight.BandwidthWeight`, one per variable (including intercept). Each variable gets its own bandwidth."
+msgstr "``weights`` — 一列 :class:`~pygwmodel.spatial_weight.BandwidthWeight`，每个变量（含截距）一个。每个变量拥有独立的带宽。"
+
+#: ../../index.rst:100
+msgid "``bandwidth_initilize`` — Per-variable initialization strategy: :class:`~pygwmodel.gwr_multiscale.GWRMultiscale.BandwidthInitilizeType.Null` (auto-select), ``Specified`` (fixed), or ``Initial``."
+msgstr "``bandwidth_initilize`` — 每个变量的带宽初始值类型：:class:`~pygwmodel.gwr_multiscale.GWRMultiscale.BandwidthInitilizeType.Null`（自动优选）、``Specified``（指定值）或 ``Initial``。"
+
+#: ../../index.rst:103
+msgid "``bandwidth_selection_approach`` — Criterion per variable: :class:`~pygwmodel.gwr_multiscale.GWRMultiscale.BandwidthSelectionCriterionType.CV` or ``AIC``."
+msgstr "``bandwidth_selection_approach`` — 每个变量的带宽选择指标： :class:`~pygwmodel.gwr_multiscale.GWRMultiscale.BandwidthSelectionCriterionType.CV` 或 ``AIC``。"
+
+#: ../../index.rst:106
+msgid "``criterion_type`` — Backfitting convergence criterion: :class:`~pygwmodel.gwr_multiscale.GWRMultiscale.BackFittingCriterionType.CVR` or ``dCVR``."
+msgstr "``criterion_type`` — 后向迭代算法收敛指标值类型： :class:`~pygwmodel.gwr_multiscale.GWRMultiscale.BackFittingCriterionType.CVR` 或 ``dCVR``。"
+
+#: ../../index.rst:109
+msgid "``max_iteration`` — Maximum backfitting iterations (default 500)."
+msgstr "``max_iteration`` — 最大迭代次数（默认 500）。"
+
+#: ../../index.rst:110
+msgid "``preditor_centered`` — Whether to center each predictor before fitting."
+msgstr "``preditor_centered`` — 是否在拟合前中心化每个自变量。"
+
+#: ../../index.rst:113
+msgid "Spatial Weights"
+msgstr "空间权重"
+
+#: ../../index.rst:129
+msgid "Available kernels: ``Gaussian``, ``Exponential``, ``Bisquare``, ``Tricube``, ``Boxcar``."
+msgstr "可用的核函数：``Gaussian``、``Exponential``、``Bisquare``、``Tricube``、``Boxcar``。"
+
+#: ../../index.rst:132
+msgid "Parallel Computing"
+msgstr "并行计算"
+
+#: ../../index.rst:134
+msgid "Enable multi-threading via OpenMP:"
+msgstr "通过 OpenMP 启用多线程并行："
+
+#: ../../index.rst:145
+msgid "API Reference"
+msgstr "API 参考"
+
+#: ../../index.rst:147
+msgid "Module Reference:"
+msgstr "模块参考："
+
+#: ../../index.rst:154
+msgid "Indices and Tables"
+msgstr "索引和列表"
+
+#: ../../index.rst:156
+msgid ":ref:`genindex`"
+msgstr ":ref:`genindex`"
+
+#: ../../index.rst:157
+msgid ":ref:`modindex`"
+msgstr ":ref:`modindex`"
+
+#: ../../index.rst:158
+msgid ":ref:`search`"
+msgstr ":ref:`search`"
