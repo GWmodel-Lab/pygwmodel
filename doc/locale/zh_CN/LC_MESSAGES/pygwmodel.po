@@ -1,15 +1,16 @@
-# Chinese translation for pygwmodel documentation.
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, GWmodel-Lab
 # This file is distributed under the same license as the pygwmodel package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: pygwmodel 0.1.0\n"
+"Project-Id-Version: pygwmodel \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-19 17:38+0800\n"
-"PO-Revision-Date: 2026-05-19 17:40+0800\n"
-"Last-Translator: GWmodel-Lab\n"
-"Language-Team: zh_CN <>\n"
+"PO-Revision-Date: 2026-05-19 18:20+0800\n"
+"Last-Translator: pygwmodel team <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,7 +18,7 @@ msgstr ""
 
 #: ../../pygwmodel.rst:2
 msgid "pygwmodel package"
-msgstr "pygwmodel 包"
+msgstr "pygwmodel 软件包"
 
 #: ../../pygwmodel.rst:5
 msgid "Submodules"
@@ -25,11 +26,11 @@ msgstr "子模块"
 
 #: ../../pygwmodel.rst:8
 msgid "pygwmodel.gwr\\_basic module"
-msgstr "pygwmodel.gwr_basic 模块"
+msgstr "pygwmodel.gwr\\_basic 模块"
 
 #: ../../../src/pygwmodel/gwr_basic.py:docstring of pygwmodel.gwr_basic.GWRBasic:1
 msgid "Basic GWR python high api class."
-msgstr "基本地理加权回归 Python 高层 API 类。"
+msgstr "基础 GWR Python 高层 API 类。"
 
 #: ../../../src/pygwmodel/gwr_basic.py:docstring of pygwmodel.gwr_basic.GWRBasic.fit:1
 msgid "Run algorithm and return result"
@@ -45,11 +46,11 @@ msgstr "pygwmodel.gwr_multiscale 模块"
 
 #: ../../../src/pygwmodel/gwr_multiscale.py:docstring of pygwmodel.gwr_multiscale.GWRMultiscale:1
 msgid "Multiscale GWR python high api class."
-msgstr "多尺度GWR Python 高层 API 类。"
+msgstr "多尺度 GWR Python 高层 API 类。"
 
 #: ../../../src/pygwmodel/gwr_multiscale.py:docstring of pygwmodel.gwr_multiscale.GWRMultiscale.fit:1
 msgid "Run the multiscale GWR algorithm and return self."
-msgstr "运行多尺度GWR算法并返回自身。"
+msgstr "运行多尺度 GWR 算法并返回自身。"
 
 #: ../../pygwmodel.rst:32
 msgid "pygwmodel.parallel module"
@@ -57,7 +58,7 @@ msgstr "pygwmodel.parallel 模块"
 
 #: ../../pygwmodel.rst:40
 msgid "pygwmodel.spatial\\_weight module"
-msgstr "pygwmodel.spatial_weight 模块"
+msgstr "pygwmodel.spatial\\_weight 模块"
 
 #: ../../pygwmodel.rst:48
 msgid "Module contents"
