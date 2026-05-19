@@ -32,7 +32,7 @@ using array_for_arma_t = nb::ndarray<
 >;
 
 template<typename T>
-struct nb::detail::type_caster<T, nb::detail::enable_if_t<nb::detail::is_ndarray_scalar_v<typename T::elem_type>>>
+struct nb::detail::type_caster<T, nb::detail::enable_if_t<std::is_arithmetic_v<typename T::elem_type>>>
 {
     using Scalar = typename T::elem_type;
     using NDArray = array_for_arma_t<T>;

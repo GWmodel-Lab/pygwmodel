@@ -6,6 +6,7 @@ namespace nb = nanobind;
 
 void init_base(nb::module_& m);
 void init_gwr_basic(nb::module_& m);
+void init_gwr_multiscale(nb::module_& m);
 
 NB_MODULE(_regression, m)
 {
@@ -36,4 +37,5 @@ NB_MODULE(_regression, m)
         ;
     
     init_gwr_basic(m);
+    init_gwr_multiscale(m);
 }
