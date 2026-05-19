@@ -1,0 +1,98 @@
+name: CD
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build-wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    defaults:
+      run:
+        working-directory: pygwmodel
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install cibuildwheel
+        run: pip install cibuildwheel
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp312-*"
+          CIBW_SKIP: "pp* *-musllinux* *-manylinux_i686* *-win32 *-macosx_x86_64"
+          CIBW_BEFORE_ALL_LINUX: >
+            apt-get update -qq &&
+            apt-get install -qq libarmadillo-dev libopenblas-dev libgsl-dev
+          CIBW_BEFORE_ALL_MACOS: brew install armadillo gsl openblas
+          CIBW_BEFORE_ALL_WINDOWS: |
+            $vcpkg = "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
+            & $vcpkg install armadillo gsl openblas --triplet x64-windows
+          CIBW_ENVIRONMENT_WINDOWS: >
+            CMAKE_ARGS="-DBLA_VENDOR=OpenBLAS -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET="10.14"
+          CIBW_TEST_COMMAND: "pytest {project}/tests -v"
+          CIBW_TEST_REQUIRES: pytest
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: pygwmodel/wheelhouse/*.whl
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build-wheels
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Create GitHub Release
+    needs: build-wheels
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.whl
+          generate_release_notes: true
