@@ -1,0 +1,10 @@
+{
+  "dependencies": [
+    "armadillo",
+    "gsl",
+    {
+      "name": "openblas",
+      "features": ["threads"]
+    }
+  ]
+}

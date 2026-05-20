@@ -13,6 +13,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      USERNAME: GWmodel-Lab
+      FEED_URL: https://nuget.pkg.github.com/GWmodel-Lab/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,github,readwrite"
+      VCPKG_USE_NUGET_CACHE: 1
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout
@@ -27,6 +35,23 @@ jobs:
 
       - name: Install cibuildwheel
         run: pip install cibuildwheel
+
+      - name: Restore Vcpkg
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cd "$env:VCPKG_INSTALLATION_ROOT"
+          git fetch
+          git switch 2025.02.14 --detach
+
+      - name: Setup NuGet Credentials
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $VCPKG_EXE="$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
+          $NUGET_EXE="$(.$VCPKG_EXE fetch nuget)"
+          .$NUGET_EXE sources add -Source ${{ env.FEED_URL }} -Name github -UserName ${{ env.USERNAME }} -Password ${{ secrets.GITHUB_TOKEN }} -StorePasswordInClearText
+          .$NUGET_EXE setapikey ${{ secrets.GITHUB_TOKEN }} -Source "${{ env.FEED_URL }}"
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
