@@ -8,12 +8,13 @@ from pygwmodel.parallel import ParallelType
 from pygwmodel.spatial_weight import BandwidthWeight
 from pygwmodel.gwss import GWSS
 
+TEST_DATA = os.environ.get("PYGW_TEST_DATA", sys.argv[1] if len(sys.argv) > 1 else "test/londonhp100.csv")
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 
 class TestGWSS(unittest.TestCase):
     
     def setUp(self):
-        londonhp_csv = pd.read_csv(sys.argv[1])
+        londonhp_csv = pd.read_csv(TEST_DATA)
         self.londonhp = gp.GeoDataFrame(londonhp_csv, geometry=gp.points_from_xy(londonhp_csv.x, londonhp_csv.y))
         self.londonhp_vars = ["PURCHASE", "FLOORSZ", "UNEMPLOY", "PROF"]
         self.parallel_case = {

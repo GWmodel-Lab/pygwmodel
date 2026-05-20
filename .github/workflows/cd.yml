@@ -36,16 +36,20 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: >
             apt-get update -qq &&
             apt-get install -qq libarmadillo-dev libopenblas-dev libgsl-dev
-          CIBW_ENVIRONMENT_LINUX: CMAKE_ARGS="-DWITH_TESTS=OFF"
+          CIBW_ENVIRONMENT_LINUX: >
+            CMAKE_ARGS="-DWITH_TESTS=OFF"
+            PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
           CIBW_BEFORE_ALL_MACOS: brew install armadillo gsl openblas
           CIBW_ENVIRONMENT_MACOS: >
             CMAKE_ARGS="-DWITH_TESTS=OFF"
+            PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
             MACOSX_DEPLOYMENT_TARGET="10.14"
           CIBW_BEFORE_ALL_WINDOWS: |
             $vcpkg = "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
             & $vcpkg install armadillo gsl openblas --triplet x64-windows
           CIBW_ENVIRONMENT_WINDOWS: >
             CMAKE_ARGS="-DWITH_TESTS=OFF -DBLA_VENDOR=OpenBLAS -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
           CIBW_TEST_COMMAND: "pytest {project}/tests -v --ignore={project}/tests/test_gwss.py"
           CIBW_TEST_REQUIRES: pytest
 

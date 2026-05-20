@@ -62,3 +62,5 @@ jobs:
 
       - name: Run tests
         run: python -m pytest test/ -v --ignore=test/test_gwss.py
+        env:
+          PYGW_TEST_DATA: test/londonhp100.csv
