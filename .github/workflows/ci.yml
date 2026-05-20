@@ -50,12 +50,14 @@ jobs:
       - name: Build package
         if: runner.os != 'Windows'
         run: pip install --no-build-isolation -ve .
+        env:
+          CMAKE_ARGS: "-DWITH_TESTS=OFF"
 
       - name: Build package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $env:CMAKE_ARGS = "-DBLA_VENDOR=OpenBLAS -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+          $env:CMAKE_ARGS = "-DWITH_TESTS=OFF -DBLA_VENDOR=OpenBLAS -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
           pip install --no-build-isolation -ve .
 
       - name: Run tests
