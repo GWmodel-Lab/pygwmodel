@@ -48,6 +48,7 @@ jobs:
             $vcpkg = "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
             & $vcpkg install armadillo gsl openblas --triplet x64-windows
           CIBW_ENVIRONMENT_WINDOWS: >
+            PATH="C:/vcpkg/installed/x64-windows/bin"
             CMAKE_ARGS="-DWITH_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
             PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
           CIBW_TEST_COMMAND: "pytest {project}/tests -v --ignore={project}/tests/test_gwss.py"

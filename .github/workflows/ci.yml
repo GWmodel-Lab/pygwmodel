@@ -61,6 +61,16 @@ jobs:
           pip install --no-build-isolation -ve .
 
       - name: Run tests
+        if: runner.os != 'Windows'
         run: python -m pytest test/ -v --ignore=test/test_gwss.py
+        env:
+          PYGW_TEST_DATA: test/londonhp100.csv
+
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows/bin;$env:PATH"
+          python -m pytest test/ -v --ignore=test/test_gwss.py
         env:
           PYGW_TEST_DATA: test/londonhp100.csv
