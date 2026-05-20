@@ -73,7 +73,7 @@ jobs:
         run: |
           cd "$env:VCPKG_INSTALLATION_ROOT"
           git fetch
-          git switch 2025.02.14 --detach
+          git switch 2026.04.27 --detach
 
       - name: Setup NuGet Credentials
         shell: pwsh
