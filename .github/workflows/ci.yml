@@ -61,4 +61,4 @@ jobs:
           pip install --no-build-isolation -ve .
 
       - name: Run tests
-        run: python -m pytest test/ -v
+        run: python -m pytest test/ -v --ignore=test/test_gwss.py

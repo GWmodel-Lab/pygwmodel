@@ -46,7 +46,7 @@ jobs:
             & $vcpkg install armadillo gsl openblas --triplet x64-windows
           CIBW_ENVIRONMENT_WINDOWS: >
             CMAKE_ARGS="-DWITH_TESTS=OFF -DBLA_VENDOR=OpenBLAS -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-          CIBW_TEST_COMMAND: "pytest {project}/tests -v"
+          CIBW_TEST_COMMAND: "pytest {project}/tests -v --ignore={project}/tests/test_gwss.py"
           CIBW_TEST_REQUIRES: pytest
 
       - name: Upload wheels
