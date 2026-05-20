@@ -34,6 +34,15 @@ extensions = [
     'sphinx.ext.autodoc'
 ]
 
+# Mock C++ extension modules for ReadTheDocs (or other environments
+# where the native libraries cannot be built).
+autodoc_mock_imports = [
+    'pygwmodel._spatial_weight',
+    'pygwmodel._parallel',
+    'pygwmodel._regression',
+    'pygwmodel._analysis',
+]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
