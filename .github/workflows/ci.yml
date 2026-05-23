@@ -95,17 +95,25 @@ jobs:
           python-version: '3.12'
 
       - name: Install build dependencies
-        run: pip install nanobind "scikit-build-core[pyproject]" numpy geopandas pytest
+        run: pip install nanobind "scikit-build-core[pyproject]" numpy geopandas pytest delvewheel
 
-      - name: Build package
+      - name: Build wheel
         shell: pwsh
         run: |
           $env:CMAKE_ARGS = "-DWITH_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
-          pip install --no-build-isolation -v .
+          pip wheel --no-build-isolation --no-deps -v . --wheel-dir wheelhouse
 
-      - name: Add vcpkg DLLs to PATH
+      - name: Repair wheel
         shell: pwsh
-        run: echo "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        run: |
+          $wheel = (Get-ChildItem wheelhouse\pygwmodel-*.whl | Select-Object -First 1).FullName
+          python tools\repair_windows_wheel.py $wheel repaired-wheel
+
+      - name: Install repaired wheel
+        shell: pwsh
+        run: |
+          $wheel = (Get-ChildItem repaired-wheel\pygwmodel-*.whl | Select-Object -First 1).FullName
+          pip install $wheel
 
       - name: Run tests
         run: python -m pytest test/ -v --ignore=test/test_gwss.py

@@ -34,7 +34,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install cibuildwheel
-        run: pip install cibuildwheel
+        run: pip install cibuildwheel delvewheel
 
       - name: Restore Vcpkg
         if: runner.os == 'Windows'
@@ -72,10 +72,13 @@ jobs:
           CIBW_BEFORE_ALL_WINDOWS: |
             $vcpkg = "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
             & $vcpkg install armadillo gsl openblas --triplet x64-windows
+          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_ENVIRONMENT_WINDOWS: >
             PATH="C:/vcpkg/installed/x64-windows/bin"
             CMAKE_ARGS="-DWITH_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
             PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            python "${{ github.workspace }}/tools/repair_windows_wheel.py" {wheel} {dest_dir}
           CIBW_TEST_COMMAND: "pytest {project}/tests -v --ignore={project}/tests/test_gwss.py"
           CIBW_TEST_REQUIRES: pytest
 
