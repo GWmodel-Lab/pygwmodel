@@ -1,0 +1,683 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, GWmodel-Lab
+# This file is distributed under the same license as the pygwmodel package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pygwmodel \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 23:29+0800\n"
+"PO-Revision-Date: 2026-05-19 18:20+0800\n"
+"Last-Translator: pygwmodel team <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../models.rst:2
+msgid "Regression Models"
+msgstr "回归模型"
+
+#: ../../models/gwr.rst:2
+msgid "Basic Geographically Weighted Regression (GWR)"
+msgstr "基础地理加权回归 (GWR)"
+
+#: ../../models/gwr.rst:7
+#: ../../models/gwr_multiscale.rst:7
+msgid "Mathematical Foundation"
+msgstr "数学原理"
+
+#: ../../models/gwr.rst:9
+msgid "For a dataset of :math:`n` samples and :math:`p` independent variables, the basic GWR model at sample :math:`i` is defined as:"
+msgstr "对于一个包含 :math:`n` 个样本和 :math:`p` 个自变量的数据集，样本 :math:`i` 处的基础 GWR 模型定义为："
+
+#: ../../models/gwr.rst:12
+msgid "y_i = \\beta_{i0} + \\sum_{k=1}^{p} \\beta_{ik} x_{ik} + \\varepsilon_i"
+msgstr "y_i = \\beta_{i0} + \\sum_{k=1}^{p} \\beta_{ik} x_{ik} + \\varepsilon_i"
+
+#: ../../models/gwr.rst:16
+msgid "where:"
+msgstr "其中："
+
+#: ../../models/gwr.rst:18
+msgid ":math:`y_i` is the dependent variable,"
+msgstr ":math:`y_i` 为因变量，"
+
+#: ../../models/gwr.rst:19
+msgid ":math:`x_{ik}` is the :math:`k`-th independent variable,"
+msgstr ":math:`x_{ik}` 为第 :math:`k` 个自变量，"
+
+#: ../../models/gwr.rst:20
+msgid ":math:`\\beta_{ik}` is the :math:`k`-th coefficient,"
+msgstr ":math:`\\beta_{ik}` 为第 :math:`k` 个回归系数估计值，"
+
+#: ../../models/gwr.rst:21
+msgid ":math:`\\beta_{i0}` is the intercept,"
+msgstr ":math:`\\beta_{i0}` 为截距，"
+
+#: ../../models/gwr.rst:22
+msgid ":math:`\\varepsilon_i \\sim \\mathcal{N}(0, \\sigma^2)` is the random error."
+msgstr ":math:`\\varepsilon_i \\sim \\mathcal{N}(0, \\sigma^2)` 为随机误差。"
+
+#: ../../models/gwr.rst:24
+msgid "The locally weighted least-squares estimator of the coefficients is:"
+msgstr "系数的局部加权最小二乘估计为："
+
+#: ../../models/gwr.rst:26
+msgid "\\hat{\\boldsymbol{\\beta}}_i = \\left( \\mathbf{X}^\\top \\mathbf{W}_i \\mathbf{X} \\right)^{-1} \\mathbf{X}^\\top \\mathbf{W}_i \\mathbf{y}"
+msgstr "\\hat{\\boldsymbol{\\beta}}_i = \\left( \\mathbf{X}^\\top \\mathbf{W}_i \\mathbf{X} \\right)^{-1} \\mathbf{X}^\\top \\mathbf{W}_i \\mathbf{y}"
+
+#: ../../models/gwr.rst:30
+msgid "where :math:`\\mathbf{W}_i = \\operatorname{diag}(w_{i1}, w_{i2}, \\dots, w_{in})` is the spatial weighting matrix. Each :math:`w_{ij}` is computed by a kernel function :math:`k(d_{ij}; b)` based on the distance from sample :math:`i` to sample :math:`j`."
+msgstr "其中 :math:`\\mathbf{W}_i = \\operatorname{diag}(w_{i1}, w_{i2}, \\dots, w_{in})` 为空间权重矩阵。每个 :math:`w_{ij}` 由核函数 :math:`k(d_{ij}; b)` 根据样本 :math:`i` 到样本 :math:`j` 的距离计算得出。"
+
+#: ../../models/gwr.rst:36
+msgid "Diagnostic Information"
+msgstr "诊断信息"
+
+#: ../../models/gwr.rst:38
+msgid "After fitting, the algorithm computes the following diagnostics:"
+msgstr "拟合后，算法会计算以下诊断信息："
+
+#: ../../models/gwr.rst:44
+msgid "Metric"
+msgstr "指标"
+
+#: ../../models/gwr.rst:45
+#: ../../models/gwr_multiscale.rst:109
+msgid "Meaning"
+msgstr "含义"
+
+#: ../../models/gwr.rst:46
+msgid "Key"
+msgstr "键名"
+
+#: ../../models/gwr.rst:47
+msgid "RSS"
+msgstr "RSS"
+
+#: ../../models/gwr.rst:48
+msgid "Residual sum of squares :math:`\\sum (y_i - \\hat{y}_i)^2`"
+msgstr "残差平方和 :math:`\\sum (y_i - \\hat{y}_i)^2`"
+
+#: ../../models/gwr.rst:49
+msgid "``diagnostic['RSS']``"
+msgstr "``diagnostic['RSS']``"
+
+#: ../../models/gwr.rst:50
+msgid "AICc"
+msgstr "AICc"
+
+#: ../../models/gwr.rst:51
+msgid "Corrected Akaike information criterion (smaller is better)"
+msgstr "修正赤池信息准则（越小越好）"
+
+#: ../../models/gwr.rst:52
+msgid "``diagnostic['AICc']``"
+msgstr "``diagnostic['AICc']``"
+
+#: ../../models/gwr.rst:53
+msgid "ENP"
+msgstr "ENP"
+
+#: ../../models/gwr.rst:54
+msgid "Effective number of parameters"
+msgstr "有效参数数"
+
+#: ../../models/gwr.rst:55
+msgid "``diagnostic['ENP']``"
+msgstr "``diagnostic['ENP']``"
+
+#: ../../models/gwr.rst:56
+msgid "EDF"
+msgstr "EDF"
+
+#: ../../models/gwr.rst:57
+msgid "Effective degrees of freedom"
+msgstr "有效自由度"
+
+#: ../../models/gwr.rst:58
+msgid "``diagnostic['EDF']``"
+msgstr "``diagnostic['EDF']``"
+
+#: ../../models/gwr.rst:59
+msgid "R²"
+msgstr "R²"
+
+#: ../../models/gwr.rst:60
+msgid "Coefficient of determination"
+msgstr "决定系数"
+
+#: ../../models/gwr.rst:61
+msgid "``diagnostic['RSquare']``"
+msgstr "``diagnostic['RSquare']``"
+
+#: ../../models/gwr.rst:62
+msgid "Adjusted R²"
+msgstr "修正 R²"
+
+#: ../../models/gwr.rst:63
+msgid "Adjusted R-squared"
+msgstr "修正决定系数"
+
+#: ../../models/gwr.rst:64
+msgid "``diagnostic['RSquareAdjust']``"
+msgstr "``diagnostic['RSquareAdjust']``"
+
+#: ../../models/gwr.rst:69
+#: ../../models/gwr_multiscale.rst:58
+msgid "Key Parameters"
+msgstr "重要设置项"
+
+#: ../../models/gwr.rst:75
+#: ../../models/gwr_multiscale.rst:64
+msgid "Parameter"
+msgstr "参数"
+
+#: ../../models/gwr.rst:76
+#: ../../models/gwr_multiscale.rst:65
+msgid "Description"
+msgstr "描述"
+
+#: ../../models/gwr.rst:77
+#: ../../models/gwr_multiscale.rst:66
+msgid "Default"
+msgstr "默认值"
+
+#: ../../models/gwr.rst:78
+msgid "``weight``"
+msgstr "``weight``"
+
+#: ../../models/gwr.rst:79
+msgid "A single bandwidth weight shared by all variables"
+msgstr "所有变量共用的单一带宽权重"
+
+#: ../../models/gwr.rst:80
+#: ../../models/gwr_multiscale.rst:69
+msgid "Required"
+msgstr "必需"
+
+#: ../../models/gwr.rst:81
+#: ../../models/gwr_multiscale.rst:70
+msgid "``distance``"
+msgstr "``distance``"
+
+#: ../../models/gwr.rst:82
+msgid "The distance metric to use"
+msgstr "使用的距离度量"
+
+#: ../../models/gwr.rst:83
+#: ../../models/gwr_multiscale.rst:72
+msgid "``CRSDistance()``"
+msgstr "``CRSDistance()``"
+
+#: ../../models/gwr.rst:84
+#: ../../models/gwr_multiscale.rst:73
+msgid "``has_intercept``"
+msgstr "``has_intercept``"
+
+#: ../../models/gwr.rst:85
+#: ../../models/gwr_multiscale.rst:74
+msgid "Whether to include an intercept term"
+msgstr "是否包含截距项"
+
+#: ../../models/gwr.rst:86
+#: ../../models/gwr_multiscale.rst:75
+#: ../../models/gwr_multiscale.rst:96
+msgid "``True``"
+msgstr "``True``"
+
+#: ../../models/gwr.rst:87
+msgid "``fit(optimize_bw=...)``"
+msgstr "``fit(optimize_bw=...)``"
+
+#: ../../models/gwr.rst:88
+msgid "Auto-select bandwidth: ``CV`` or ``AIC``"
+msgstr "自动优选带宽：``CV`` 或 ``AIC``"
+
+#: ../../models/gwr.rst:89
+#: ../../models/gwr.rst:92
+msgid "``None``"
+msgstr "``None``"
+
+#: ../../models/gwr.rst:90
+msgid "``fit(optimize_var=...)``"
+msgstr "``fit(optimize_var=...)``"
+
+#: ../../models/gwr.rst:91
+msgid "Auto-select variables via forward selection: AIC change threshold"
+msgstr "通过前向选择自动优选变量：AIC 变化阈值"
+
+#: ../../models/gwr.rst:97
+#: ../../models/gwr_multiscale.rst:120
+#: ../../models/gwss.rst:84
+msgid "Code Examples"
+msgstr "代码示例"
+
+#: ../../models/gwr.rst:100
+msgid "Basic Usage"
+msgstr "基本用法"
+
+#: ../../models/gwr.rst:123
+msgid "Bandwidth Selection"
+msgstr "带宽优选"
+
+#: ../../models/gwr.rst:134
+msgid "Independent Variable Selection"
+msgstr "自变量优选"
+
+#: ../../models/gwr.rst:148
+msgid "Prediction"
+msgstr "预测"
+
+#: ../../models/gwr.rst:158
+#: ../../models/gwr_multiscale.rst:188
+msgid "References"
+msgstr "参考文献"
+
+#: ../../models/gwr.rst:160
+msgid "Brunsdon, C., Fotheringham, A. S., & Charlton, M. E. (1996). *Geographically weighted regression: a method for exploring spatial nonstationarity*. Geographical Analysis, 28(4), 281-298."
+msgstr "Brunsdon, C., Fotheringham, A. S., & Charlton, M. E. (1996). *Geographically weighted regression: a method for exploring spatial nonstationarity*. Geographical Analysis, 28(4), 281-298."
+
+#: ../../models/gwr.rst:164
+msgid "Fotheringham, A. S., Brunsdon, C., & Charlton, M. (2002). *Geographically weighted regression: the analysis of spatially varying relationships*. John Wiley & Sons."
+msgstr "Fotheringham, A. S., Brunsdon, C., & Charlton, M. (2002). *Geographically weighted regression: the analysis of spatially varying relationships*. John Wiley & Sons."
+
+#: ../../models/gwr_multiscale.rst:2
+msgid "Multiscale Geographically Weighted Regression (GWRMultiscale)"
+msgstr "多尺度地理加权回归 (GWRMultiscale)"
+
+#: ../../models/gwr_multiscale.rst:9
+msgid "Multiscale GWR (MGWR) extends basic GWR by allowing each independent variable to have its own bandwidth. Different spatial processes may operate at different spatial scales — the influence of some variables may be highly local (small bandwidth), while others may have regional or global scale (large bandwidth)."
+msgstr "多尺度 GWR (MGWR) 扩展了基础 GWR，允许每个自变量拥有各自的带宽。不同的空间过程可能在不同的空间尺度上运行——某些变量的影响可能高度局部化（小带宽），而其他变量可能具有区域或全局尺度（大带宽）。"
+
+#: ../../models/gwr_multiscale.rst:14
+msgid "The MGWR model form is the same as basic GWR:"
+msgstr "MGWR 模型形式与基础 GWR 相同："
+
+#: ../../models/gwr_multiscale.rst:16
+msgid "y_i = \\beta_{i0}(b_0) + \\sum_{k=1}^{p} \\beta_{ik}(b_k) x_{ik} + \\varepsilon_i"
+msgstr "y_i = \\beta_{i0}(b_0) + \\sum_{k=1}^{p} \\beta_{ik}(b_k) x_{ik} + \\varepsilon_i"
+
+#: ../../models/gwr_multiscale.rst:20
+msgid "However, each coefficient :math:`\\beta_{ik}` is estimated using its own bandwidth :math:`b_k`. Bandwidth calibration is carried out via the **backfitting** algorithm [#mgwr]_:"
+msgstr "然而，每个系数 :math:`\\beta_{ik}` 使用各自的带宽 :math:`b_k` 进行估计。带宽校准通过**后向迭代算法**\ 执行 [#mgwr]_："
+
+#: ../../models/gwr_multiscale.rst:24
+msgid "**Initialisation**\ : Compute initial coefficient estimates :math:`\\boldsymbol{\\beta}^{(0)}` using standard GWR with an initial spatial weighting configuration."
+msgstr "**初始化**\ ：使用标准 GWR 配合初始空间权重配置计算初始系数估计 :math:`\\boldsymbol{\\beta}^{(0)}`。"
+
+#: ../../models/gwr_multiscale.rst:27
+msgid "**Backfitting**\ : For each iteration :math:`t = 1, 2, \\dots`:"
+msgstr "**后向迭代**\ ：对于每次迭代 :math:`t = 1, 2, \\dots`："
+
+#: ../../models/gwr_multiscale.rst:29
+msgid "For each variable :math:`k`:"
+msgstr "对于每个变量 :math:`k`："
+
+#: ../../models/gwr_multiscale.rst:31
+msgid "Fix the coefficients of all other variables and compute the residual of the dependent variable for the current variable."
+msgstr "固定所有其他变量的系数，计算当前变量对应的因变量残差。"
+
+#: ../../models/gwr_multiscale.rst:32
+msgid "Select the optimal bandwidth :math:`b_k` for variable :math:`k` (golden section search with CV/AIC criterion)."
+msgstr "为变量 :math:`k`\ 优选最优带宽 :math:`b_k`\ （黄金分割算法配合 CV/AIC 准则）。"
+
+#: ../../models/gwr_multiscale.rst:33
+msgid "Fit new coefficients for variable :math:`k` using :math:`b_k`."
+msgstr "使用 :math:`b_k` 为变量 :math:`k` 拟合新的回归系数估计值。"
+
+#: ../../models/gwr_multiscale.rst:34
+msgid "Update the residuals."
+msgstr "更新残差。"
+
+#: ../../models/gwr_multiscale.rst:36
+msgid "Check the convergence criterion (CVR or dCVR); stop if satisfied."
+msgstr "检查收敛准则（CVR 或 dCVR）；满足条件则停止。"
+
+#: ../../models/gwr_multiscale.rst:38
+msgid "**Diagnostics**\ : Compute RSS, AICc, ENP, EDF, R², and other diagnostic metrics."
+msgstr "**诊断**\ ：计算 RSS、AICc、ENP、EDF、R² 及其他诊断指标。"
+
+#: ../../models/gwr_multiscale.rst:41
+msgid "Convergence Criteria"
+msgstr "收敛准则"
+
+#: ../../models/gwr_multiscale.rst:43
+msgid "**CVR** (Change in RSS):"
+msgstr "**CVR**\ （残差平方和变化量）："
+
+#: ../../models/gwr_multiscale.rst:45
+msgid "\\text{CVR} = |RSS_t - RSS_{t-1}|"
+msgstr "\\text{CVR} = |RSS_t - RSS_{t-1}|"
+
+#: ../../models/gwr_multiscale.rst:49
+msgid "**dCVR** (relative Change in RSS, default):"
+msgstr "**dCVR**\ （残差平方和相对变化量，默认）："
+
+#: ../../models/gwr_multiscale.rst:51
+msgid "\\text{dCVR} = \\sqrt{\\frac{|RSS_t - RSS_{t-1}|}{RSS_t}}"
+msgstr "\\text{dCVR} = \\sqrt{\\frac{|RSS_t - RSS_{t-1}|}{RSS_t}}"
+
+#: ../../models/gwr_multiscale.rst:67
+msgid "``weights``"
+msgstr "``weights``"
+
+#: ../../models/gwr_multiscale.rst:68
+msgid "A list of bandwidth weights, one per variable (including intercept)"
+msgstr "带宽权重列表，每个变量一个（包括截距）"
+
+#: ../../models/gwr_multiscale.rst:71
+msgid "The distance metric shared by all variables"
+msgstr "所有变量共用的距离度量"
+
+#: ../../models/gwr_multiscale.rst:76
+msgid "``bandwidth_initilize``"
+msgstr "``bandwidth_initilize``"
+
+#: ../../models/gwr_multiscale.rst:77
+msgid "Bandwidth initialisation type per variable"
+msgstr "各变量的带宽初始值类型"
+
+#: ../../models/gwr_multiscale.rst:78
+msgid "All ``Null`` (auto-select)"
+msgstr "``Null``\ （自动选择）"
+
+#: ../../models/gwr_multiscale.rst:79
+msgid "``bandwidth_selection_approach``"
+msgstr "``bandwidth_selection_approach``"
+
+#: ../../models/gwr_multiscale.rst:80
+msgid "Bandwidth selection criterion per variable"
+msgstr "各变量的带宽优选准则"
+
+#: ../../models/gwr_multiscale.rst:81
+msgid "All ``CV``"
+msgstr "全部 ``CV``"
+
+#: ../../models/gwr_multiscale.rst:82
+msgid "``preditor_centered``"
+msgstr "``preditor_centered``"
+
+#: ../../models/gwr_multiscale.rst:83
+msgid "Whether to centre each predictor before fitting"
+msgstr "拟合前是否对每个自变量进行中心化"
+
+#: ../../models/gwr_multiscale.rst:84
+msgid "All ``False``"
+msgstr "全部 ``False``"
+
+#: ../../models/gwr_multiscale.rst:85
+msgid "``criterion_type``"
+msgstr "``criterion_type``"
+
+#: ../../models/gwr_multiscale.rst:86
+msgid "Backfitting convergence criterion type"
+msgstr "后向迭代算法收敛准则类型"
+
+#: ../../models/gwr_multiscale.rst:87
+msgid "``dCVR``"
+msgstr "``dCVR``"
+
+#: ../../models/gwr_multiscale.rst:88
+msgid "``max_iteration``"
+msgstr "``max_iteration``"
+
+#: ../../models/gwr_multiscale.rst:89
+msgid "Maximum number of iterations"
+msgstr "最大迭代次数"
+
+#: ../../models/gwr_multiscale.rst:90
+msgid "``500``"
+msgstr "``500``"
+
+#: ../../models/gwr_multiscale.rst:91
+msgid "``criterion_threshold``"
+msgstr "``criterion_threshold``"
+
+#: ../../models/gwr_multiscale.rst:92
+msgid "Convergence threshold"
+msgstr "收敛阈值"
+
+#: ../../models/gwr_multiscale.rst:93
+msgid "``1e-6``"
+msgstr "``1e-6``"
+
+#: ../../models/gwr_multiscale.rst:94
+msgid "``has_hat_matrix``"
+msgstr "``has_hat_matrix``"
+
+#: ../../models/gwr_multiscale.rst:95
+msgid "Whether to compute the hat matrix (for diagnostics)"
+msgstr "是否计算帽子矩阵（用于诊断）"
+
+#: ../../models/gwr_multiscale.rst:97
+msgid "``adaptive_lower``"
+msgstr "``adaptive_lower``"
+
+#: ../../models/gwr_multiscale.rst:98
+msgid "Lower bound on neighbour count for adaptive bandwidth selection"
+msgstr "可变带宽优选时的邻居数下限"
+
+#: ../../models/gwr_multiscale.rst:99
+msgid "``10``"
+msgstr "``10``"
+
+#: ../../models/gwr_multiscale.rst:102
+msgid "Bandwidth Initialisation Types"
+msgstr "带宽初始值类型"
+
+#: ../../models/gwr_multiscale.rst:108
+msgid "Type"
+msgstr "类型"
+
+#: ../../models/gwr_multiscale.rst:110
+msgid "``BandwidthInitilizeType.Null``"
+msgstr "``BandwidthInitilizeType.Null``"
+
+#: ../../models/gwr_multiscale.rst:111
+msgid "Not specified; auto-select via golden section search during backfitting"
+msgstr "未指定；后向迭代过程中通过黄金分割算法自动选择"
+
+#: ../../models/gwr_multiscale.rst:112
+msgid "``BandwidthInitilizeType.Specified``"
+msgstr "``BandwidthInitilizeType.Specified``"
+
+#: ../../models/gwr_multiscale.rst:113
+msgid "User-specified; skip bandwidth selection and use the fixed value from ``weights``"
+msgstr "用户指定；跳过带宽优选，使用 ``weights`` 中的固定值"
+
+#: ../../models/gwr_multiscale.rst:114
+msgid "``BandwidthInitilizeType.Initial``"
+msgstr "``BandwidthInitilizeType.Initial``"
+
+#: ../../models/gwr_multiscale.rst:115
+msgid "Initially optimised; may still be adjusted in later backfitting iterations"
+msgstr "初始已优化；在后续后向迭代中仍可被调整"
+
+#: ../../models/gwr_multiscale.rst:123
+msgid "Basic Usage (Auto-Select Bandwidths)"
+msgstr "基本用法（自动优选带宽）"
+
+#: ../../models/gwr_multiscale.rst:154
+msgid "Specified Bandwidths"
+msgstr "指定带宽"
+
+#: ../../models/gwr_multiscale.rst:171
+msgid "Note: when ``bandwidth_initilize`` is set to ``Specified``, the bandwidths remain fixed; otherwise they are iteratively optimised during backfitting."
+msgstr "注意：当 ``bandwidth_initilize`` 设置为 ``Specified`` 时，带宽保持固定；否则将在后向迭代过程中逐步优化。"
+
+#: ../../models/gwr_multiscale.rst:175
+msgid "Adjusting Convergence"
+msgstr "调整收敛准则"
+
+#: ../../models/gwr_multiscale.rst:190
+msgid "Fotheringham, A. S., Yang, W., & Kang, W. (2017). *Multiscale geographically weighted regression (MGWR)*. Annals of the American Association of Geographers, 107(6), 1247-1265."
+msgstr "Fotheringham, A. S., Yang, W., & Kang, W. (2017). *Multiscale geographically weighted regression (MGWR)*. Annals of the American Association of Geographers, 107(6), 1247-1265."
+
+#: ../../models/gwr_multiscale.rst:194
+msgid "Yu, H., Fotheringham, A. S., Li, Z., Oshan, T., Kang, W., & Wolf, L. J. (2020). *Inference in multiscale geographically weighted regression*. Geographical Analysis, 52(1), 87-106."
+msgstr "Yu, H., Fotheringham, A. S., Li, Z., Oshan, T., Kang, W., & Wolf, L. J. (2020). *Inference in multiscale geographically weighted regression*. Geographical Analysis, 52(1), 87-106."
+
+#: ../../models/gwss.rst:2
+msgid "Geographically Weighted Summary Statistics (GWSS)"
+msgstr "地理加权汇总统计 (GWSS)"
+
+#: ../../models/gwss.rst:7
+msgid "Model Overview"
+msgstr "模型概述"
+
+#: ../../models/gwss.rst:9
+msgid "Geographically Weighted Summary Statistics (GWSS) performs locally weighted descriptive statistics on multivariate data, revealing spatial heterogeneity in the statistical characteristics of variables."
+msgstr "地理加权汇总统计 (GWSS) 对多维数据执行局部加权描述性统计，揭示变量统计特征的空间异质性。"
+
+#: ../../models/gwss.rst:13
+msgid "GWSS supports two modes:"
+msgstr "GWSS 支持两种模式："
+
+#: ../../models/gwss.rst:15
+msgid "Average mode — computes local mean, standard deviation, variance, skewness, coefficient of variation, and optionally local median, interquartile range, and quantile imbalance."
+msgstr "均值模式 — 计算局部均值、局部标准差、局部方差、局部偏度、局部变异系数，以及可选的局部中位数、四分位距和分位数不平衡度。"
+
+#: ../../models/gwss.rst:18
+msgid "Correlation mode — computes local Pearson correlation coefficients and Spearman rank correlation coefficients."
+msgstr "相关性模式 — 计算局部皮尔逊相关系数和局部斯皮尔曼秩相关系数。"
+
+#: ../../models/gwss.rst:24
+msgid "Two Modes"
+msgstr "两种模式"
+
+#: ../../models/gwss.rst:27
+#: ../../models/gwss.rst:87
+msgid "Average Mode"
+msgstr "均值模式"
+
+#: ../../models/gwss.rst:29
+msgid "For each variable, the following local statistics are computed:"
+msgstr "对于每个变量，计算以下局部统计量："
+
+#: ../../models/gwss.rst:35
+#: ../../models/gwss.rst:57
+msgid "Statistic"
+msgstr "统计量"
+
+#: ../../models/gwss.rst:36
+#: ../../models/gwss.rst:58
+msgid "Attribute"
+msgstr "属性"
+
+#: ../../models/gwss.rst:37
+#: ../../models/gwss.rst:59
+msgid "Column Name"
+msgstr "列名"
+
+#: ../../models/gwss.rst:38
+msgid "Local Mean"
+msgstr "局部均值"
+
+#: ../../models/gwss.rst:39
+msgid "``local_mean``"
+msgstr "``local_mean``"
+
+#: ../../models/gwss.rst:40
+msgid "``{variable}_Mean``"
+msgstr "``{variable}_Mean``"
+
+#: ../../models/gwss.rst:41
+msgid "Local Std Dev"
+msgstr "局部标准差"
+
+#: ../../models/gwss.rst:42
+msgid "``local_sdev``"
+msgstr "``local_sdev``"
+
+#: ../../models/gwss.rst:43
+msgid "``{variable}_SDev``"
+msgstr "``{variable}_SDev``"
+
+#: ../../models/gwss.rst:44
+msgid "Local Skewness"
+msgstr "局部偏度"
+
+#: ../../models/gwss.rst:45
+msgid "``local_skewness``"
+msgstr "``local_skewness``"
+
+#: ../../models/gwss.rst:46
+msgid "``{variable}_Skew``"
+msgstr "``{variable}_Skew``"
+
+#: ../../models/gwss.rst:47
+msgid "Local CV"
+msgstr "局部变异系数"
+
+#: ../../models/gwss.rst:48
+msgid "``local_cv``"
+msgstr "``local_cv``"
+
+#: ../../models/gwss.rst:49
+msgid "``{variable}_CV``"
+msgstr "``{variable}_CV``"
+
+#: ../../models/gwss.rst:51
+msgid "When ``quantile=True``:"
+msgstr "当 ``quantile=True`` 时："
+
+#: ../../models/gwss.rst:60
+msgid "Local Median"
+msgstr "局部中位数"
+
+#: ../../models/gwss.rst:61
+msgid "``local_median``"
+msgstr "``local_median``"
+
+#: ../../models/gwss.rst:62
+msgid "``{variable}_Median``"
+msgstr "``{variable}_Median``"
+
+#: ../../models/gwss.rst:63
+msgid "IQR"
+msgstr "IQR"
+
+#: ../../models/gwss.rst:64
+msgid "``iqr``"
+msgstr "``iqr``"
+
+#: ../../models/gwss.rst:65
+msgid "``{variable}_IQR``"
+msgstr "``{variable}_IQR``"
+
+#: ../../models/gwss.rst:66
+msgid "Quantile Imbalance"
+msgstr "分位数不平衡度"
+
+#: ../../models/gwss.rst:67
+msgid "``qi``"
+msgstr "``qi``"
+
+#: ../../models/gwss.rst:68
+msgid "``{variable}_QI``"
+msgstr "``{variable}_QI``"
+
+#: ../../models/gwss.rst:71
+#: ../../models/gwss.rst:108
+msgid "Correlation Mode"
+msgstr "相关性模式"
+
+#: ../../models/gwss.rst:73
+msgid "For each pair of variables :math:`(X_i, X_j)`, the following are computed:"
+msgstr "对于每对变量 :math:`(X_i, X_j)`，计算以下内容："
+
+#: ../../models/gwss.rst:75
+msgid "Local Pearson correlation coefficient — via locally weighted covariance"
+msgstr "局部皮尔逊相关系数 — 通过局部加权协方差"
+
+#: ../../models/gwss.rst:76
+msgid "Local Spearman rank correlation coefficient — via locally weighted correlation on ranked data"
+msgstr "局部斯皮尔曼秩相关系数 — 通过对排序数据计算局部加权相关性"
+
+#: ../../models/gwss.rst:79
+msgid "Column name format: ``{var1}.{var2}_Corr`` and ``{var1}.{var2}_SCorr``."
+msgstr "列名格式：``{var1}.{var2}_Corr`` 和 ``{var1}.{var2}_SCorr``。"

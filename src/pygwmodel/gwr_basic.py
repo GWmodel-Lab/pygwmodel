@@ -1,7 +1,6 @@
 from typing import List, Union, Optional
 import numpy as np
 import geopandas as gp
-from enum import IntEnum
 from .spatial_weight import SpatialWeight, Distance, BandwidthWeight
 from .parallel import ParallelType
 from ._regression import _GWRBasic
@@ -12,9 +11,7 @@ class GWRBasic:
     Basic GWR python high api class.
     """
 
-    class BandwidthSelectionCriterionType(IntEnum):
-        AIC = _GWRBasic.AIC
-        CV = _GWRBasic.CV
+    BandwidthSelectionCriterionType = _GWRBasic.BandwidthSelectionCriterionType
 
     def __init__(self, sdf: gp.GeoDataFrame, depen_var: str, indep_vars: List[str], weight: BandwidthWeight, distance: Distance, has_intercept=True):
         """

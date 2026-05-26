@@ -1,0 +1,130 @@
+name: CD
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build-wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      USERNAME: GWmodel-Lab
+      FEED_URL: https://nuget.pkg.github.com/GWmodel-Lab/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,github,readwrite"
+      VCPKG_USE_NUGET_CACHE: 1
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install cibuildwheel
+        run: pip install cibuildwheel delvewheel
+
+      - name: Restore Vcpkg
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cd "$env:VCPKG_INSTALLATION_ROOT"
+          git fetch
+          git switch 2026.04.27 --detach
+
+      - name: Setup NuGet Credentials
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $VCPKG_EXE="$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
+          $NUGET_EXE="$(.$VCPKG_EXE fetch nuget)"
+          .$NUGET_EXE sources add -Source ${{ env.FEED_URL }} -Name github -UserName ${{ env.USERNAME }} -Password ${{ secrets.GITHUB_TOKEN }} -StorePasswordInClearText
+          .$NUGET_EXE setapikey ${{ secrets.GITHUB_TOKEN }} -Source "${{ env.FEED_URL }}"
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp312-*"
+          CIBW_SKIP: "pp* *-musllinux* *-manylinux_i686* *-win32 *-macosx_x86_64"
+          CIBW_BEFORE_ALL_LINUX: >
+            apt-get update -qq &&
+            apt-get install -qq libarmadillo-dev libopenblas-dev libgsl-dev
+          CIBW_ENVIRONMENT_LINUX: >
+            CMAKE_ARGS="-DWITH_TESTS=OFF"
+            PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
+          CIBW_BEFORE_ALL_MACOS: brew install armadillo gsl openblas
+          CIBW_ENVIRONMENT_MACOS: >
+            CMAKE_ARGS="-DWITH_TESTS=OFF"
+            PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
+            MACOSX_DEPLOYMENT_TARGET="10.14"
+          CIBW_BEFORE_ALL_WINDOWS: |
+            $vcpkg = "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
+            & $vcpkg install armadillo gsl openblas --triplet x64-windows
+          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          CIBW_ENVIRONMENT_WINDOWS: >
+            PATH="C:/vcpkg/installed/x64-windows/bin"
+            CMAKE_ARGS="-DWITH_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            python "${{ github.workspace }}/tools/repair_windows_wheel.py" {wheel} {dest_dir}
+          CIBW_TEST_COMMAND: "pytest {project}/tests -v --ignore={project}/tests/test_gwss.py"
+          CIBW_TEST_REQUIRES: pytest
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: wheelhouse/*.whl
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build-wheels
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Create GitHub Release
+    needs: build-wheels
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.whl
+          generate_release_notes: true

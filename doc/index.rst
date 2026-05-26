@@ -1,28 +1,53 @@
-.. pygwmodel documentation master file, created by
-   sphinx-quickstart on Sat Nov 18 16:45:14 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+pygwmodel Documentation
+=========================
 
-Welcome to pygwmodel's documentation!
-=====================================
+**pygwmodel** is a Python package providing conscious and easy-to-use interfaces to
+high-performance C++ implementations of geographically weighted (GW) models,
+based on `libgwmodel <https://github.com/GWmodel-Lab/libgwmodel>`_ and **GeoPandas**.
 
-The **pygwmodel** is a Python package of bindings to geographically weighted (GW) models.
-GW modelling is a special branch of spatial statistics.
-GW models suit situations when data are not described well by some global model,
-but where there are spatial regions where a suitably localized calibration provides a better description.
+GW models are a branch of spatial statistics suited to situations where data are
+not well described by some global model, but where spatial regions exist where a
+suitably localized calibration provides a better description.
 
-The goal of **pygwmodel** is to provide conscious and easy-to-use user interface
-to high-performance C++ implementations of GW models based on **GeoPandas**.
-We believe with the newly designed interfaces and the underlying C++ core,
-users will get fluent experiences.
+Implemented Models
+------------------
+
+* **GWRBasic** — Basic Geographically Weighted Regression with a single bandwidth.
+* **GWRMultiscale** — Multiscale GWR (MGWR) with per-variable bandwidths and
+  backfitting algorithm.
+* **GWSS** — Geographically Weighted Summary Statistics (averages and correlations).
+
+Quick Start
+-----------
+
+.. code-block:: python
+
+   from pygwmodel import GWRBasic, GWRMultiscale, BandwidthWeight, CRSDistance
+
+   # Basic GWR
+   algorithm = GWRBasic(data, y, x,
+                        weight=BandwidthWeight(36.0, adaptive=True),
+                        distance=CRSDistance()).fit()
+   print(algorithm.diagnostic['RSquare'])
+
+   # Multiscale GWR
+   mgwr = GWRMultiscale(data, y, x,
+                        weights=[BandwidthWeight(36.0, adaptive=True) for _ in range(4)]
+                        ).fit()
+   print(mgwr.diagnostic)
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   quickstart
+   spatial_weight
+   models
+   models/gwss
+   performance
    modules.rst
 
-Indices and tables
+Indices and Tables
 ==================
 
 * :ref:`genindex`

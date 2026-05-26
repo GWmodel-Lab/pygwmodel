@@ -1,0 +1,263 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, GWmodel-Lab
+# This file is distributed under the same license as the pygwmodel package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pygwmodel \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 23:29+0800\n"
+"PO-Revision-Date: 2026-05-19 18:20+0800\n"
+"Last-Translator: pygwmodel team <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../spatial_weight.rst:2
+msgid "Spatial Weights"
+msgstr "空间权重"
+
+#: ../../spatial_weight.rst:4
+msgid "Spatial weights are the core concept of GW models. For each target point :math:`i`, the distance to every other data point :math:`j` is computed via a distance metric, and a kernel function converts the distance into a weight :math:`w_{ij}`. Larger distance means smaller weight."
+msgstr "空间权重是 GW 模型的核心概念。对于每个目标点 :math:`i`，通过距离度量计算其到每个其他数据点 :math:`j` 的距离，再通过核函数将距离转换为权重 :math:`w_{ij}`。距离越大，权重越小。"
+
+#: ../../spatial_weight.rst:12
+msgid "Distance Metrics"
+msgstr "距离度量"
+
+#: ../../spatial_weight.rst:14
+msgid "pygwmodel supports the following distance metrics:"
+msgstr "pygwmodel 支持以下距离度量："
+
+#: ../../spatial_weight.rst:20
+msgid "Distance Type"
+msgstr "距离类型"
+
+#: ../../spatial_weight.rst:21
+msgid "Description"
+msgstr "描述"
+
+#: ../../spatial_weight.rst:22
+msgid "Python Class"
+msgstr "Python 类"
+
+#: ../../spatial_weight.rst:23
+#: ../../spatial_weight.rst:44
+msgid "CRS Distance"
+msgstr "坐标系距离"
+
+#: ../../spatial_weight.rst:24
+msgid "Automatic selection based on coordinate reference system: Euclidean for projected coordinates, great-circle for geographic coordinates."
+msgstr "基于坐标参考系自动选择：投影坐标系使用欧几里得距离，地理坐标系使用大圆距离。"
+
+#: ../../spatial_weight.rst:26
+msgid ":class:`~pygwmodel.spatial_weight.CRSDistance`"
+msgstr ":class:`~pygwmodel.spatial_weight.CRSDistance`"
+
+#: ../../spatial_weight.rst:27
+msgid "Minkowski Distance"
+msgstr "闵可夫斯基距离"
+
+#: ../../spatial_weight.rst:28
+msgid "Generalised distance parameterised by :math:`p`: :math:`p=1` is Manhattan, :math:`p=2` is Euclidean, :math:`p \\to \\infty` is Chebyshev."
+msgstr "由 :math:`p` 参数化的广义距离：:math:`p=1` 为曼哈顿距离，:math:`p=2` 为欧几里得距离，:math:`p \\to \\infty` 为切比雪夫距离。"
+
+#: ../../spatial_weight.rst:30
+#: ../../spatial_weight.rst:34
+#: ../../spatial_weight.rst:37
+#: ../../spatial_weight.rst:41
+msgid "(C++ implemented; Python binding pending)"
+msgstr "（C++ 已实现；Python 绑定待完成）"
+
+#: ../../spatial_weight.rst:31
+msgid "One-Dimensional Distance"
+msgstr "一维距离"
+
+#: ../../spatial_weight.rst:32
+msgid "Absolute difference along a single spatial or temporal dimension, used as the temporal component in spatiotemporal models."
+msgstr "沿单一空间或时间维度的绝对差，在时空模型中作为时间分量使用。"
+
+#: ../../spatial_weight.rst:35
+msgid "Distance Matrix File"
+msgstr "距离矩阵文件"
+
+#: ../../spatial_weight.rst:36
+msgid "Reads distances from a precomputed ``.dmat`` binary distance matrix file."
+msgstr "从预先计算的 ``.dmat`` 二进制距离矩阵文件中读取距离。"
+
+#: ../../spatial_weight.rst:38
+msgid "Spatiotemporal Distance"
+msgstr "时空距离"
+
+#: ../../spatial_weight.rst:39
+msgid "Weighted combination of spatial and temporal distances, supporting orthogonal and oblique modes."
+msgstr "空间距离与时间距离的加权组合，支持正交和斜交模式。"
+
+#: ../../spatial_weight.rst:46
+msgid "The coordinate-reference-system distance is the most commonly used metric, automatically selecting the calculation method based on the CRS."
+msgstr "坐标参考系距离是最常用的度量，会根据 CRS 自动选择计算方法。"
+
+#: ../../spatial_weight.rst:49
+msgid "**Projected coordinates** (``is_geographic=False``) — Euclidean distance:"
+msgstr "**投影坐标系** (``is_geographic=False``) — 欧几里得距离："
+
+#: ../../spatial_weight.rst:51
+msgid "d_{ij} = \\sqrt{(u_i - u_j)^2 + (v_i - v_j)^2}"
+msgstr "d_{ij} = \\sqrt{(u_i - u_j)^2 + (v_i - v_j)^2}"
+
+#: ../../spatial_weight.rst:55
+msgid "**Geographic coordinates** (``is_geographic=True``) — great-circle distance (geodesic distance)."
+msgstr "**地理坐标系** (``is_geographic=True``) — 大圆距离（测地线距离）。"
+
+#: ../../spatial_weight.rst:58
+#: ../../spatial_weight.rst:109
+#: ../../spatial_weight.rst:142
+msgid "Usage:"
+msgstr "用法："
+
+#: ../../spatial_weight.rst:73
+msgid "Kernel Functions and Weights"
+msgstr "核函数与权重"
+
+#: ../../spatial_weight.rst:75
+msgid "Kernel functions convert distances :math:`d_{ij}` into weights :math:`w_{ij}`. pygwmodel supports five kernel functions, configured via :class:`~pygwmodel.spatial_weight.BandwidthWeight`."
+msgstr "核函数将距离 :math:`d_{ij}` 转换为权重 :math:`w_{ij}`。pygwmodel 支持五种核函数，通过 :class:`~pygwmodel.spatial_weight.BandwidthWeight` 配置。"
+
+#: ../../spatial_weight.rst:83
+msgid "Kernel"
+msgstr "核函数"
+
+#: ../../spatial_weight.rst:84
+msgid "Formula"
+msgstr "公式"
+
+#: ../../spatial_weight.rst:85
+msgid "Enum Value"
+msgstr "枚举值"
+
+#: ../../spatial_weight.rst:86
+msgid "Gaussian"
+msgstr "高斯"
+
+#: ../../spatial_weight.rst:87
+msgid ":math:`w_{ij} = \\exp\\left(-\\dfrac{d_{ij}^2}{2b^2}\\right)`"
+msgstr ":math:`w_{ij} = \\exp\\left(-\\dfrac{d_{ij}^2}{2b^2}\\right)`"
+
+#: ../../spatial_weight.rst:88
+msgid "``BandwidthWeight.Kernel.Gaussian``"
+msgstr "``BandwidthWeight.Kernel.Gaussian``"
+
+#: ../../spatial_weight.rst:89
+msgid "Exponential"
+msgstr "指数"
+
+#: ../../spatial_weight.rst:90
+msgid ":math:`w_{ij} = \\exp\\left(-\\dfrac{|d_{ij}|}{b}\\right)`"
+msgstr ":math:`w_{ij} = \\exp\\left(-\\dfrac{|d_{ij}|}{b}\\right)`"
+
+#: ../../spatial_weight.rst:91
+msgid "``BandwidthWeight.Kernel.Exponential``"
+msgstr "``BandwidthWeight.Kernel.Exponential``"
+
+#: ../../spatial_weight.rst:92
+msgid "Bisquare"
+msgstr "双平方"
+
+#: ../../spatial_weight.rst:93
+msgid ":math:`w_{ij} = \\begin{cases} \\left(1 - \\left(\\frac{d_{ij}}{b}\\right)^2\\right)^2, & d_{ij} < b \\\\ 0, & \\text{otherwise} \\end{cases}`"
+msgstr ":math:`w_{ij} = \\begin{cases} \\left(1 - \\left(\\frac{d_{ij}}{b}\\right)^2\\right)^2, & d_{ij} < b \\\\ 0, & \\text{otherwise} \\end{cases}`"
+
+#: ../../spatial_weight.rst:94
+msgid "``BandwidthWeight.Kernel.Bisquare``"
+msgstr "``BandwidthWeight.Kernel.Bisquare``"
+
+#: ../../spatial_weight.rst:95
+msgid "Tricube"
+msgstr "三次方"
+
+#: ../../spatial_weight.rst:96
+msgid ":math:`w_{ij} = \\begin{cases} \\left(1 - \\left(\\frac{d_{ij}}{b}\\right)^3\\right)^3, & d_{ij} < b \\\\ 0, & \\text{otherwise} \\end{cases}`"
+msgstr ":math:`w_{ij} = \\begin{cases} \\left(1 - \\left(\\frac{d_{ij}}{b}\\right)^3\\right)^3, & d_{ij} < b \\\\ 0, & \\text{otherwise} \\end{cases}`"
+
+#: ../../spatial_weight.rst:97
+msgid "``BandwidthWeight.Kernel.Tricube``"
+msgstr "``BandwidthWeight.Kernel.Tricube``"
+
+#: ../../spatial_weight.rst:98
+msgid "Boxcar"
+msgstr "矩形"
+
+#: ../../spatial_weight.rst:99
+msgid ":math:`w_{ij} = \\begin{cases} 1, & d_{ij} < b \\\\ 0, & \\text{otherwise} \\end{cases}`"
+msgstr ":math:`w_{ij} = \\begin{cases} 1, & d_{ij} < b \\\\ 0, & \\text{otherwise} \\end{cases}`"
+
+#: ../../spatial_weight.rst:100
+msgid "``BandwidthWeight.Kernel.Boxcar``"
+msgstr "``BandwidthWeight.Kernel.Boxcar``"
+
+#: ../../spatial_weight.rst:102
+msgid "Here :math:`b` is the bandwidth and :math:`d_{ij}` is the distance from sample :math:`i` to sample :math:`j`."
+msgstr "其中 :math:`b` 为带宽，:math:`d_{ij}` 为样本 :math:`i` 到样本 :math:`j` 的距离。"
+
+#: ../../spatial_weight.rst:105
+msgid "Gaussian and Exponential are continuous kernels — all samples receive non-zero weights. Bisquare, Tricube, and Boxcar are truncated kernels — samples beyond the bandwidth receive zero weight, which is useful for emphasising local effects."
+msgstr "高斯和指数是连续核函数——所有样本都获得非零权重。双平方、三次方和矩形是截断核函数——超出带宽范围的样本权重为零，这在强调局部效应时很有用。"
+
+#: ../../spatial_weight.rst:126
+msgid "Bandwidth"
+msgstr "带宽"
+
+#: ../../spatial_weight.rst:128
+msgid "The bandwidth :math:`b` controls the rate at which spatial weights decay and is the most important parameter in GW models."
+msgstr "带宽 :math:`b` 控制空间权重的衰减速率，是 GW 模型中最重要的参数。"
+
+#: ../../spatial_weight.rst:132
+msgid "Bandwidth Types"
+msgstr "带宽类型"
+
+#: ../../spatial_weight.rst:134
+msgid "**Fixed bandwidth**\ : The bandwidth value is a distance. Weights are computed directly as :math:`w = k(d; b)`."
+msgstr "**固定带宽**\ ：带宽值是一个距离值。权重直接按 :math:`w = k(d; b)` 计算。"
+
+#: ../../spatial_weight.rst:136
+msgid "**Adaptive bandwidth**\ : The bandwidth value is a neighbour count. For focus point :math:`i`, the effective distance bandwidth is the distance to the :math:`b`-th nearest neighbour. Different locations can use different effective distance bandwidths, making this suitable for datasets with non-uniform sample density."
+msgstr "**可变带宽**\ ：带宽值是一个邻居数。对于焦点 :math:`i`，有效距离带宽为到第 :math:`b` 个最近邻的距离。不同位置可以使用不同的有效距离带宽，适用于样本密度不均匀的数据集。"
+
+#: ../../spatial_weight.rst:153
+msgid "Bandwidth Selection"
+msgstr "带宽优选"
+
+#: ../../spatial_weight.rst:155
+msgid "If you are unsure about the right bandwidth value, the algorithm can select it automatically."
+msgstr "如果不确定合适的带宽值，算法可以自动选择。"
+
+#: ../../spatial_weight.rst:158
+msgid "**GWRBasic**\ :"
+msgstr "**GWRBasic**\ ："
+
+#: ../../spatial_weight.rst:170
+msgid "**GWRMultiscale** (each variable's bandwidth is optimised independently during backfitting):"
+msgstr "**GWRMultiscale**\ （各变量的带宽在后向迭代过程中独立优化）："
+
+#: ../../spatial_weight.rst:188
+msgid "Bandwidth selection criteria:"
+msgstr "带宽优选准则："
+
+#: ../../spatial_weight.rst:190
+msgid "**CV** (Cross-Validation): Minimizes the cross-validation residual sum of squares."
+msgstr "**CV**\ （交叉验证）：最小化交叉验证残差平方和。"
+
+#: ../../spatial_weight.rst:191
+msgid "**AIC** (Akaike Information Criterion): Minimizes the AIC value."
+msgstr "**AIC**\ （赤池信息准则）：最小化 AIC 值。"
+
+#: ../../spatial_weight.rst:194
+msgid "Spatial Weight Configuration"
+msgstr "空间权重配置"
+
+#: ../../spatial_weight.rst:196
+msgid "A :class:`~pygwmodel.spatial_weight.SpatialWeight` combines a distance metric and a bandwidth weight, created via the factory method:"
+msgstr "一个 :class:`~pygwmodel.spatial_weight.SpatialWeight` 组合了距离度量和带宽权重，通过工厂方法创建："

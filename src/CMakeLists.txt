@@ -19,7 +19,7 @@ else(ARMADILLO_FOUND)
 endif(ARMADILLO_FOUND)
 
 set(LIBGWMODEL_INCLUDE_DIR ../libgwmodel/include)
-include_directories(${LIBGWMODEL_INCLUDE_DIR}/gwmodelpp)
+include_directories(${LIBGWMODEL_INCLUDE_DIR} ${LIBGWMODEL_INCLUDE_DIR}/gwmodelpp)
 
 nanobind_add_module(_parallel STABLE_ABI parallel.cpp)
 target_link_libraries(_parallel PRIVATE gwmodel)
@@ -27,15 +27,14 @@ target_link_libraries(_parallel PRIVATE gwmodel)
 nanobind_add_module(_spatial_weight STABLE_ABI spatial_weight.cpp)
 target_link_libraries(_spatial_weight PRIVATE gwmodel)
 
-nanobind_add_module(_regression STABLE_ABI common.hpp parallel.hpp base.cpp gwr_basic.cpp regression.cpp)
+nanobind_add_module(_regression STABLE_ABI common.hpp parallel.hpp base.cpp gwr_basic.cpp gwr_multiscale.cpp regression.cpp)
 target_link_libraries(_regression PRIVATE gwmodel)
 
-nanobind_add_module(_analysis STABLE_ABI common.hpp base.cpp parallel.hpp analysis.cpp gwss.cpp)
-target_link_libraries(_analysis PRIVATE gwmodel)
+# nanobind_add_module(_analysis STABLE_ABI common.hpp base.cpp parallel.hpp analysis.cpp gwss.cpp)
+# target_link_libraries(_analysis PRIVATE gwmodel)
 
 install(TARGETS 
     _regression
     _spatial_weight
     _parallel
-    _analysis
     LIBRARY DESTINATION pygwmodel)

@@ -1,0 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, GWmodel-Lab
+# This file is distributed under the same license as the pygwmodel package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pygwmodel \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 18:20+0800\n"
+"PO-Revision-Date: 2026-05-19 18:20+0800\n"
+"Last-Translator: pygwmodel team <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../index.rst:39
+msgid "Contents:"
+msgstr "目录:"
+
+#: ../../index.rst:2
+msgid "pygwmodel Documentation"
+msgstr "pygwmodel 文档"
+
+#: ../../index.rst:4
+msgid "**pygwmodel** is a Python package providing conscious and easy-to-use interfaces to high-performance C++ implementations of geographically weighted (GW) models, based on `libgwmodel <https://github.com/GWmodel-Lab/libgwmodel>`_ and **GeoPandas**\ ."
+msgstr "**pygwmodel** 是一个基于 `libgwmodel <https://github.com/GWmodel-Lab/libgwmodel>`_ 和 **GeoPandas** 的 Python 软件包，为高性能 C++ 地理加权（GW）模型实现提供简洁易用的接口。"
+
+#: ../../index.rst:8
+msgid "GW models are a branch of spatial statistics suited to situations where data are not well described by some global model, but where spatial regions exist where a suitably localized calibration provides a better description."
+msgstr "GW 模型是空间统计学的一个分支，适用于数据不能被某个全局模型很好描述，但存在空间区域可通过适当的局部标定提供更优描述的情形。"
+
+#: ../../index.rst:13
+msgid "Implemented Models"
+msgstr "已实现的模型"
+
+#: ../../index.rst:15
+msgid "**GWRBasic** — Basic Geographically Weighted Regression with a single bandwidth."
+msgstr "**GWRBasic** — 基础地理加权回归，使用单一带宽。"
+
+#: ../../index.rst:16
+msgid "**GWRMultiscale** — Multiscale GWR (MGWR) with per-variable bandwidths and backfitting algorithm."
+msgstr "**GWRMultiscale** — 多尺度 GWR (MGWR)，支持逐变量带宽和后向迭代算法。"
+
+#: ../../index.rst:18
+msgid "**GWSS** — Geographically Weighted Summary Statistics (averages and correlations)."
+msgstr "**GWSS** — 地理加权汇总统计（均值和相关性）。"
+
+#: ../../index.rst:21
+msgid "Quick Start"
+msgstr "快速入门"
+
+#: ../../index.rst:51
+msgid "Indices and Tables"
+msgstr "索引与表格"
+
+#: ../../index.rst:53
+msgid ":ref:`genindex`"
+msgstr ":ref:`genindex`"
+
+#: ../../index.rst:54
+msgid ":ref:`modindex`"
+msgstr ":ref:`modindex`"
+
+#: ../../index.rst:55
+msgid ":ref:`search`"
+msgstr ":ref:`search`"

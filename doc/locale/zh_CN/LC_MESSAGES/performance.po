@@ -1,0 +1,210 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, GWmodel-Lab
+# This file is distributed under the same license as the pygwmodel package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pygwmodel \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 23:29+0800\n"
+"PO-Revision-Date: 2026-05-19 18:20+0800\n"
+"Last-Translator: pygwmodel team <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../performance.rst:2
+msgid "High-Performance Computing"
+msgstr "高性能计算"
+
+#: ../../performance.rst:7
+msgid "Supported Parallel Algorithms"
+msgstr "支持的高性能算法"
+
+#: ../../performance.rst:13
+msgid "Algorithm"
+msgstr "算法"
+
+#: ../../performance.rst:14
+msgid "Serial"
+msgstr "串行"
+
+#: ../../performance.rst:15
+msgid "OpenMP"
+msgstr "OpenMP"
+
+#: ../../performance.rst:16
+msgid "CUDA"
+msgstr "CUDA"
+
+#: ../../performance.rst:17
+msgid "MPI"
+msgstr "MPI"
+
+#: ../../performance.rst:18
+msgid "GWRBasic"
+msgstr "GWRBasic"
+
+#: ../../performance.rst:19
+#: ../../performance.rst:20
+#: ../../performance.rst:21
+#: ../../performance.rst:22
+#: ../../performance.rst:24
+#: ../../performance.rst:25
+#: ../../performance.rst:26
+#: ../../performance.rst:29
+#: ../../performance.rst:30
+#: ../../performance.rst:34
+#: ../../performance.rst:35
+msgid "✅"
+msgstr "✅"
+
+#: ../../performance.rst:23
+msgid "GWRMultiscale"
+msgstr "GWRMultiscale"
+
+#: ../../performance.rst:27
+msgid "Serial × :math:`n_{var}`"
+msgstr "串行 × :math:`n_{var}`"
+
+#: ../../performance.rst:28
+msgid "GWSS (Average)"
+msgstr "GWSS（均值）"
+
+#: ../../performance.rst:31
+#: ../../performance.rst:32
+#: ../../performance.rst:36
+#: ../../performance.rst:37
+msgid "—"
+msgstr "—"
+
+#: ../../performance.rst:33
+msgid "GWSS (Correlation)"
+msgstr "GWSS（相关性）"
+
+#: ../../performance.rst:39
+msgid "Notes:"
+msgstr "注意事项："
+
+#: ../../performance.rst:41
+msgid "**Serial** (SerialOnly): single-threaded; suitable for small datasets or debugging."
+msgstr "**串行** (SerialOnly)：单线程；适用于小数据集或调试。"
+
+#: ../../performance.rst:42
+msgid "**OpenMP**\ : shared-memory multi-threading; suitable for single-node multi-core machines. Requires ``ENABLE_OPENMP`` at build time."
+msgstr "**OpenMP**\ ：共享内存多线程并行；适用于单节点多核机器。需要在构建时启用 ``ENABLE_OPENMP``。"
+
+#: ../../performance.rst:44
+msgid "**CUDA**\ : NVIDIA GPU acceleration; suitable for large datasets. Requires ``ENABLE_CUDA`` at build time."
+msgstr "**CUDA**\ ：NVIDIA GPU 加速；适用于大数据集。需要在构建时启用 ``ENABLE_CUDA``。"
+
+#: ../../performance.rst:46
+msgid "**MPI**\ : distributed computing; suitable for multi-node clusters. Requires ``ENABLE_MPI`` at build time."
+msgstr "**MPI**\ ：分布式计算；适用于多节点集群。需要在构建时启用 ``ENABLE_MPI``。"
+
+#: ../../performance.rst:52
+msgid "Multi-Threading (OpenMP)"
+msgstr "多线程并行 (OpenMP)"
+
+#: ../../performance.rst:54
+msgid "Enables shared-memory parallel computation via OpenMP. The core per-sample model fitting loop is parallelised, with each thread independently computing coefficient estimates for a subset of samples."
+msgstr "通过 OpenMP 启用共享内存并行计算。核心的逐样本模型拟合循环被并行化，每个线程独立计算一部分样本的回归系数估计值。"
+
+#: ../../performance.rst:58
+msgid "Setting the number of threads:"
+msgstr "设置线程数："
+
+#: ../../performance.rst:70
+msgid "GWRMultiscale also supports OpenMP:"
+msgstr "GWRMultiscale 也支持 OpenMP："
+
+#: ../../performance.rst:80
+msgid "Recommended thread count: set to the number of physical CPU cores."
+msgstr "推荐线程数：设置为物理 CPU 核心数。"
+
+#: ../../performance.rst:85
+msgid "GPU Acceleration (CUDA)"
+msgstr "GPU 加速 (CUDA)"
+
+#: ../../performance.rst:87
+msgid "Offloads the locally weighted regression matrix operations to a NVIDIA GPU, suitable for larger datasets."
+msgstr "将局部加权回归矩阵运算卸载到 NVIDIA GPU，适用于较大的数据集。"
+
+#: ../../performance.rst:91
+msgid "Group Size (``group_size``)"
+msgstr "组大小 (``group_size``)"
+
+#: ../../performance.rst:93
+msgid "``group_size`` controls how many samples' coefficient estimates are computed together on the GPU in one batch. Larger groups make better use of GPU parallelism but are constrained by GPU memory. The internal constraint is:"
+msgstr "``group_size`` 控制每次在 GPU 上批量计算多少个样本的系数估计值。较大的组能更好地利用 GPU 并行性，但受 GPU 内存限制。内部约束为："
+
+#: ../../performance.rst:97
+msgid "k \\times n \\times g \\times 8 < \\text{GPU Memory}"
+msgstr "k \\times n \\times g \\times 8 < \\text{GPU 显存}"
+
+#: ../../performance.rst:101
+msgid "where :math:`k` is the number of independent variables, :math:`n` is the number of samples, and :math:`g` is the group size."
+msgstr "其中 :math:`k` 为自变量个数，:math:`n` 为样本数，:math:`g` 为组大小。"
+
+#: ../../performance.rst:104
+msgid "Usage:"
+msgstr "用法："
+
+#: ../../performance.rst:114
+msgid "For GWRMultiscale:"
+msgstr "对于 GWRMultiscale："
+
+#: ../../performance.rst:125
+msgid "Performance Tips"
+msgstr "性能建议"
+
+#: ../../performance.rst:131
+msgid "Scenario"
+msgstr "场景"
+
+#: ../../performance.rst:132
+msgid "Recommendation"
+msgstr "建议"
+
+#: ../../performance.rst:133
+msgid "Small datasets (:math:`n < 1000`)"
+msgstr "小数据集 (:math:`n < 1000`)"
+
+#: ../../performance.rst:134
+msgid "Serial is sufficient; overhead is negligible"
+msgstr "串行即可；开销可忽略不计"
+
+#: ../../performance.rst:135
+msgid "Medium datasets (:math:`n < 10^4`)"
+msgstr "中等数据集 (:math:`n < 10^4`)"
+
+#: ../../performance.rst:136
+msgid "Use OpenMP with thread count equal to CPU cores"
+msgstr "使用 OpenMP，线程数等于 CPU 核心数"
+
+#: ../../performance.rst:137
+msgid "Large datasets (:math:`n > 10^4`)"
+msgstr "大数据集 (:math:`n > 10^4`)"
+
+#: ../../performance.rst:138
+msgid "Use CUDA if available; otherwise OpenMP"
+msgstr "如有 CUDA 则使用 CUDA；否则使用 OpenMP"
+
+#: ../../performance.rst:139
+msgid "Speeding up GWRMultiscale"
+msgstr "加速 GWRMultiscale"
+
+#: ../../performance.rst:140
+msgid "Set ``has_hat_matrix=False`` to skip hat matrix computation, significantly reducing memory and computational cost"
+msgstr "设置 ``has_hat_matrix=False`` 跳过帽子矩阵计算，显著减少内存和计算开销"
+
+#: ../../performance.rst:142
+msgid "GWRMultiscale convergence"
+msgstr "GWRMultiscale 收敛"
+
+#: ../../performance.rst:143
+msgid "Increase ``criterion_threshold`` to reduce iterations (trades slight accuracy)"
+msgstr "增大 ``criterion_threshold`` 以减少迭代次数（以微小精度损失为代价）"

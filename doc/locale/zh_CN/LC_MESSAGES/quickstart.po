@@ -1,0 +1,97 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, GWmodel-Lab
+# This file is distributed under the same license as the pygwmodel package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pygwmodel \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 23:29+0800\n"
+"PO-Revision-Date: 2026-05-19 18:20+0800\n"
+"Last-Translator: pygwmodel team <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../quickstart.rst:2
+msgid "Quick Start"
+msgstr "快速入门"
+
+#: ../../quickstart.rst:7
+msgid "Overview"
+msgstr "概览"
+
+#: ../../quickstart.rst:9
+msgid "**pygwmodel** is a Python binding for `libgwmodel <https://github.com/GWmodel-Lab/libgwmodel>`_ that provides clear, high-performance interfaces for geographically weighted (GW) models based on **GeoPandas**\ ."
+msgstr "**pygwmodel** 是 `libgwmodel <https://github.com/GWmodel-Lab/libgwmodel>`_ 的 Python 绑定，为基于 **GeoPandas** 的地理加权（GW）模型提供清晰、高性能的接口。"
+
+#: ../../quickstart.rst:14
+msgid "Currently implemented models:"
+msgstr "当前已实现的模型："
+
+#: ../../quickstart.rst:16
+msgid "**Geographically Weighted Regression (GWR)** — :class:`~pygwmodel.gwr_basic.GWRBasic`"
+msgstr "**地理加权回归 (GWR)** — :class:`~pygwmodel.gwr_basic.GWRBasic`"
+
+#: ../../quickstart.rst:17
+msgid "**Multiscale GWR (MGWR)** — :class:`~pygwmodel.gwr_multiscale.GWRMultiscale`"
+msgstr "**多尺度 GWR (MGWR)** — :class:`~pygwmodel.gwr_multiscale.GWRMultiscale`"
+
+#: ../../quickstart.rst:18
+msgid "**Geographically Weighted Summary Statistics (GWSS)** — :class:`~pygwmodel.gwss.GWSS`"
+msgstr "**地理加权汇总统计 (GWSS)** — :class:`~pygwmodel.gwss.GWSS`"
+
+#: ../../quickstart.rst:20
+msgid "All algorithms use a C++17 core, exposed to Python via `nanobind <https://github.com/wjakob/nanobind>`_, with support for OpenMP multi-threading and CUDA GPU acceleration."
+msgstr "所有算法均使用 C++17 核心，通过 `nanobind <https://github.com/wjakob/nanobind>`_ 暴露给 Python，并支持 OpenMP 多线程并行和 CUDA GPU 加速。"
+
+#: ../../quickstart.rst:27
+msgid "Installation"
+msgstr "安装"
+
+#: ../../quickstart.rst:30
+msgid "System Dependencies"
+msgstr "系统依赖"
+
+#: ../../quickstart.rst:32
+msgid "Install the required native libraries:"
+msgstr "安装所需的原生库："
+
+#: ../../quickstart.rst:43
+msgid "Python Installation"
+msgstr "Python 安装"
+
+#: ../../quickstart.rst:52
+msgid "On Windows, you **must** use OpenBLAS to avoid segmentation faults:"
+msgstr "在 Windows 上，您**必须**\ 使用 OpenBLAS 以避免段错误："
+
+#: ../../quickstart.rst:59
+msgid "Or pass the setting directly to pip:"
+msgstr "或直接将设置传递给 pip："
+
+#: ../../quickstart.rst:68
+msgid "Development Guide"
+msgstr "开发指南"
+
+#: ../../quickstart.rst:71
+msgid "Editable Install"
+msgstr "可编辑安装"
+
+#: ../../quickstart.rst:73
+msgid "An editable install lets you edit Python code without reinstalling:"
+msgstr "可编辑安装允许您修改 Python 代码而无需重新安装："
+
+#: ../../quickstart.rst:81
+msgid "Running Tests"
+msgstr "运行测试"
+
+#: ../../quickstart.rst:96
+msgid "Building Documentation"
+msgstr "构建文档"
+
+#: ../../quickstart.rst:105
+msgid "Project Structure"
+msgstr "项目结构"

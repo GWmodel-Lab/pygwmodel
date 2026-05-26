@@ -49,11 +49,26 @@ pip install . --config-settings=cmake.args=-DBLA_VENDOR=OpenBLAS
 ## Getting started
 
 ```py
-from pygwmodel import GWRBasic
-algorithm = GWRBasic(data, y, x, 36.0).fit()
+from pygwmodel import GWRBasic, BandwidthWeight, CRSDistance
+algorithm = GWRBasic(data, y, x,
+                     weight=BandwidthWeight(36.0, adaptive=True),
+                     distance=CRSDistance()).fit()
 ```
 
-For full usage, please see the unit tests in `test` directory.
+Multiscale GWR (MGWR) assigns a separate bandwidth to each predictor:
+
+```py
+from pygwmodel import GWRMultiscale, BandwidthWeight
+
+n_var = 4  # intercept + 3 predictors
+weights = [BandwidthWeight(36.0, adaptive=True) for _ in range(n_var)]
+
+algorithm = GWRMultiscale(data, y, x, weights=weights).fit()
+print(algorithm.diagnostic)
+```
+
+For full usage, please see the unit tests in `test` directory and the
+`documentation <https://gwmodel-lab.github.io/pygwmodel/>`_.
 
 ## Related work
 

@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  test-unix:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install native dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq libarmadillo-dev libopenblas-dev libgsl-dev
+
+      - name: Install native dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install armadillo gsl openblas
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: pip install nanobind "scikit-build-core[pyproject]" numpy geopandas pytest
+
+      - name: Build package
+        run: pip install --no-build-isolation -ve .
+        env:
+          CMAKE_ARGS: "-DWITH_TESTS=OFF"
+
+      - name: Run tests
+        run: python -m pytest test/ -v --ignore=test/test_gwss.py
+        env:
+          PYGW_TEST_DATA: test/londonhp100.csv
+
+  test-windows:
+    name: windows-latest
+    runs-on: windows-latest
+    env:
+      USERNAME: GWmodel-Lab
+      FEED_URL: https://nuget.pkg.github.com/GWmodel-Lab/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,github,readwrite"
+      VCPKG_USE_NUGET_CACHE: 1
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Restore Vcpkg
+        shell: pwsh
+        run: |
+          cd "$env:VCPKG_INSTALLATION_ROOT"
+          git fetch
+          git switch 2026.04.27 --detach
+
+      - name: Setup NuGet Credentials
+        shell: pwsh
+        run: |
+          $VCPKG_EXE="$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
+          $NUGET_EXE="$(.$VCPKG_EXE fetch nuget)"
+          .$NUGET_EXE sources add -Source ${{ env.FEED_URL }} -Name github -UserName ${{ env.USERNAME }} -Password ${{ secrets.GITHUB_TOKEN }} -StorePasswordInClearText
+          .$NUGET_EXE setapikey ${{ secrets.GITHUB_TOKEN }} -Source "${{ env.FEED_URL }}"
+
+      - name: Install native dependencies
+        shell: pwsh
+        run: |
+          $vcpkg = "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
+          & $vcpkg install armadillo gsl openblas[threads] --triplet x64-windows
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: pip install nanobind "scikit-build-core[pyproject]" numpy geopandas pytest delvewheel
+
+      - name: Build wheel
+        shell: pwsh
+        run: |
+          $env:CMAKE_ARGS = "-DWITH_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+          pip wheel --no-build-isolation --no-deps -v . --wheel-dir wheelhouse
+
+      - name: Repair wheel
+        shell: pwsh
+        run: |
+          $wheel = (Get-ChildItem wheelhouse\pygwmodel-*.whl | Select-Object -First 1).FullName
+          python tools\repair_windows_wheel.py $wheel repaired-wheel
+
+      - name: Install repaired wheel
+        shell: pwsh
+        run: |
+          $wheel = (Get-ChildItem repaired-wheel\pygwmodel-*.whl | Select-Object -First 1).FullName
+          pip install $wheel
+
+      - name: Run tests
+        run: python -m pytest test/ -v --ignore=test/test_gwss.py
+        env:
+          PYGW_TEST_DATA: test/londonhp100.csv

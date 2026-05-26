@@ -1,5 +1,4 @@
 from typing import Optional
-from enum import IntEnum
 from ._spatial_weight import _SpatialWeight
 from ._spatial_weight import _BandwidthWeight
 
@@ -29,12 +28,7 @@ class Weight:
 
 class BandwidthWeight(Weight):
 
-    class Kernel(IntEnum):
-        Gaussian = _BandwidthWeight.Gaussian
-        Exponential = _BandwidthWeight.Exponential
-        Bisquare = _BandwidthWeight.Bisquare
-        Tricube = _BandwidthWeight.Tricube
-        Boxcar = _BandwidthWeight.Boxcar
+    Kernel = _BandwidthWeight.BandwidthKernelType
 
     bandwidth: Optional[float] = None
     adaptive: bool = False

@@ -1,23 +1,29 @@
 import sys
 import os
+from pathlib import Path
 import unittest
 import numpy as np
 import pandas as pd
 import geopandas as gp
 from pygwmodel import GWRBasic, ParallelType, BandwidthWeight, CRSDistance
 
+TEST_DATA = os.environ.get("PYGW_TEST_DATA")
+if TEST_DATA is None and len(sys.argv) > 1 and Path(sys.argv[1]).is_file():
+    TEST_DATA = sys.argv[1]
+if TEST_DATA is None:
+    TEST_DATA = str(Path(__file__).with_name("londonhp100.csv"))
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 
 
 class TestGWRBasic(unittest.TestCase):
     
     def setUp(self):
-        londonhp_csv = pd.read_csv(sys.argv[1])
+        londonhp_csv = pd.read_csv(TEST_DATA)
         self.londonhp = gp.GeoDataFrame(londonhp_csv, geometry=gp.points_from_xy(londonhp_csv.x, londonhp_csv.y))
         self.depen = 'PURCHASE'
         self.indep = ["FLOORSZ", "UNEMPLOY", "PROF"]
         self.parallel_case = {
-            ParallelType.Serial: dict()
+            ParallelType.SerialOnly: dict()
         }
         self.weight = BandwidthWeight(36.0, True)
         self.distance = CRSDistance(False)
