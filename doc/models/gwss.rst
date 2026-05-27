@@ -1,30 +1,28 @@
-Geographically Weighted Summary Statistics (GWSS)
-=================================================
+Geographically Weighted Summary Statistics (GWAverage / GWCorrelation)
+======================================================================
 
 .. _gwss-overview:
 
 Model Overview
 --------------
 
-Geographically Weighted Summary Statistics (GWSS) performs locally weighted
+Geographically Weighted Summary Statistics performs locally weighted
 descriptive statistics on multivariate data, revealing spatial heterogeneity
 in the statistical characteristics of variables.
 
-GWSS supports two modes:
+Two classes are provided:
 
-- Average mode — computes local mean, standard deviation, variance, skewness,
-  coefficient of variation, and optionally local median, interquartile range,
-  and quantile imbalance.
-- Correlation mode — computes local Pearson correlation coefficients and
-  Spearman rank correlation coefficients.
+- :class:`~pygwmodel.gwss.GWAverage` — computes local mean, standard deviation,
+  variance, skewness, coefficient of variation, and optionally local median,
+  interquartile range, and quantile imbalance.
+- :class:`~pygwmodel.gwss.GWCorrelation` — computes local Pearson correlation
+  coefficients and Spearman rank correlation coefficients for every pair of
+  variables.
 
-.. _gwss-modes:
+.. _gwss-average:
 
-Two Modes
+GWAverage
 ---------
-
-Average Mode
-~~~~~~~~~~~~
 
 For each variable, the following local statistics are computed:
 
@@ -67,8 +65,10 @@ When ``quantile=True``:
      - ``qi``
      - ``{variable}_QI``
 
-Correlation Mode
-~~~~~~~~~~~~~~~~
+.. _gwss-correlation:
+
+GWCorrelation
+-------------
 
 For each pair of variables :math:`(X_i, X_j)`, the following are computed:
 
@@ -83,35 +83,51 @@ Column name format: ``{var1}.{var2}_Corr`` and ``{var1}.{var2}_SCorr``.
 Code Examples
 -------------
 
-Average Mode
-~~~~~~~~~~~~
+GWAverage
+~~~~~~~~~
 
 .. code-block:: python
 
-    from pygwmodel import GWSS, BandwidthWeight
+    from pygwmodel import GWAverage, BandwidthWeight
 
     vars = ["PURCHASE", "FLOORSZ", "UNEMPLOY", "PROF"]
 
-    gwss = GWSS(
+    gwa = GWAverage(
         data, vars,
         weight=BandwidthWeight(36.0, adaptive=True),
-        mode=GWSS.Mode.Average,
         quantile=False
     ).run()
 
-    result = gwss.result_layer
+    result = gwa.result_layer
     print(result.columns)
     # PURCHASE_Mean, PURCHASE_SDev, PURCHASE_Skew, PURCHASE_CV,
     # FLOORSZ_Mean, ...
 
-Correlation Mode
-~~~~~~~~~~~~~~~~
+GWCorrelation
+~~~~~~~~~~~~~
 
 .. code-block:: python
 
-    gwss = GWSS(data, vars, weight=BandwidthWeight(36.0, adaptive=True))
-    result = gwss.run(mode=GWSS.Mode.Correlation).result_layer
+    from pygwmodel import GWCorrelation, BandwidthWeight
+
+    gwc = GWCorrelation(data, vars, weight=BandwidthWeight(36.0, adaptive=True))
+    result = gwc.run().result_layer
 
     print(result.columns)
     # PURCHASE.FLOORSZ_Corr, PURCHASE.FLOORSZ_SCorr,
     # PURCHASE.UNEMPLOY_Corr, ...
+
+Parallel Execution
+~~~~~~~~~~~~~~~~~~
+
+Both classes support OpenMP multi-threading:
+
+.. code-block:: python
+
+    from pygwmodel import GWAverage, GWCorrelation, ParallelType
+
+    gwa = GWAverage(data, vars, weight=...)
+    gwa.enable_parallel(ParallelType.OpenMP, threads=4).run()
+
+    gwc = GWCorrelation(data, vars, weight=...)
+    gwc.enable_parallel(ParallelType.OpenMP, threads=4).run()

@@ -25,6 +25,7 @@ add_custom_target(testPythonDeps ALL
         $<TARGET_FILE:_spatial_weight>
         $<TARGET_FILE:_parallel>
         $<TARGET_FILE:_regression>
+        $<TARGET_FILE:_analysis>
         ${PYTHON_TEST_SCRIPT_DIR}/pygwmodel
     COMMAND ${CMAKE_COMMAND} -E
         copy_if_different
@@ -38,11 +39,11 @@ add_test(
     COMMAND ${Python_EXECUTABLE} test_gwr_basic.py ${PYTHON_TEST_DATA}
     WORKING_DIRECTORY ${PYTHON_TEST_SCRIPT_DIR}
 )
-# add_test(
-#     NAME testPythonGWSS
-#     COMMAND ${Python_EXECUTABLE} test_gwss.py ${PYTHON_TEST_DATA}
-#     WORKING_DIRECTORY ${PYTHON_TEST_SCRIPT_DIR}
-# )
+add_test(
+    NAME testPythonGWSS
+    COMMAND ${Python_EXECUTABLE} test_gwss.py ${PYTHON_TEST_DATA}
+    WORKING_DIRECTORY ${PYTHON_TEST_SCRIPT_DIR}
+)
 add_test(
     NAME testPythonGWRMultiscale
     COMMAND ${Python_EXECUTABLE} test_gwr_multiscale.py ${PYTHON_TEST_DATA}

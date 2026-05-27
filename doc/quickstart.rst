@@ -15,7 +15,8 @@ Currently implemented models:
 
 - **Geographically Weighted Regression (GWR)** — :class:`~pygwmodel.gwr_basic.GWRBasic`
 - **Multiscale GWR (MGWR)** — :class:`~pygwmodel.gwr_multiscale.GWRMultiscale`
-- **Geographically Weighted Summary Statistics (GWSS)** — :class:`~pygwmodel.gwss.GWSS`
+- **GW Average** — :class:`~pygwmodel.gwss.GWAverage`
+- **GW Correlation** — :class:`~pygwmodel.gwss.GWCorrelation`
 
 All algorithms use a C++17 core, exposed to Python via
 `nanobind <https://github.com/wjakob/nanobind>`_, with support for

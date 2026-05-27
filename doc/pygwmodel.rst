@@ -20,13 +20,13 @@ pygwmodel.gwr_multiscale module
    :undoc-members:
    :show-inheritance:
 
-.. pygwmodel.gwss module (disabled — _analysis module needs _GWSS binding update)
-.. ---------------------
+pygwmodel.gwss module
+---------------------
 
-.. .. automodule:: pygwmodel.gwss
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+.. automodule:: pygwmodel.gwss
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 pygwmodel.parallel module
 -------------------------
