@@ -3,7 +3,7 @@ import numpy as np
 import geopandas as gp
 from .spatial_weight import BandwidthWeight, CRSDistance, Distance, SpatialWeight
 from .parallel import ParallelType
-from ._analysis import _GWSS
+from ._analysis import _GWAverage, _GWCorrelation
 
 
 class GWAverage:
@@ -23,14 +23,13 @@ class GWAverage:
         self.distance = distance
         self.quantile = quantile
         self.result_layer: Optional[gp.GeoDataFrame] = None
-        self.algorithm = _GWSS()
+        self.algorithm = _GWAverage()
         self.algorithm.coords = np.asfortranarray(
             sdf.geometry.centroid.get_coordinates(), dtype=np.float64)
         self.algorithm.variables = np.asfortranarray(
             sdf[self.vars], dtype=np.float64)
         self.algorithm.spatial_weight = SpatialWeight.create(distance, weight)
         self.algorithm.quantile = self.quantile
-        self.algorithm.set_mode(_GWSS.Mode.Average)
 
     def enable_parallel(self, type: ParallelType, **kwargs):
         if type == ParallelType.OpenMP:
@@ -44,7 +43,6 @@ class GWAverage:
     def run(self, quantile: bool = False):
         self.quantile = quantile
         self.algorithm.quantile = self.quantile
-        self.algorithm.set_mode(_GWSS.Mode.Average)
         self.algorithm.run()
         result_data = {
             **{f'{f}_Mean': self.local_mean[:, i]
@@ -68,8 +66,6 @@ class GWAverage:
             }
         self.result_layer = gp.GeoDataFrame(result_data, geometry=self.geometry)
         return self
-
-    # -- read-only properties from C++ _GWSS --
 
     @property
     def local_mean(self):
@@ -112,22 +108,20 @@ class GWCorrelation:
     """
 
     def __init__(self, sdf: gp.GeoDataFrame, vars: List[str],
-                 weight: BandwidthWeight, distance: Distance = CRSDistance(),
-                 corr_with_first: bool = False) -> None:
+                 weight: BandwidthWeight, distance: Distance = CRSDistance()) -> None:
         self.geometry = sdf.geometry
         self.vars = vars
         self.weight = weight
         self.distance = distance
-        self.corr_with_first = corr_with_first
         self.result_layer: Optional[gp.GeoDataFrame] = None
-        self.algorithm = _GWSS()
+        self.algorithm = _GWCorrelation()
         self.algorithm.coords = np.asfortranarray(
             sdf.geometry.centroid.get_coordinates(), dtype=np.float64)
         self.algorithm.variables = np.asfortranarray(
             sdf[self.vars], dtype=np.float64)
-        self.algorithm.spatial_weight = SpatialWeight.create(distance, weight)
-        self.algorithm.corr_with_first = self.corr_with_first
-        self.algorithm.set_mode(_GWSS.Mode.Correlation)
+        n_var = len(self.vars)
+        sw = SpatialWeight.create(distance, weight)
+        self.algorithm.spatial_weights = [sw] * n_var
 
     def enable_parallel(self, type: ParallelType, **kwargs):
         if type == ParallelType.OpenMP:
@@ -139,7 +133,6 @@ class GWCorrelation:
         return self
 
     def run(self):
-        self.algorithm.set_mode(_GWSS.Mode.Correlation)
         self.algorithm.run()
         columns = [(fi, fj) for i, fi in enumerate(self.vars)
                    for _, fj in enumerate(self.vars[i + 1:])]
@@ -151,8 +144,6 @@ class GWCorrelation:
         }
         self.result_layer = gp.GeoDataFrame(result_data, geometry=self.geometry)
         return self
-
-    # -- read-only properties from C++ _GWSS --
 
     @property
     def local_mean(self):
