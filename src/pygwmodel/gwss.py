@@ -117,11 +117,17 @@ class GWCorrelation:
         self.algorithm = _GWCorrelation()
         self.algorithm.coords = np.asfortranarray(
             sdf.geometry.centroid.get_coordinates(), dtype=np.float64)
-        self.algorithm.variables = np.asfortranarray(
-            sdf[self.vars], dtype=np.float64)
+        vars_mat = np.asfortranarray(sdf[self.vars], dtype=np.float64)
+        self.algorithm.variables1 = vars_mat
+        self.algorithm.variables2 = vars_mat
         n_var = len(self.vars)
+        n_col = n_var * n_var
         sw = SpatialWeight.create(distance, weight)
-        self.algorithm.spatial_weights = [sw] * n_var
+        self.algorithm.spatial_weights = [sw] * n_col
+        self.algorithm.bandwidth_initilize = \
+            [_GWCorrelation.BandwidthInitilizeType.Specified] * n_col
+        self.algorithm.bandwidth_selection_approach = \
+            [_GWCorrelation.BandwidthSelectionCriterionType.CV] * n_col
 
     def enable_parallel(self, type: ParallelType, **kwargs):
         if type == ParallelType.OpenMP:
@@ -134,13 +140,16 @@ class GWCorrelation:
 
     def run(self):
         self.algorithm.run()
-        columns = [(fi, fj) for i, fi in enumerate(self.vars)
-                   for _, fj in enumerate(self.vars[i + 1:])]
+        n_var = len(self.vars)
+        pairs = [(i, j) for i in range(n_var) for j in range(i + 1, n_var)]
+        col_indices = [i * n_var + j for i, j in pairs]
         result_data = {
-            **{f'{fi}.{fj}_Corr': self.local_corr[:, i]
-               for i, (fi, fj) in enumerate(columns)},
-            **{f'{fi}.{fj}_SCorr': self.local_s_corr[:, i]
-               for i, (fi, fj) in enumerate(columns)}
+            **{f'{self.vars[ci]}.{self.vars[cj]}_Corr':
+               self.local_corr[:, col_idx]
+               for (ci, cj), col_idx in zip(pairs, col_indices)},
+            **{f'{self.vars[ci]}.{self.vars[cj]}_SCorr':
+               self.local_s_corr[:, col_idx]
+               for (ci, cj), col_idx in zip(pairs, col_indices)}
         }
         self.result_layer = gp.GeoDataFrame(result_data, geometry=self.geometry)
         return self

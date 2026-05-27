@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 import unittest
 import numpy as np
 import pandas as pd
@@ -8,7 +9,11 @@ from pygwmodel.parallel import ParallelType
 from pygwmodel.spatial_weight import BandwidthWeight
 from pygwmodel.gwss import GWAverage, GWCorrelation
 
-TEST_DATA = os.environ.get("PYGW_TEST_DATA", sys.argv[1] if len(sys.argv) > 1 else "test/londonhp100.csv")
+TEST_DATA = os.environ.get("PYGW_TEST_DATA")
+if TEST_DATA is None and len(sys.argv) > 1 and Path(sys.argv[1]).is_file():
+    TEST_DATA = sys.argv[1]
+if TEST_DATA is None:
+    TEST_DATA = str(Path(__file__).with_name("londonhp100.csv"))
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 
 class TestGWAverage(unittest.TestCase):
@@ -30,7 +35,7 @@ class TestGWAverage(unittest.TestCase):
                                          BandwidthWeight(36.0, adaptive=True))
                 londonhp_gwa_result: gp.GeoDataFrame = londonhp_gwa.enable_parallel(p, **pargs).run().result_layer
                 result = pd.DataFrame(londonhp_gwa_result).drop('geometry', axis=1)
-                result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], interpolation='midpoint'), axis=0)
+                result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], method='midpoint'), axis=0)
 
                 localmean_q0 = np.array([
                     [155530.887621432, 71.3459254279447, 6.92671958853926, 39.0446823327541],
@@ -92,7 +97,7 @@ class TestGWCorrelation(unittest.TestCase):
                                              BandwidthWeight(36.0, adaptive=True))
                 londonhp_gwc_result: gp.GeoDataFrame = londonhp_gwc.enable_parallel(p, **pargs).run().result_layer
                 result = pd.DataFrame(londonhp_gwc_result).drop('geometry', axis=1)
-                result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], interpolation='midpoint'), axis=0)
+                result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], method='midpoint'), axis=0)
 
                 localcorr_q0 = np.array([
                     [0.748948486801849,-0.320600183598632,0.203011140141453,-0.126882976445561,-0.0892568204410789,-0.948799446008617],

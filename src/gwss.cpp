@@ -1,4 +1,5 @@
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/vector.h>
 #include <GWAverage.h>
 #include <GWCorrelation.h>
 #include "common.hpp"
@@ -27,9 +28,26 @@ void init_gwss(nb::module_& m)
     def_parallel_openmp(_GWAverage);
 
     nb::class_<gwm::GWCorrelation, gwm::SpatialMultiscaleAlgorithm> _GWCorrelation(m, "_GWCorrelation");
+
+    nb::enum_<gwm::GWCorrelation::BandwidthInitilizeType>(_GWCorrelation, "BandwidthInitilizeType")
+        .value("Null", gwm::GWCorrelation::BandwidthInitilizeType::Null)
+        .value("Initial", gwm::GWCorrelation::BandwidthInitilizeType::Initial)
+        .value("Specified", gwm::GWCorrelation::BandwidthInitilizeType::Specified)
+        .export_values()
+        ;
+
+    nb::enum_<gwm::GWCorrelation::BandwidthSelectionCriterionType>(_GWCorrelation, "BandwidthSelectionCriterionType")
+        .value("CV", gwm::GWCorrelation::BandwidthSelectionCriterionType::CV)
+        .value("AIC", gwm::GWCorrelation::BandwidthSelectionCriterionType::AIC)
+        .export_values()
+        ;
+
     _GWCorrelation
         .def(nb::init<>())
-        .def_prop_rw("variables", &gwm::GWCorrelation::variables2, &gwm::GWCorrelation::setVariables2, nb::rv_policy::move)
+        .def_prop_rw("variables1", &gwm::GWCorrelation::variables1, &gwm::GWCorrelation::setVariables1, nb::rv_policy::move)
+        .def_prop_rw("variables2", &gwm::GWCorrelation::variables2, &gwm::GWCorrelation::setVariables2, nb::rv_policy::move)
+        .def_prop_rw("bandwidth_initilize", &gwm::GWCorrelation::bandwidthInitilize, &gwm::GWCorrelation::setBandwidthInitilize)
+        .def_prop_rw("bandwidth_selection_approach", &gwm::GWCorrelation::bandwidthSelectionApproach, &gwm::GWCorrelation::setBandwidthSelectionApproach)
         .def("run", &gwm::GWCorrelation::run)
         .def_prop_ro("local_mean", &gwm::GWCorrelation::localMean, nb::rv_policy::move)
         .def_prop_ro("local_sdev", &gwm::GWCorrelation::localSDev, nb::rv_policy::move)
