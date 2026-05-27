@@ -6,3 +6,4 @@ Regression Models
 
    models/gwr
    models/gwr_multiscale
+   models/gwss

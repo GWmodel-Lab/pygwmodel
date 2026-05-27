@@ -15,7 +15,8 @@ Implemented Models
 * **GWRBasic** — Basic Geographically Weighted Regression with a single bandwidth.
 * **GWRMultiscale** — Multiscale GWR (MGWR) with per-variable bandwidths and
   backfitting algorithm.
-* **GWSS** — Geographically Weighted Summary Statistics (averages and correlations).
+* **GWAverage** — Geographically Weighted Summary Statistics (mean, std dev, etc.).
+* **GWCorrelation** — Geographically Weighted Correlation coefficients.
 
 Quick Start
 -----------

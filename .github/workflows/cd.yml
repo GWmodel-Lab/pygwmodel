@@ -79,7 +79,7 @@ jobs:
             PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
             python "${{ github.workspace }}/tools/repair_windows_wheel.py" {wheel} {dest_dir}
-          CIBW_TEST_COMMAND: "pytest {project}/tests -v --ignore={project}/tests/test_gwss.py"
+          CIBW_TEST_COMMAND: "pytest {project}/tests -v"
           CIBW_TEST_REQUIRES: pytest
 
       - name: Upload wheels

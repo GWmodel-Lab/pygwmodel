@@ -7,7 +7,7 @@ import pandas as pd
 import geopandas as gp
 from pygwmodel.parallel import ParallelType
 from pygwmodel.spatial_weight import BandwidthWeight
-from pygwmodel.gwss import GWSS
+from pygwmodel.gwss import GWAverage, GWCorrelation
 
 TEST_DATA = os.environ.get("PYGW_TEST_DATA")
 if TEST_DATA is None and len(sys.argv) > 1 and Path(sys.argv[1]).is_file():
@@ -16,7 +16,7 @@ if TEST_DATA is None:
     TEST_DATA = str(Path(__file__).with_name("londonhp100.csv"))
 ENABLE_OPENMP = (lambda s: False if s is None else (s.lower() in ['true', '1', 't', 'y', 'yes', 'on']))(os.getenv("ENABLE_OPENMP"))
 
-class TestGWSS(unittest.TestCase):
+class TestGWAverage(unittest.TestCase):
     
     def setUp(self):
         londonhp_csv = pd.read_csv(TEST_DATA)
@@ -31,10 +31,11 @@ class TestGWSS(unittest.TestCase):
     def test_average(self):
         for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                londonhp_gwss = GWSS(self.londonhp, self.londonhp_vars, BandwidthWeight(36.0, adaptive=True))
-                londonhp_gwss_result: gp.GeoDataFrame = londonhp_gwss.enable_parallel(p, **pargs).run().result_layer
-                result = pd.DataFrame(londonhp_gwss_result).drop('geometry', axis=1)
-                result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], interpolation='midpoint'), axis=0)
+                londonhp_gwa = GWAverage(self.londonhp, self.londonhp_vars,
+                                         BandwidthWeight(36.0, adaptive=True))
+                londonhp_gwa_result: gp.GeoDataFrame = londonhp_gwa.enable_parallel(p, **pargs).run().result_layer
+                result = pd.DataFrame(londonhp_gwa_result).drop('geometry', axis=1)
+                result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], method='midpoint'), axis=0)
 
                 localmean_q0 = np.array([
                     [155530.887621432, 71.3459254279447, 6.92671958853926, 39.0446823327541],
@@ -76,13 +77,27 @@ class TestGWSS(unittest.TestCase):
                 localcv_q = result_q.loc[:, 'PURCHASE_CV':'PROF_CV'].values  # type: ignore
                 self.assertTrue(np.all(np.abs(localcv_q0 - localcv_q) < 1e-8))
 
+
+class TestGWCorrelation(unittest.TestCase):
+
+    def setUp(self):
+        londonhp_csv = pd.read_csv(TEST_DATA)
+        self.londonhp = gp.GeoDataFrame(londonhp_csv, geometry=gp.points_from_xy(londonhp_csv.x, londonhp_csv.y))
+        self.londonhp_vars = ["PURCHASE", "FLOORSZ", "UNEMPLOY", "PROF"]
+        self.parallel_case = {
+            ParallelType.SerialOnly: dict()
+        }
+        if ENABLE_OPENMP:
+            self.parallel_case[ParallelType.OpenMP] = {'threads': 4}
+
     def test_correlation(self):
         for p, pargs in self.parallel_case.items():
             with self.subTest(parallel=p):
-                londonhp_gwss = GWSS(self.londonhp, self.londonhp_vars, BandwidthWeight(36.0, adaptive=True))
-                londonhp_gwss_result: gp.GeoDataFrame = londonhp_gwss.enable_parallel(p, **pargs).run(GWSS.Mode.Correlation).result_layer
-                result = pd.DataFrame(londonhp_gwss_result).drop('geometry', axis=1)
-                result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], interpolation='midpoint'), axis=0)
+                londonhp_gwc = GWCorrelation(self.londonhp, self.londonhp_vars,
+                                             BandwidthWeight(36.0, adaptive=True))
+                londonhp_gwc_result: gp.GeoDataFrame = londonhp_gwc.enable_parallel(p, **pargs).run().result_layer
+                result = pd.DataFrame(londonhp_gwc_result).drop('geometry', axis=1)
+                result_q = result.apply(lambda x: np.quantile(x, [0, 0.25, 0.5, 0.75, 1], method='midpoint'), axis=0)
 
                 localcorr_q0 = np.array([
                     [0.748948486801849,-0.320600183598632,0.203011140141453,-0.126882976445561,-0.0892568204410789,-0.948799446008617],
