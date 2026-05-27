@@ -15,6 +15,7 @@ Currently implemented models:
 
 - **Geographically Weighted Regression (GWR)** — :class:`~pygwmodel.gwr_basic.GWRBasic`
 - **Multiscale GWR (MGWR)** — :class:`~pygwmodel.gwr_multiscale.GWRMultiscale`
+- **Geographically and Temporally Weighted Regression (GTWR)** — :class:`~pygwmodel.gtwr.GTWR`
 - **GW Average** — :class:`~pygwmodel.gwss.GWAverage`
 - **GW Correlation** — :class:`~pygwmodel.gwss.GWCorrelation`
 
