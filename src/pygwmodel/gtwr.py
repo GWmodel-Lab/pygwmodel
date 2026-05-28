@@ -9,25 +9,38 @@ class GTWR:
     """Geographically and Temporally Weighted Regression.
 
     GTWR extends GWR by incorporating temporal information via a
-    spatio-temporal distance metric with a spatio-temporal ratio
-    parameter (lambda).
+    spatio-temporal distance metric.  A spatio-temporal ratio
+    parameter :math:`\\lambda \\in [0, 1]` balances the influence
+    of spatial proximity versus temporal proximity in the
+    weighting scheme.
+
+    Supports automatic bandwidth selection (CV or AIC) and
+    OpenMP parallel computation.
 
     Parameters
     ----------
     sdf : GeoDataFrame
-        Input data with geometry column.
+        Input data with a geometry column.
     depen_var : str
         Dependent variable column name.
-    indep_vars : List[str]
+    indep_vars : list of str
         Independent variable column names.
     times : str
         Column name for temporal stamps.
     weight : BandwidthWeight
-        Bandwidth weight configuration.
+        Bandwidth and kernel configuration.
     distance : CRSSTDistance, optional
-        Spatio-temporal distance (default CRSSTDistance).
+        Spatio-temporal distance metric (default CRSSTDistance
+        with lambda=0.5).
     has_intercept : bool, optional
-        Include intercept term (default True).
+        Include an intercept term (default True).
+
+    Attributes
+    ----------
+    result_layer : GeoDataFrame or None
+        Fitted results after calling :meth:`fit`.
+    BandwidthSelectionCriterionType : enum
+        AIC, CV
     """
 
     BandwidthSelectionCriterionType = _GTWR.BandwidthSelectionCriterionType
@@ -69,6 +82,15 @@ class GTWR:
         self.algorithm.prepare_st_distance()
 
     def enable_parallel(self, type: ParallelType, **kwargs):
+        """Enable parallel computation.
+
+        Parameters
+        ----------
+        type : ParallelType
+            Parallel backend (only OpenMP supported).
+        **kwargs
+            ``threads`` (int) — number of OpenMP threads.
+        """
         if type == ParallelType.OpenMP:
             threads = kwargs.get('threads', 8)
             if isinstance(threads, int) and threads > 0:
@@ -80,6 +102,19 @@ class GTWR:
     def fit(self,
             optimize_bandwidth:
             Optional[BandwidthSelectionCriterionType] = None):
+        """Fit the GTWR model.
+
+        Parameters
+        ----------
+        optimize_bandwidth : BandwidthSelectionCriterionType, optional
+            Criterion for automatic bandwidth selection
+            (AIC or CV).
+
+        Returns
+        -------
+        self
+            The fitted instance with ``result_layer`` populated.
+        """
         if (self.weight.bandwidth is None
                 and optimize_bandwidth is None):
             optimize_bandwidth = GTWR.BandwidthSelectionCriterionType.CV
@@ -105,6 +140,20 @@ class GTWR:
         return self
 
     def predict(self, targets: gp.GeoDataFrame):
+        """Predict coefficients at new locations.
+
+        Parameters
+        ----------
+        targets : GeoDataFrame
+            Target locations with independent variable columns.
+
+        Returns
+        -------
+        GeoDataFrame
+            Predicted coefficients.  If the independent and
+            dependent variables are present in ``targets``,
+            ``y_hat`` and ``residual`` columns are appended.
+        """
         if self.weight.bandwidth is None:
             raise ValueError("Bandwidth cannot be None when predicting")
         predict_locations = np.asfortranarray(
@@ -128,25 +177,32 @@ class GTWR:
 
     @property
     def diagnostic(self):
+        """dict: Regression diagnostics (RSS, AIC, AICc, ENP, EDF,
+        RSquare, RSquareAdjust)."""
         return self.algorithm.diagnostic if self.algorithm else None
 
     @property
     def betas(self):
+        """ndarray: Coefficient estimates (n_samples × n_vars)."""
         return self.algorithm.betas if self.algorithm else None
 
     @property
     def betasSE(self):
+        """ndarray: Standard errors of coefficients."""
         return self.algorithm.betasSE if self.algorithm else None
 
     @property
     def bandwidth_criterions(self):
+        """list: Bandwidth selection criterion values."""
         return self.algorithm.bandwidth_criterions \
             if self.algorithm else None
 
     @property
     def lambda_(self):
+        """float: Current spatio-temporal ratio parameter."""
         return self.algorithm.lambda_ if self.algorithm else None
 
     @property
     def angle(self):
+        """float: Oblique angle for spatio-temporal distance."""
         return self.algorithm.angle if self.algorithm else None

@@ -1,3 +1,24 @@
+"""pygwmodel — Python bindings for geographically weighted (GW) models.
+
+Provides high-level GeoPandas-based interfaces to the C++ libgwmodel
+library.  All algorithms support OpenMP multi-threading and some
+support CUDA GPU acceleration.
+
+Available models
+----------------
+- :class:`GWRBasic` — Basic Geographically Weighted Regression.
+- :class:`GWRMultiscale` — Multiscale GWR (per-variable bandwidths).
+- :class:`GTWR` — Geographically and Temporally Weighted Regression.
+- :class:`GWAverage` — GW local summary statistics.
+- :class:`GWCorrelation` — GW local correlation coefficients.
+
+Spatial weighting
+-----------------
+- :class:`BandwidthWeight` — Bandwidth and kernel configuration.
+- :class:`CRSDistance` — Euclidean / great-circle distance.
+- :class:`CRSSTDistance` — Spatio-temporal distance (for GTWR).
+"""
+
 import os
 import sys
 from pathlib import Path
