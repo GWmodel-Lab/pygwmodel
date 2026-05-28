@@ -20,6 +20,14 @@ pygwmodel.gwr_multiscale module
    :undoc-members:
    :show-inheritance:
 
+pygwmodel.gtwr module
+---------------------
+
+.. automodule:: pygwmodel.gtwr
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pygwmodel.gwss module
 ---------------------
 

@@ -1,6 +1,8 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/tuple.h>
 #include <GWRBasic.h>
+#include <spatialweight/CRSSTDistance.h>
+#include <spatialweight/OneDimDistance.h>
 #include "common.hpp"
 
 namespace nb = nanobind;
@@ -55,6 +57,17 @@ NB_MODULE(_spatial_weight, m)
             [](gwm::SpatialWeight &sw, bool geographic)
             {
                 sw.setDistance(gwm::CRSDistance(geographic));
+            }
+        )
+        .def(
+            "set_distance_crst",
+            [](gwm::SpatialWeight &sw, bool geographic, double lambda)
+            {
+                sw.setDistance(gwm::CRSSTDistance(
+                    new gwm::CRSDistance(geographic),
+                    new gwm::OneDimDistance(),
+                    lambda
+                ));
             }
         )
         ;
