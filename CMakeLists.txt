@@ -29,7 +29,7 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-find_package(Python 3.8 REQUIRED COMPONENTS Interpreter Development.Module)
+find_package(Python 3.12 REQUIRED COMPONENTS Interpreter Development.Module Development.SABIModule)
 
 # Detect the installed nanobind package and import it into CMake
 execute_process(
@@ -49,6 +49,11 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(MSVC)
 
+if(WIN32)
+  # Prefer package config files (e.g. vcpkg-provided Armadillo config) over CMake modules.
+  set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
+endif()
+
 add_subdirectory(libgwmodel)
 
 add_subdirectory(src)
@@ -57,4 +62,3 @@ if(WITH_PYTESTS)
     enable_testing()
     add_subdirectory(test)
 endif(WITH_PYTESTS)
-

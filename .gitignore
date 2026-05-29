@@ -233,3 +233,4 @@ cython_debug/
 # Sphinx
 !/doc/Makefile
 _build/
+.tmp*

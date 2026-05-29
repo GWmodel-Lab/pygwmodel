@@ -4,11 +4,16 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pygwmodel"
-version = "0.1.0"
+version = "0.0.1"
 description = "A Python binding for GWmodel"
 readme = "README.md"
+requires-python = ">=3.12"
 authors = [
     { name = "Yigong Hu", email = "yigong.hu@outlook.com" }
+]
+dependencies = [
+    "numpy",
+    "geopandas",
 ]
 
 [project.urls]
@@ -28,7 +33,7 @@ wheel.py-api = "cp312"
 build-verbosity = 1
 build = "cp312-*"
 skip = "pp* *-musllinux* *-manylinux_i686* *-win32 *-macosx_x86_64"
-test-command = "pytest {project}/tests -v"
+test-command = "pytest {project}/test -v"
 test-requires = "pytest"
 
 [tool.cibuildwheel.macos.environment]
