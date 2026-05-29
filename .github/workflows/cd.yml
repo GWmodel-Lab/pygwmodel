@@ -59,8 +59,15 @@ jobs:
           CIBW_BUILD: "cp312-*"
           CIBW_SKIP: "pp* *-musllinux* *-manylinux_i686* *-win32 *-macosx_x86_64"
           CIBW_BEFORE_ALL_LINUX: >
-            apt-get update -qq &&
-            apt-get install -qq libarmadillo-dev libopenblas-dev libgsl-dev
+            if command -v apt-get >/dev/null; then
+            apt-get update -qq && apt-get install -qq libarmadillo-dev libopenblas-dev libgsl-dev;
+            elif command -v dnf >/dev/null; then
+            dnf install -y armadillo-devel openblas-devel gsl-devel;
+            elif command -v yum >/dev/null; then
+            yum install -y armadillo-devel openblas-devel gsl-devel;
+            else
+            echo "No supported package manager found" && exit 1;
+            fi
           CIBW_ENVIRONMENT_LINUX: >
             CMAKE_ARGS="-DWITH_TESTS=OFF"
             PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
@@ -68,10 +75,9 @@ jobs:
           CIBW_ENVIRONMENT_MACOS: >
             CMAKE_ARGS="-DWITH_TESTS=OFF"
             PYGW_TEST_DATA="{project}/tests/londonhp100.csv"
-            MACOSX_DEPLOYMENT_TARGET="10.14"
+            MACOSX_DEPLOYMENT_TARGET="15.0"
           CIBW_BEFORE_ALL_WINDOWS: |
-            $vcpkg = "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe"
-            & $vcpkg install armadillo gsl openblas --triplet x64-windows
+            "%VCPKG_INSTALLATION_ROOT%\vcpkg.exe" install armadillo gsl openblas --triplet x64-windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_ENVIRONMENT_WINDOWS: >
             PATH="C:/vcpkg/installed/x64-windows/bin"
