@@ -10,6 +10,10 @@ readme = "README.md"
 authors = [
     { name = "Yigong Hu", email = "yigong.hu@outlook.com" }
 ]
+dependencies = [
+    "numpy",
+    "geopandas",
+]
 
 [project.urls]
 Homepage = "https://github.com/GWmodel-Lab/pygwmodel"
