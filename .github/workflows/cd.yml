@@ -78,7 +78,7 @@ jobs:
             cd /d "%VCPKG_INSTALLATION_ROOT%"
             git fetch --tags
             git switch --detach 2026.04.27
-            "%VCPKG_INSTALLATION_ROOT%\vcpkg.exe" install armadillo gsl openblas --triplet x64-windows
+            "%VCPKG_INSTALLATION_ROOT%\vcpkg.exe" install armadillo gsl openblas[threads] --triplet x64-windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_ENVIRONMENT_WINDOWS: >
             PATH="C:/vcpkg/installed/x64-windows/bin;$PATH"
