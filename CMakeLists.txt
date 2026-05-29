@@ -29,7 +29,7 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-find_package(Python 3.8 REQUIRED COMPONENTS Interpreter Development.Module)
+find_package(Python 3.12 REQUIRED COMPONENTS Interpreter Development.Module Development.SABIModule)
 
 # Detect the installed nanobind package and import it into CMake
 execute_process(

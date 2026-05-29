@@ -7,6 +7,7 @@ name = "pygwmodel"
 version = "0.1.0"
 description = "A Python binding for GWmodel"
 readme = "README.md"
+requires-python = ">=3.12"
 authors = [
     { name = "Yigong Hu", email = "yigong.hu@outlook.com" }
 ]
