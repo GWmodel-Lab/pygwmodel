@@ -59,7 +59,7 @@ jobs:
         run: |
           $vcpkgRoot = $env:VCPKG_INSTALLATION_ROOT -replace '\\', '/'
           "VCPKG_ROOT_FWD=$vcpkgRoot" >> $env:GITHUB_ENV
-          "SKBUILD_CMAKE_ARGS=-DWITH_TESTS=OFF;-DCMAKE_TOOLCHAIN_FILE=$vcpkgRoot/scripts/buildsystems/vcpkg.cmake;-DVCPKG_TARGET_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+          "SKBUILD_CMAKE_ARGS=-DWITH_TESTS=OFF;-DCMAKE_TOOLCHAIN_FILE=$vcpkgRoot/scripts/buildsystems/vcpkg.cmake;-DVCPKG_TARGET_TRIPLET=x64-windows;-DCMAKE_PREFIX_PATH=$vcpkgRoot/installed/x64-windows" >> $env:GITHUB_ENV
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
