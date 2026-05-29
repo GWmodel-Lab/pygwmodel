@@ -53,6 +53,14 @@ jobs:
           .$NUGET_EXE sources add -Source ${{ env.FEED_URL }} -Name github -UserName ${{ env.USERNAME }} -Password ${{ secrets.GITHUB_TOKEN }} -StorePasswordInClearText
           .$NUGET_EXE setapikey ${{ secrets.GITHUB_TOKEN }} -Source "${{ env.FEED_URL }}"
 
+      - name: Configure Vcpkg paths
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vcpkgRoot = $env:VCPKG_INSTALLATION_ROOT -replace '\\', '/'
+          "VCPKG_ROOT_FWD=$vcpkgRoot" >> $env:GITHUB_ENV
+          "SKBUILD_CMAKE_ARGS=-DWITH_TESTS=OFF;-DCMAKE_TOOLCHAIN_FILE=$vcpkgRoot/scripts/buildsystems/vcpkg.cmake;-DVCPKG_TARGET_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
@@ -81,8 +89,8 @@ jobs:
             "%VCPKG_INSTALLATION_ROOT%\vcpkg.exe" install armadillo gsl openblas[threads] --triplet x64-windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_ENVIRONMENT_WINDOWS: >
-            PATH="$VCPKG_INSTALLATION_ROOT/installed/x64-windows/bin;$PATH"
-            CMAKE_ARGS="-DWITH_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows"
+            PATH="$VCPKG_ROOT_FWD/installed/x64-windows/bin;$PATH"
+            SKBUILD_CMAKE_ARGS="$SKBUILD_CMAKE_ARGS"
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
             python "${{ github.workspace }}/tools/repair_windows_wheel.py" {wheel} {dest_dir}
           CIBW_TEST_COMMAND: "pytest {project}/test -v"
