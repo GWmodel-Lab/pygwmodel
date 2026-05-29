@@ -75,6 +75,9 @@ jobs:
             CMAKE_ARGS="-DWITH_TESTS=OFF"
             MACOSX_DEPLOYMENT_TARGET="15.0"
           CIBW_BEFORE_ALL_WINDOWS: |
+            cd /d "%VCPKG_INSTALLATION_ROOT%"
+            git fetch --tags
+            git switch --detach 2026.04.27
             "%VCPKG_INSTALLATION_ROOT%\vcpkg.exe" install armadillo gsl openblas --triplet x64-windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_ENVIRONMENT_WINDOWS: >
