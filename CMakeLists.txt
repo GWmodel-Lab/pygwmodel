@@ -49,6 +49,11 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(MSVC)
 
+if(WIN32)
+  # Prefer package config files (e.g. vcpkg-provided Armadillo config) over CMake modules.
+  set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
+endif()
+
 add_subdirectory(libgwmodel)
 
 add_subdirectory(src)
@@ -57,4 +62,3 @@ if(WITH_PYTESTS)
     enable_testing()
     add_subdirectory(test)
 endif(WITH_PYTESTS)
-
